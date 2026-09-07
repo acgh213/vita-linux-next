@@ -5,6 +5,8 @@ An independent continuation of the work to bring Linux to the PlayStation Vita a
 Vita Linux Next is an experimental ARM/Linux bring-up project: part kernel port, part boot-chain work, part hardware archaeology. The goal is not to pretend that a consumer console is an ordinary SBC. The goal is to make the machine useful, observable, and increasingly complete while preserving the evidence that tells us why each piece works.
 
 > **Status:** Linux 6.12 boots on the Vita 1000 and PSTV. The project is active research and development, not a finished distribution.
+>
+> See the [work matrix](docs/PROJECT-STATUS.md) for what is done, in progress, not implemented, or on hold. [HyFetch](docs/HYFETCH.md) is being added to the embedded image as the next user-facing smoke test.
 
 ## What works
 
