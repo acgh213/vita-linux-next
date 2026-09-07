@@ -11,8 +11,8 @@ usage() {
     printf '%s\n' \
         'usage: vita-dev info [--machine]' \
         '       vita-dev build [--machine] --workdir DIR [--output PATH] SOURCE' \
-        '       vita-dev project [--machine] --workdir DIR [--output PATH] SOURCE...' \
-        '       vita-dev test [--machine] --workdir DIR [--output PATH] [--expect-status N] SOURCE...' \
+        '       vita-dev project [--machine] --workdir DIR [--output PATH] [--link -lNAME] SOURCE...' \
+        '       vita-dev test [--machine] --workdir DIR [--output PATH] [--link -lNAME] [--expect-status N] SOURCE...' \
         '       vita-dev run [--machine] BINARY [ARG ...]'
 }
 
@@ -51,12 +51,27 @@ absolute_source() {
     SOURCE_PATH=$source_dir/${source##*/}
 }
 
+# Link flags are restricted to library selection so a manifest can never inject
+# arbitrary compiler behaviour.  Accepts -lNAME only.
+validate_link_flag() {
+    case "$1" in
+        -l?*)
+            rest=${1#-l}
+            case "$rest" in
+                *[!A-Za-z0-9_.+-]*) return 1 ;;
+            esac
+            return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
 load_manifest() {
     MANIFEST_DIR=$(CDPATH='' cd -- "$(dirname "$MANIFEST")" && pwd)
     [ -f "$MANIFEST" ] || fail manifest_missing "manifest file not found: $MANIFEST"
     MANIFEST_SOURCES=
     MANIFEST_OUTPUT=
     MANIFEST_EXPECTED=
+    MANIFEST_LINK=
     while IFS= read -r line || [ -n "$line" ]; do
         case "$line" in
             ''|'#'*) continue ;;
@@ -82,6 +97,13 @@ load_manifest() {
                 [ -n "$value" ] || fail manifest_empty_output 'manifest output cannot be empty'
                 [ -z "$MANIFEST_OUTPUT" ] || fail manifest_duplicate_output 'manifest output may appear only once'
                 MANIFEST_OUTPUT=$value
+                ;;
+            link)
+                [ -n "$value" ] || fail manifest_empty_link 'manifest link cannot be empty'
+                validate_link_flag "$value" \
+                    || fail manifest_invalid_link "manifest link flag must be -lNAME: $value"
+                MANIFEST_LINK="${MANIFEST_LINK}${value}
+"
                 ;;
             expect_status)
                 case "$value" in
@@ -183,6 +205,7 @@ case "$ACTION" in
         MANIFEST=
         SOURCE_LIST=
         SOURCE_ARGS=
+        LINK_ARGS=
         OBJECT_LIST=
         cleanup_project() {
             [ -z "$SOURCE_LIST" ] || rm -f "$SOURCE_LIST"
@@ -207,6 +230,14 @@ case "$ACTION" in
                     MANIFEST=$2
                     shift
                     ;;
+                --link)
+                    [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+                    validate_link_flag "$2" \
+                        || fail invalid_link_flag "link flag must be -lNAME: $2"
+                    LINK_ARGS="${LINK_ARGS}${2}
+"
+                    shift
+                    ;;
                 --help|-h) usage; exit 0 ;;
                 -*) usage >&2; exit 2 ;;
                 *) SOURCE_ARGS="${SOURCE_ARGS}${1}
@@ -219,6 +250,7 @@ case "$ACTION" in
             [ -z "$SOURCE_ARGS" ] || fail manifest_mixed_sources 'manifest and command-line sources cannot be combined'
             SOURCE_ARGS=$MANIFEST_SOURCES
             [ -n "$OUTPUT" ] || OUTPUT=$MANIFEST_OUTPUT
+            LINK_ARGS="${LINK_ARGS}${MANIFEST_LINK}"
         fi
         [ -n "$SOURCE_ARGS" ] || { usage >&2; exit 2; }
         load_compiler
@@ -257,11 +289,24 @@ case "$ACTION" in
         while IFS= read -r OBJECT; do
             set -- "$@" "$OBJECT"
         done < "$OBJECT_LIST"
+        link_count=0
+        if [ -n "$LINK_ARGS" ]; then
+            LINK_LIST=$WORKDIR/.vita-dev-link
+            printf '%s' "$LINK_ARGS" > "$LINK_LIST"
+            while IFS= read -r LINK_FLAG; do
+                [ -n "$LINK_FLAG" ] || continue
+                validate_link_flag "$LINK_FLAG" \
+                    || fail invalid_link_flag "link flag must be -lNAME: $LINK_FLAG"
+                set -- "$@" "$LINK_FLAG"
+                link_count=$((link_count + 1))
+            done < "$LINK_LIST"
+            rm -f "$LINK_LIST"
+        fi
         "$CC" "$@" -o "$OUTPUT" || fail link_failed "linker failed"
         [ -x "$OUTPUT" ] || fail output_not_executable "linker did not produce an executable: $OUTPUT"
         if [ "$MODE" = machine ]; then
-            printf 'schema=1\naction=project\nstatus=built\nsource_count=%s\noutput=%s\nworkdir=%s\ncompiler=%s\n' \
-                "$source_count" "$OUTPUT" "$WORKDIR" "$CC"
+            printf 'schema=1\naction=project\nstatus=built\nsource_count=%s\noutput=%s\nworkdir=%s\ncompiler=%s\nlink_count=%s\n' \
+                "$source_count" "$OUTPUT" "$WORKDIR" "$CC" "$link_count"
         else
             printf 'built project: %s sources\noutput: %s\n' "$source_count" "$OUTPUT"
         fi
@@ -274,6 +319,7 @@ case "$ACTION" in
         EXPECTED_STATUS_SET=0
         MANIFEST=
         SOURCE_ARGS=
+        LINK_ARGS=
         while [ "$#" -gt 0 ]; do
             case "$1" in
                 --machine) MODE=machine ;;
@@ -290,6 +336,14 @@ case "$ACTION" in
                 --manifest)
                     [ "$#" -ge 2 ] || { usage >&2; exit 2; }
                     MANIFEST=$2
+                    shift
+                    ;;
+                --link)
+                    [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+                    validate_link_flag "$2" \
+                        || fail invalid_link_flag "link flag must be -lNAME: $2"
+                    LINK_ARGS="${LINK_ARGS}${2}
+"
                     shift
                     ;;
                 --expect-status)
@@ -310,6 +364,7 @@ case "$ACTION" in
             [ -z "$SOURCE_ARGS" ] || fail manifest_mixed_sources 'manifest and command-line sources cannot be combined'
             SOURCE_ARGS=$MANIFEST_SOURCES
             [ -n "$OUTPUT" ] || OUTPUT=$MANIFEST_OUTPUT
+            LINK_ARGS="${LINK_ARGS}${MANIFEST_LINK}"
             [ "$EXPECTED_STATUS_SET" = 1 ] || [ -z "$MANIFEST_EXPECTED" ] || EXPECTED_STATUS=$MANIFEST_EXPECTED
         fi
         [ -n "$SOURCE_ARGS" ] || { usage >&2; exit 2; }
@@ -323,6 +378,15 @@ case "$ACTION" in
         while IFS= read -r source_arg; do
             set -- "$@" "$source_arg"
         done < "$SOURCE_LIST"
+        if [ -n "$LINK_ARGS" ]; then
+            LINK_LIST=$WORKDIR/.vita-dev-test-link
+            printf '%s' "$LINK_ARGS" > "$LINK_LIST"
+            while IFS= read -r LINK_FLAG; do
+                [ -n "$LINK_FLAG" ] || continue
+                set -- "$@" --link "$LINK_FLAG"
+            done < "$LINK_LIST"
+            rm -f "$LINK_LIST"
+        fi
         if [ -n "$OUTPUT" ]; then
             PROJECT_OUTPUT=$(VITA_DEV_ROOT="$ROOT" VITA_DEV_CC="$CC_OVERRIDE" "$0" project --machine --workdir "$WORKDIR" --output "$OUTPUT" "$@") || fail build_failed 'project build failed'
         else
