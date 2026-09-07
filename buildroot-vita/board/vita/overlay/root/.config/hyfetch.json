@@ -10,7 +10,7 @@
     },
     "backend": "neofetch",
     "args": "--stdout=off",
-    "distro": "Vita Linux",
+    "distro": "linux",
     "pride_month_shown": [],
     "pride_month_disable": false
 }
