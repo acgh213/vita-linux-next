@@ -17,7 +17,7 @@ This file is the short current pointer. The detailed project status lives in [`d
 
 ## Next work
 
-- Execute [`docs/plans/2026-09-07-vita-linux-workbench.md`](docs/plans/2026-09-07-vita-linux-workbench.md): verified session activation, an explicit RW USB workspace, `vita-status`, curated native examples, then the bounded framebuffer/input dashboard.
+- Finish [`docs/plans/2026-09-07-vita-linux-workbench.md`](docs/plans/2026-09-07-vita-linux-workbench.md). Phases 0-3 are complete and hardware-gated: verified session activation, the explicit RW USB workspace, `vita-status`, and the curated native examples all pass on the PSTV (see [`docs/WORKBENCH.md`](docs/WORKBENCH.md)). Remaining: rebuild the payload with the fixed framebuffer size probe, re-run the bounded dashboard gate with one supervised button press, and run the reboot-persistence gate. Expect to redo PSTV Bluetooth pairing after that reboot — the rootfs is a RAM initramfs, so `/var/lib/bluetooth` does not survive.
 - Keep the SquashFS payload immutable and verified while using the USB transport as the persistent writable development volume.
 - Review and merge the opt-in OHCI HCD implementation.
 - Advance this repository's kernel gitlink after the kernel merge.

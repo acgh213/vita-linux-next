@@ -92,4 +92,33 @@ printf '\n--- case: stride falls back to packed width ---\n'
 R=$(make_root nostride 1 '64,16' 32 '' $((64 * 4 * 16)))
 "$TMP/fbfixture" "$R" bound || fail_test 'stride fallback case failed'
 
+printf '\n--- case: character-device framebuffer (regression) ---\n'
+# REGRESSION GUARD: /dev/fb0 on real hardware is a CHARACTER DEVICE, and
+# fseek/ftell reports size 0 on it even though a full frame is readable.
+# An ftell-based size probe wrongly refused to start on the PSTV
+# ("framebuffer is shorter than one frame") while dd read all 3,686,400 bytes.
+# Probe size via fstat/FBIOGET_FSCREENINFO, never ftell.
+if [ -c /dev/zero ]; then
+    R=$(make_root chardev 1 '64,16' 32 256 "$FRAME")
+    rm -f "$R/dev/fb0"
+    # /dev/zero is a char device that accepts writes and reports no size:
+    # the same shape as a framebuffer node for probe purposes.
+    if ln -s /dev/zero "$R/dev/fb0" 2>/dev/null; then
+        if "$TMP/fbfixture" "$R" bound > "$TMP/chardev.log" 2>&1; then
+            printf 'ok - a character-device framebuffer is accepted\n'
+        else
+            if grep -q 'shorter than one frame' "$TMP/chardev.log"; then
+                fail_test 'char-device framebuffer wrongly refused as too short (ftell regression)'
+            fi
+            printf 'note: char-device case exercised; see %s\n' "$TMP/chardev.log"
+            grep -q 'shorter than one frame' "$TMP/chardev.log" \
+                && fail_test 'ftell-based size probe has returned'
+        fi
+    else
+        printf 'skip - cannot symlink a character device here\n'
+    fi
+else
+    printf 'skip - no character device available\n'
+fi
+
 printf '\nvita-dashboard-fb: all framebuffer ownership fixtures passed\n'

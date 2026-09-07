@@ -7,8 +7,14 @@
  * has been observed to segfault at the call site.  See
  * toolkit/examples/fb-safe/README.md for the isolation evidence.
  */
+#include <errno.h>
+#include <fcntl.h>
+#include <linux/fb.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "fb_owner.h"
 
@@ -164,22 +170,51 @@ int fb_owner_probe(struct fb_owner *owner)
     }
 
     /* The framebuffer must exist and hold at least one full frame BEFORE we
-     * consider unbinding the console. */
-    fp = fopen(owner->fb_path, "rb");
-    if (fp == NULL) {
-        set_error(owner, "cannot open framebuffer device");
-        return -1;
-    }
-    if (fseek(fp, 0, SEEK_END) == 0) {
-        long size = ftell(fp);
+     * consider unbinding the console.
+     *
+     * NOTE: fseek/ftell is NOT a valid size probe here.  On the real device
+     * /dev/fb0 is a character device and ftell() returns 0 even though a full
+     * 3,686,400-byte frame is readable (measured on PSTV).  Size must come
+     * from fstat() for regular files (host fixtures) and from
+     * FBIOGET_FSCREENINFO for the actual device. */
+    {
+        struct stat st;
+        int fd = open(owner->fb_path, O_RDONLY);
 
-        if (size >= 0 && (size_t)size < owner->frame_bytes) {
-            fclose(fp);
-            set_error(owner, "framebuffer is shorter than one frame");
+        if (fd < 0) {
+            set_error(owner, "cannot open framebuffer device");
             return -1;
         }
+        if (fstat(fd, &st) != 0) {
+            close(fd);
+            set_error(owner, "cannot stat framebuffer device");
+            return -1;
+        }
+        if (S_ISREG(st.st_mode)) {
+            if ((size_t)st.st_size < owner->frame_bytes) {
+                close(fd);
+                set_error(owner, "framebuffer is shorter than one frame");
+                return -1;
+            }
+        } else if (S_ISCHR(st.st_mode)) {
+            struct fb_fix_screeninfo fix;
+
+            /* If the driver answers, trust smem_len; if it does not, the
+             * sysfs geometry already validated above is authoritative. */
+            if (ioctl(fd, FBIOGET_FSCREENINFO, &fix) == 0
+                    && fix.smem_len != 0
+                    && (size_t)fix.smem_len < owner->frame_bytes) {
+                close(fd);
+                set_error(owner, "framebuffer is shorter than one frame");
+                return -1;
+            }
+        } else {
+            close(fd);
+            set_error(owner, "framebuffer path is not a device or regular file");
+            return -1;
+        }
+        close(fd);
     }
-    fclose(fp);
 
     /* fbcon bind state: absent node means there is no console to displace. */
     owner->fbcon_was_bound = 0;
@@ -234,7 +269,7 @@ int fb_owner_acquire(struct fb_owner *owner)
 int fb_owner_write_frame(struct fb_owner *owner, const unsigned char *frame,
                          size_t len)
 {
-    FILE *fp;
+    int fd;
     size_t written;
 
     if (owner->state != FB_OWNER_OWNED) {
@@ -251,30 +286,41 @@ int fb_owner_write_frame(struct fb_owner *owner, const unsigned char *frame,
         return -1;
     }
 
-    fp = fopen(owner->fb_path, "r+b");
-    if (fp == NULL)
-        fp = fopen(owner->fb_path, "wb");
-    if (fp == NULL) {
+    /* POSIX I/O with an explicit short-write loop: write(2) on a framebuffer
+     * device may legitimately return fewer bytes than requested, and a partial
+     * frame must never be left on screen. */
+    fd = open(owner->fb_path, O_WRONLY);
+    if (fd < 0) {
         set_error(owner, "cannot open framebuffer for writing");
         return -1;
     }
-    if (fseek(fp, 0, SEEK_SET) != 0) {
-        fclose(fp);
+    if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
+        close(fd);
         set_error(owner, "cannot seek framebuffer");
         return -1;
     }
-    written = fwrite(frame, 1, len, fp);
+
+    written = 0;
+    while (written < len) {
+        ssize_t chunk = write(fd, frame + written, len - written);
+
+        if (chunk < 0) {
+            if (errno == EINTR)
+                continue;
+            close(fd);
+            set_error(owner, "framebuffer write failed");
+            return -1;
+        }
+        if (chunk == 0)
+            break;
+        written += (size_t)chunk;
+    }
     if (written != len) {
-        fclose(fp);
+        close(fd);
         set_error(owner, "short framebuffer write");
         return -1;
     }
-    if (fflush(fp) != 0) {
-        fclose(fp);
-        set_error(owner, "framebuffer flush failed");
-        return -1;
-    }
-    fclose(fp);
+    close(fd);
 
     owner->frames_written++;
     return 0;
