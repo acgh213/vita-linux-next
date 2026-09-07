@@ -58,6 +58,7 @@ The Debian host fetched `/frame.bmp`, and the response validated as:
 HTTP body: 172854 bytes
 BMP geometry: 320x180, 24-bit
 startup: bind=0.0.0.0 port=18082 device=/dev/fb0 width=320 height=180 scale=4 read_only=1
+framebuffer-http=PASS
 ```
 
 The server exited after the single request. It opens `/dev/fb0` read-only and
