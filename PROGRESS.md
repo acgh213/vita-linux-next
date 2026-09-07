@@ -17,6 +17,8 @@ This file is the short current pointer. The detailed project status lives in [`d
 
 ## Next work
 
+- Execute [`docs/plans/2026-09-07-vita-linux-workbench.md`](docs/plans/2026-09-07-vita-linux-workbench.md): verified session activation, an explicit RW USB workspace, `vita-status`, curated native examples, then the bounded framebuffer/input dashboard.
+- Keep the SquashFS payload immutable and verified while using the USB transport as the persistent writable development volume.
 - Review and merge the opt-in OHCI HCD implementation.
 - Advance this repository's kernel gitlink after the kernel merge.
 - Decide the production shape for OHCI: late-ordered boot integration versus explicitly manual bring-up.
