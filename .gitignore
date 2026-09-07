@@ -1,0 +1,22 @@
+# Subrepos (have their own git history)
+refs/
+refs
+
+# Built artifacts
+/cart/build/
+*.o
+zImage
+*.dtb
+payload.bin
+kplugin.skprx
+plugin_loader.vpk
+
+# Serial logs
+logs/
+logs
+
+# Worktree kernel dir override (per-worktree, not committed)
+.linux-vita-dir
+
+# Claude Code
+.claude/

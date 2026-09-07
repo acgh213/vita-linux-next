@@ -1,0 +1,120 @@
+name: Build smoketest
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  BOOTLIN_VERSION: "2025.08-1"
+  BOOTLIN_DIR: armv7-eabihf--glibc--bleeding-edge-2025.08-1
+
+jobs:
+  build-linux:
+    name: Linux (Bootlin GCC)
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 1
+
+      - name: Cache Bootlin toolchain
+        uses: actions/cache@v4
+        id: toolchain-cache
+        with:
+          path: ${{ github.workspace }}/.toolchains/${{ env.BOOTLIN_DIR }}
+          key: bootlin-${{ env.BOOTLIN_DIR }}
+
+      - name: Install Bootlin toolchain
+        if: steps.toolchain-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "${{ github.workspace }}/.toolchains"
+          curl -fsSL "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs/${{ env.BOOTLIN_DIR }}.tar.xz" | \
+            tar -xJC "${{ github.workspace }}/.toolchains"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q bc flex bison libssl-dev libelf-dev
+
+      - name: Test build contract and complete demo-cart gate
+        run: |
+          export PATH="${{ github.workspace }}/.toolchains/${{ env.BOOTLIN_DIR }}/bin:$PATH"
+          make test CART_CROSS_CC=arm-linux-gcc
+
+      - name: Configure kernel
+        working-directory: linux_vita
+        run: |
+          export PATH="${{ github.workspace }}/.toolchains/${{ env.BOOTLIN_DIR }}/bin:$PATH"
+          make ARCH=arm CROSS_COMPILE=arm-linux- vita_defconfig
+          # No initramfs in CI — rootfs.cpio.zst is not in the repo
+          sed -i 's|^CONFIG_INITRAMFS_SOURCE=.*|CONFIG_INITRAMFS_SOURCE=""|' .config
+          make ARCH=arm CROSS_COMPILE=arm-linux- olddefconfig
+
+      - name: Build device tree compiler
+        working-directory: linux_vita
+        run: |
+          export PATH="${{ github.workspace }}/.toolchains/${{ env.BOOTLIN_DIR }}/bin:$PATH"
+          make ARCH=arm CROSS_COMPILE=arm-linux- scripts_dtc -j$(nproc)
+
+      - name: Build device trees
+        run: |
+          export PATH="${{ github.workspace }}/.toolchains/${{ env.BOOTLIN_DIR }}/bin:$PATH"
+          make dtb CROSS_COMPILE=arm-linux-
+
+      - name: Verify outputs
+        run: |
+          make verify-dtb
+          echo "Build successful"
+
+  build-macos:
+    name: macOS (LLVM/Clang)
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 1
+
+      - name: Install dependencies
+        run: brew install llvm lld libelf make findutils gnu-sed
+
+      - name: Configure kernel
+        working-directory: linux_vita
+        run: |
+          export PATH="$(brew --prefix findutils)/libexec/gnubin:$(brew --prefix gnu-sed)/libexec/gnubin:$(brew --prefix llvm)/bin:$(brew --prefix lld)/bin:$PATH"
+          gmake ARCH=arm LLVM=1 \
+            HOSTCFLAGS="-Iscripts/macos-include -I$(brew --prefix libelf)/include" \
+            vita_defconfig
+          # No initramfs in CI — rootfs.cpio.zst is not in the repo
+          sed -i 's|^CONFIG_INITRAMFS_SOURCE=.*|CONFIG_INITRAMFS_SOURCE=""|' .config
+          gmake ARCH=arm LLVM=1 \
+            HOSTCFLAGS="-Iscripts/macos-include -I$(brew --prefix libelf)/include" \
+            olddefconfig
+
+      - name: Build device tree compiler
+        working-directory: linux_vita
+        run: |
+          export PATH="$(brew --prefix findutils)/libexec/gnubin:$(brew --prefix gnu-sed)/libexec/gnubin:$(brew --prefix llvm)/bin:$(brew --prefix lld)/bin:$PATH"
+          gmake ARCH=arm LLVM=1 \
+            HOSTCFLAGS="-Iscripts/macos-include -I$(brew --prefix libelf)/include" \
+            scripts_dtc -j$(sysctl -n hw.ncpu)
+
+      - name: Build device trees
+        run: |
+          export PATH="$(brew --prefix llvm)/bin:$PATH"
+          gmake dtb
+
+      - name: Verify outputs
+        run: |
+          gmake verify-dtb
+          echo "Build successful"
