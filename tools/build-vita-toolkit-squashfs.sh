@@ -60,6 +60,13 @@ done
 [ -f "$SOURCE/bin/vita-inputwatch" ] || { printf 'missing source file: %s/bin/vita-inputwatch\n' "$SOURCE" >&2; exit 1; }
 [ -f "$SOURCE/bin/vita-inputwatch.arm" ] || { printf 'missing source file: %s/bin/vita-inputwatch.arm\n' "$SOURCE" >&2; exit 1; }
 [ -f "$SOURCE/bin/vita-dev" ] || { printf 'missing source file: %s/bin/vita-dev\n' "$SOURCE" >&2; exit 1; }
+[ -f "$SOURCE/bin/vita-toolkit-session" ] || { printf 'missing source file: %s/bin/vita-toolkit-session\n' "$SOURCE" >&2; exit 1; }
+[ -f "$SOURCE/bin/vita-workspace" ] || { printf 'missing source file: %s/bin/vita-workspace\n' "$SOURCE" >&2; exit 1; }
+[ -f "$SOURCE/bin/vita-status" ] || { printf 'missing source file: %s/bin/vita-status\n' "$SOURCE" >&2; exit 1; }
+[ -f "$SOURCE/bin/vita-example" ] || { printf 'missing source file: %s/bin/vita-example\n' "$SOURCE" >&2; exit 1; }
+[ -f "$SOURCE/bin/vita-dashboard" ] || { printf 'missing source file: %s/bin/vita-dashboard\n' "$SOURCE" >&2; exit 1; }
+[ -f "$SOURCE/bin/vita-dashboard.arm" ] || { printf 'missing source file: %s/bin/vita-dashboard.arm\n' "$SOURCE" >&2; exit 1; }
+[ -d "$SOURCE/examples" ] || { printf 'missing source dir: %s/examples\n' "$SOURCE" >&2; exit 1; }
 [ -f "$SOURCE/share/vita-fbserve.c" ] || { printf 'missing source file: %s/share/vita-fbserve.c\n' "$SOURCE" >&2; exit 1; }
 [ -f "$SOURCE/share/vita-control.c" ] || { printf 'missing source file: %s/share/vita-control.c\n' "$SOURCE" >&2; exit 1; }
 [ -f "$SOURCE/share/vita-inputwatch.c" ] || { printf 'missing source file: %s/share/vita-inputwatch.c\n' "$SOURCE" >&2; exit 1; }
@@ -195,7 +202,50 @@ install -m 0755 "$SOURCE/bin/vita-inputinfo" "$STAGE/bin/vita-inputinfo"
 install -m 0755 "$SOURCE/bin/vita-inputwatch" "$STAGE/bin/vita-inputwatch"
 install -m 0755 "$SOURCE/bin/vita-inputwatch.arm" "$STAGE/libexec/vita-inputwatch.arm"
 install -m 0755 "$SOURCE/bin/vita-dev" "$STAGE/bin/vita-dev"
+install -m 0755 "$SOURCE/bin/vita-toolkit-session" "$STAGE/bin/vita-toolkit-session"
+install -m 0755 "$SOURCE/bin/vita-workspace" "$STAGE/bin/vita-workspace"
+install -m 0755 "$SOURCE/bin/vita-status" "$STAGE/bin/vita-status"
+install -m 0755 "$SOURCE/bin/vita-example" "$STAGE/bin/vita-example"
+install -m 0755 "$SOURCE/bin/vita-dashboard" "$STAGE/bin/vita-dashboard"
+install -m 0755 "$SOURCE/bin/vita-dashboard.arm" "$STAGE/libexec/vita-dashboard.arm"
 install -m 0644 "$SOURCE/squashfs/VERSION" "$STAGE/VERSION"
+
+# Curated examples: sources, manifests, and docs only.  Never ship build output.
+mkdir -p "$STAGE/examples"
+chmod 0755 "$STAGE/examples"
+for example_dir in "$SOURCE"/examples/*; do
+    [ -d "$example_dir" ] || continue
+    [ -f "$example_dir/vita.project" ] || continue
+    example_name=${example_dir##*/}
+    mkdir -p "$STAGE/examples/$example_name"
+    chmod 0755 "$STAGE/examples/$example_name"
+    install -m 0644 "$example_dir/vita.project" \
+        "$STAGE/examples/$example_name/vita.project"
+    [ -f "$example_dir/README.md" ] && install -m 0644 "$example_dir/README.md" \
+        "$STAGE/examples/$example_name/README.md"
+    if [ -d "$example_dir/src" ]; then
+        mkdir -p "$STAGE/examples/$example_name/src"
+        chmod 0755 "$STAGE/examples/$example_name/src"
+        for source_file in "$example_dir"/src/*.c "$example_dir"/src/*.h; do
+            [ -f "$source_file" ] || continue
+            install -m 0644 "$source_file" \
+                "$STAGE/examples/$example_name/src/${source_file##*/}"
+        done
+    fi
+done
+
+# Build provenance for the shipped dashboard binary.
+mkdir -p "$STAGE/share/vita-dashboard"
+chmod 0755 "$STAGE/share/vita-dashboard"
+{
+    printf 'application=vita-dashboard\n'
+    printf 'binary=libexec/vita-dashboard.arm\n'
+    printf 'binary_sha256=%s\n' "$(hash_file "$SOURCE/bin/vita-dashboard.arm")"
+    printf 'sources=fb_owner.c render.c status.c input.c main.c\n'
+    printf 'production_compiler=arm-linux-gnueabihf-gcc\n'
+    printf 'bootstrap_compiler=tcc\n'
+} > "$STAGE/share/vita-dashboard/BUILD-INFO"
+chmod 0644 "$STAGE/share/vita-dashboard/BUILD-INFO"
 install -m 0644 "$SOURCE/README.md" "$STAGE/share/README.md"
 install -m 0644 "$SOURCE/share/vita-bench.c" "$STAGE/share/vita-bench.c"
 install -m 0644 "$SOURCE/share/vita-fbserve.c" "$STAGE/share/vita-fbserve.c"
