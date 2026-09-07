@@ -12,6 +12,7 @@ This file is the short current pointer. The detailed project status lives in [`d
 - The OHCI/HID kernel implementation is queued for review in [`acgh213/linux_vita#9`](https://github.com/acgh213/linux_vita/pull/9).
 
 - The full lane-by-lane ledger is [`docs/PROJECT-STATUS.md`](docs/PROJECT-STATUS.md), including DONE, IN PROGRESS, NOT IMPLEMENTED, ON HOLD, and BLOCKED work.
+- The native toolkit SquashFS is deployed and mounted read-only on the PSTV; diagnostics, native two-file pthread/`libm` linking, and the read-only framebuffer HTTP snapshot all pass. See [`lab/toolkit-mounted-validation-2026-09-07.md`](lab/toolkit-mounted-validation-2026-09-07.md).
 - HyFetch 1.99.0 is wired into the Buildroot defconfig with a preseeded transgender configuration and has passed the PSTV hardware smoke test; see [`docs/HYFETCH.md`](docs/HYFETCH.md) and the dated lab record.
 
 ## Next work
