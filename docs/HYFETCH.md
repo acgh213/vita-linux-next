@@ -14,13 +14,13 @@ second native fetch implementation or a Python package manager.
 - Buildroot `neofetch`
 - the external `python-hyfetch` package
 
-`/root/.config/hyfetch.json` is installed with a rainbow preset, 8-bit colour
+`/root/.config/hyfetch.json` is installed with a transgender preset, 8-bit colour
 mode, the generic Linux logo key, and noninteractive `--stdout=off` backend
 arguments. The command therefore works immediately over SSH or a serial shell:
 
 ```sh
 hyfetch
-hyfetch --backend neofetch --preset rainbow
+hyfetch --backend neofetch --preset transgender
 hyfetch --help
 ```
 
@@ -60,13 +60,12 @@ The HyFetch 1.99.0 source tarball is pinned and hash-checked in
 ddeb422fd797c710f0ad37d584fac466df89e39feddeef765492b2c0b529616e
 ```
 
-The target-side gate is bounded and read-only apart from the process itself:
+The target-side gate is bounded by the host and is read-only apart from the
+HyFetch process itself:
 
 ```sh
-timeout 20 hyfetch --backend neofetch --preset rainbow
-hyfetch --help >/tmp/hyfetch-help.txt
-sha256sum /tmp/hyfetch-help.txt
-rm -f /tmp/hyfetch-help.txt
+timeout 20 ssh root@vita 'hyfetch --backend neofetch --preset transgender'
+ssh root@vita 'hyfetch --help >/dev/null'
 ```
 
 Record the kernel tip, rootfs SHA-256, and the exact HyFetch output in the lab

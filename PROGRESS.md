@@ -12,7 +12,7 @@ This file is the short current pointer. The detailed project status lives in [`d
 - The OHCI/HID kernel implementation is queued for review in [`acgh213/linux_vita#9`](https://github.com/acgh213/linux_vita/pull/9).
 
 - The full lane-by-lane ledger is [`docs/PROJECT-STATUS.md`](docs/PROJECT-STATUS.md), including DONE, IN PROGRESS, NOT IMPLEMENTED, ON HOLD, and BLOCKED work.
-- HyFetch 1.99.0 is now wired into the Buildroot defconfig with a preseeded rainbow configuration; it remains pending the rebuilt-image hardware smoke test.
+- HyFetch 1.99.0 is wired into the Buildroot defconfig with a preseeded transgender configuration and has passed the PSTV hardware smoke test; see [`docs/HYFETCH.md`](docs/HYFETCH.md) and the dated lab record.
 
 ## Next work
 

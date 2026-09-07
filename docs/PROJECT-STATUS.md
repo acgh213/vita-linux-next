@@ -28,7 +28,7 @@ research result.
 | eMMC and storage | **DONE** | eMMC exposed read-only; removable storage discovery and safe mount discipline documented; no implicit writes. | Keep every new storage experiment read-only first. |
 | PSTV EHCI host | **DONE** | USB bus 0 host-mode choreography works; EHCI FRINDEX advances and external Type-A high-speed storage enumerates and mounts read-only. | Preserve the EHCI-first admission rule for all companion work. |
 | PSTV OHCI diagnostic | **DONE** | Empty-bus read/reset/first-frame gate passed on real PSTV silicon with SOF IRQs, cleanup, quarantine, and `-EBUSY` admission control. | This proves the controller window, not enumeration. |
-| OHCI HCD and HID | **IN PROGRESS** | Opt-in HCD gate module has host/backend tests, ARM W=1 build cleanliness, and a tested kernel candidate at `1ee3edf3c90a`. | Finish reviewed trigger/stop/quarantine wiring, then run the physical low/full-speed enumeration gate. |
+| OHCI HCD and HID | **DONE / INTEGRATION PENDING** | Opt-in HCD gate module has host/backend tests, ARM W=1 build cleanliness, and tested kernel candidate `1ee3edf3c90a`; a direct Keychron C3 Pro enumerated through EHCI → OHCI as `usb3` at 12 Mb/s, bound to `usbhid`/`hid-generic`, created input devices, and reached interactive HDMI console login. Cleanup returned `status=0`, `cleanup_status=0`, `poisoned=0`. | Finish review/merge of [`acgh213/linux_vita#9`](https://github.com/acgh213/linux_vita/pull/9), then promote the tested path into the normal project pin via [`acgh213/vita-linux-port#29`](https://github.com/acgh213/vita-linux-port/pull/29). |
 | Simple framebuffer | **DONE** | PSTV 1280×720 RGBA geometry, safe capture/restore, fbcon ownership, and framebuffer-serving tooling are validated. | Keep writes explicit and shadow-rendered. |
 | IFTU/DRM display | **DONE** | Mapping bug fixed; mode enumeration, vblank IRQ, inactive-plane programming, one user-confirmed flip, and repeated page flips all passed the M2 ladder. | Wire the tested flip path into normal DRM atomic/page-flip userspace ABI. |
 | SGX/GPU | **ON HOLD** | Register/gate surveys, secure-RAZ behavior, KBL decryption, SMC 0x107 denial, and VDDG revision-gate refusal are documented. | No more guessed secure SMCs; resume only with secure-world provenance or a new safe lever. |
@@ -38,12 +38,12 @@ research result.
 | Native ARM compiler | **DONE** | Pinned TinyCC plus matching glibc development sysroot works on PSTV for multi-file C, linking, pthreads, `libm`, and bounded project tests. | Keep static GCC cross-builds as the production-artifact path. |
 | Demo cart | **DONE** | Framebuffer canvas/scenes, worker pool, input/control, framebuffer ownership, runtime, and temporary candidate lifecycle have passed the recorded gates. | Promote only after a fresh artifact/provenance gate; do not overwrite the known-good rollback. |
 | External toolkit payload | **DONE** | Deterministic SquashFS payload builder, manifest, USB staging, read-only loop mount, native tools, and cleanup were validated. | Keep payload and embedded rescue image as separate layers. |
-| HyFetch | **IN PROGRESS** | Buildroot package wiring and a preseeded rainbow config are now in the canonical repo; target execution has not yet been claimed. | Build the image, boot it, run `hyfetch --backend neofetch`, capture output, and record exact artifact hashes. |
+| HyFetch | **DONE** | Buildroot package, ARM Python 3/readline runtime, neofetch backend, and preseeded transgender config are in the embedded image; target execution and pseudo-TTY ANSI colour output passed on the PSTV. | Keep the package pinned and rerun the bounded smoke gate when the base image or Python version changes. |
 | Research and reverse engineering | **DONE / ONGOING** | Hardware maps, loader behavior, secure-world/KBL decryption, USB/DRM/SGX evidence, and dated lab records live in the associated research archive. | New claims require a dated record, exact artifacts, and an evidence boundary. |
 
 ## Explicitly not shipped yet
 
-- Low/full-speed HID enumeration through the OHCI companion.
+- Upstream review/merge and default project integration of the tested OHCI/HID path.
 - A production DRM atomic page-flip implementation wired to normal userspace.
 - An SGX/OpenPVR driver or accelerated 3D path.
 - A supported audio playback path.
