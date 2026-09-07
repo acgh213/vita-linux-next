@@ -15,8 +15,8 @@ second native fetch implementation or a Python package manager.
 - the external `python-hyfetch` package
 
 `/root/.config/hyfetch.json` is installed with a rainbow preset, 8-bit colour
-mode, and noninteractive `--stdout=off` backend arguments. The command therefore
-works immediately over SSH or a serial shell:
+mode, the generic Linux logo key, and noninteractive `--stdout=off` backend
+arguments. The command therefore works immediately over SSH or a serial shell:
 
 ```sh
 hyfetch
@@ -43,4 +43,32 @@ Before deploying, verify the package and config are present in the generated
 target tree and in the embedded archive:
 
 ```sh
-grep -E 'BR2_PACKAGE_(PYTHON_HYFETCH|PYTHON3|N...(truncated)
+grep -E '^BR2_PACKAGE_(PYTHON_HYFETCH|PYTHON3|PYTHON3_READLINE|NEOFETCH)=' \
+  buildroot/.config
+
+test -x buildroot/output/target/usr/bin/hyfetch
+test -x buildroot/output/target/usr/bin/neofetch
+test -x buildroot/output/target/usr/bin/python3
+cmp buildroot-vita/board/vita/overlay/root/.config/hyfetch.json \
+  buildroot/output/target/root/.config/hyfetch.json
+```
+
+The HyFetch 1.99.0 source tarball is pinned and hash-checked in
+`buildroot-vita/package/python-hyfetch/python-hyfetch.hash`:
+
+```text
+ddeb422fd797c710f0ad37d584fac466df89e39feddeef765492b2c0b529616e
+```
+
+The target-side gate is bounded and read-only apart from the process itself:
+
+```sh
+timeout 20 hyfetch --backend neofetch --preset rainbow
+hyfetch --help >/tmp/hyfetch-help.txt
+sha256sum /tmp/hyfetch-help.txt
+rm -f /tmp/hyfetch-help.txt
+```
+
+Record the kernel tip, rootfs SHA-256, and the exact HyFetch output in the lab
+record. A successful Buildroot build is not a hardware pass until the command
+has executed on the target.
