@@ -107,6 +107,12 @@ if [ ! -L "$OUT/bin/cc" ] || [ "$(readlink "$OUT/bin/cc")" != tcc ]; then
 fi
 VITA_TOOLKIT_ROOT="$OUT" sh -c     '. "$VITA_TOOLKIT_ROOT/toolchain-env.sh"; [ "$CC" = cc ]; [ "$(command -v cc)" = "$VITA_TOOLKIT_ROOT/bin/cc" ]' \
     || fail 'toolchain-env.sh does not activate the native compiler'
+MISSING_ROOT="$TMP/missing-toolkit-root"
+if VITA_TOOLKIT_ROOT="$MISSING_ROOT" sh -c '. "$1/toolchain-env.sh"' sh "$OUT" >"$TMP/missing-root.out" 2>&1; then
+    fail 'toolchain-env.sh accepted a missing toolkit root'
+fi
+grep -F "toolchain-env: missing toolkit root: $MISSING_ROOT" "$TMP/missing-root.out" >/dev/null \
+    || fail 'toolchain-env.sh did not explain the missing toolkit root'
 file "$OUT/bin/tcc" | grep -q 'ELF 32-bit.*ARM' \
     || fail 'staged tcc is not a 32-bit ARM ELF'
 arm-linux-gnueabihf-readelf -l "$OUT/bin/tcc" | grep -qv 'Requesting program interpreter' \
