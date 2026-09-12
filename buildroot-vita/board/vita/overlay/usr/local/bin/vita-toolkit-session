@@ -1,0 +1,419 @@
+#!/bin/sh
+# Activate or deactivate a verified Vita toolkit workbench session.
+#
+# A session is: (1) a conservatively discovered removable transport filesystem,
+# (2) a hash-verified SquashFS payload loop-mounted read-only at /opt/vita-toolkit,
+# and (3) optionally an explicit read-write persistent workbench tree on the
+# transport.  Teardown re-verifies the payload hash and unmounts in reverse order.
+set -eu
+
+ACTION=
+MACHINE=0
+RW_WORKSPACE=0
+EXPLICIT_FILE=
+TARGET=${VITA_SESSION_TARGET:-/opt/vita-toolkit}
+TRANSPORT_MOUNTPOINT=${VITA_SESSION_TRANSPORT:-/mnt/vita-storage}
+WORKBENCH_NAME=vita-workbench
+STATE_DIR=${VITA_SESSION_STATE_DIR:-/run/vita-toolkit}
+PROC_MOUNTS=${VITA_TOOLKIT_PROC_MOUNTS:-/proc/mounts}
+MOUNT_CMD=${VITA_TOOLKIT_MOUNT_CMD:-mount}
+UMOUNT_CMD=${VITA_TOOLKIT_UMOUNT_CMD:-umount}
+STORAGE_CMD=${VITA_SESSION_STORAGE_CMD:-vita-storage}
+EXPECTED_LABEL=${VITA_SESSION_EXPECTED_LABEL:-}
+PAYLOAD_GLOB=${VITA_SESSION_PAYLOAD_GLOB:-vita-toolkit*.squashfs}
+
+usage() {
+    printf '%s\n' \
+        'usage: vita-toolkit-session start [--file IMAGE] [--rw-workspace] [--machine]' \
+        '       vita-toolkit-session status [--machine]' \
+        '       vita-toolkit-session stop [--machine]' \
+        '  --file IMAGE      explicit SquashFS payload path (skips discovery)' \
+        '  --rw-workspace    mount the transport filesystem read-write and create' \
+        '                    the persistent vita-workbench tree' \
+        '  --machine         stable key=value output'
+}
+
+report() {
+    if [ "$MACHINE" -eq 1 ]; then
+        printf '%s=%s\n' "$1" "$2"
+    else
+        printf '%s: %s\n' "$1" "$2"
+    fi
+}
+
+fail() {
+    code=$1
+    message=$2
+    if [ "$MACHINE" -eq 1 ]; then
+        printf 'schema=1\naction=%s\nstatus=%s\n' "${ACTION:-unknown}" "$code"
+    else
+        printf 'vita-toolkit-session: %s\n' "$message" >&2
+    fi
+    exit 1
+}
+
+valid_path() {
+    case "$1" in
+        /*) ;;
+        *) return 1 ;;
+    esac
+    case "$1" in
+        *..*|*[!A-Za-z0-9_./:-]*) return 1 ;;
+    esac
+    case "$1" in
+        /|/dev|/proc|/sys|/run|/etc|/bin|/sbin|/usr|/var|/home) return 1 ;;
+    esac
+    return 0
+}
+
+hash_file() {
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$1" | awk '{print $1}'
+    else
+        shasum -a 256 "$1" | awk '{print $1}'
+    fi
+}
+
+mount_options_for() {
+    awk -v target="$1" '$2 == target { print $4; found=1 } END { if (!found) exit 1 }' \
+        "$PROC_MOUNTS" 2>/dev/null
+}
+
+mount_source_for() {
+    awk -v target="$1" '$2 == target { print $1; found=1 } END { if (!found) exit 1 }' \
+        "$PROC_MOUNTS" 2>/dev/null
+}
+
+is_mounted() {
+    awk -v target="$1" '$2 == target { found=1 } END { exit !found }' "$PROC_MOUNTS" 2>/dev/null
+}
+
+# Read-only mode check: a mount is read-write unless the first option is `ro`
+# or `ro` appears as a standalone option.
+mount_is_ro() {
+    opts=$1
+    old_ifs=$IFS
+    IFS=,
+    # shellcheck disable=SC2086 # Intentional split on the mount option delimiter.
+    set -- $opts
+    IFS=$old_ifs
+    for opt in "$@"; do
+        [ "$opt" = ro ] && return 0
+    done
+    return 1
+}
+
+# Conservative discovery: exactly one removable partition carrying exactly one
+# payload candidate.  Anything ambiguous fails closed WITHOUT invoking mount.
+discover_transport() {
+    storage=$("$STORAGE_CMD" --machine 2>/dev/null) \
+        || fail storage_query_failed 'vita-storage --machine failed'
+    count=$(printf '%s\n' "$storage" | awk -F= '$1 == "storage_count" { print $2 }')
+    case "$count" in
+        ''|*[!0-9]*) fail storage_query_malformed 'vita-storage did not report a count' ;;
+    esac
+    [ "$count" -ge 1 ] || fail no_removable_storage 'no removable storage found'
+
+    matches=0
+    DISCOVERED_DEVICE=
+    DISCOVERED_MOUNTPOINT=
+    index=1
+    while [ "$index" -le "$count" ]; do
+        fs=$(printf '%s\n' "$storage" | awk -F= -v k="storage_${index}_filesystem" '$1 == k { print $2 }')
+        label=$(printf '%s\n' "$storage" | awk -F= -v k="storage_${index}_label" '$1 == k { print $2 }')
+        device=$(printf '%s\n' "$storage" | awk -F= -v k="storage_${index}_device" '$1 == k { print $2 }')
+        mountpoint=$(printf '%s\n' "$storage" | awk -F= -v k="storage_${index}_mountpoint" '$1 == k { print $2 }')
+        index=$((index + 1))
+        case "$fs" in
+            exfat|vfat) ;;
+            *) continue ;;
+        esac
+        if [ -n "$EXPECTED_LABEL" ] && [ "$label" != "$EXPECTED_LABEL" ]; then
+            continue
+        fi
+        matches=$((matches + 1))
+        DISCOVERED_DEVICE=$device
+        DISCOVERED_MOUNTPOINT=$mountpoint
+    done
+
+    [ "$matches" -ne 0 ] || fail no_candidate_storage 'no removable partition with a supported filesystem'
+    [ "$matches" -eq 1 ] || fail ambiguous_storage "refusing to guess between $matches candidates"
+}
+
+# Find exactly one payload under the transport mountpoint.
+discover_payload() {
+    dir=$1
+    found=
+    count=0
+    for candidate in "$dir"/$PAYLOAD_GLOB; do
+        [ -f "$candidate" ] || continue
+        found=$candidate
+        count=$((count + 1))
+    done
+    [ "$count" -ne 0 ] || fail payload_missing "no payload matching $PAYLOAD_GLOB in $dir"
+    [ "$count" -eq 1 ] || fail ambiguous_payload "refusing to guess between $count payloads"
+    PAYLOAD=$found
+}
+
+# The checksum contract: <payload>.sha256 sidecar, else a SHA256SUMS file in the
+# same directory naming the payload's basename.  Absent metadata is fatal.
+resolve_expected_hash() {
+    payload=$1
+    dir=${payload%/*}
+    base=${payload##*/}
+    EXPECTED_HASH=
+    HASH_SOURCE=
+    if [ -f "$payload.sha256" ]; then
+        EXPECTED_HASH=$(awk 'NR == 1 { print $1 }' "$payload.sha256")
+        HASH_SOURCE=$payload.sha256
+    elif [ -f "$dir/SHA256SUMS" ]; then
+        EXPECTED_HASH=$(awk -v b="$base" '{ name=$2; sub(/^\*/, "", name); sub(/^.*\//, "", name); if (name == b) { print $1; exit } }' "$dir/SHA256SUMS")
+        HASH_SOURCE=$dir/SHA256SUMS
+    fi
+    case "$EXPECTED_HASH" in
+        '') return 1 ;;
+        *[!0-9a-fA-F]*) return 1 ;;
+    esac
+    [ "${#EXPECTED_HASH}" -eq 64 ] || return 1
+    return 0
+}
+
+write_state() {
+    mkdir -p "$STATE_DIR" || fail state_unavailable "cannot create state dir: $STATE_DIR"
+    {
+        printf 'payload=%s\n' "$PAYLOAD"
+        printf 'payload_sha256=%s\n' "$PAYLOAD_HASH"
+        printf 'target=%s\n' "$TARGET"
+        printf 'transport=%s\n' "$TRANSPORT_MOUNTPOINT"
+        printf 'transport_mode=%s\n' "$TRANSPORT_MODE"
+        printf 'source_type=%s\n' "$SOURCE_TYPE"
+        printf 'workspace=%s\n' "$WORKSPACE"
+        printf 'transport_mounted_by_session=%s\n' "$TRANSPORT_MOUNTED_BY_SESSION"
+    } > "$STATE_DIR/session"
+}
+
+read_state() {
+    [ -f "$STATE_DIR/session" ] || return 1
+    STATE_PAYLOAD=$(awk -F= '$1 == "payload" { print substr($0, index($0, "=") + 1) }' "$STATE_DIR/session")
+    STATE_HASH=$(awk -F= '$1 == "payload_sha256" { print $2 }' "$STATE_DIR/session")
+    STATE_TARGET=$(awk -F= '$1 == "target" { print substr($0, index($0, "=") + 1) }' "$STATE_DIR/session")
+    STATE_TRANSPORT=$(awk -F= '$1 == "transport" { print substr($0, index($0, "=") + 1) }' "$STATE_DIR/session")
+    STATE_TRANSPORT_MODE=$(awk -F= '$1 == "transport_mode" { print $2 }' "$STATE_DIR/session")
+    STATE_WORKSPACE=$(awk -F= '$1 == "workspace" { print substr($0, index($0, "=") + 1) }' "$STATE_DIR/session")
+    STATE_TRANSPORT_OWNED=$(awk -F= '$1 == "transport_mounted_by_session" { print $2 }' "$STATE_DIR/session")
+    return 0
+}
+
+[ "$#" -gt 0 ] || { usage >&2; exit 2; }
+ACTION=$1
+shift
+case "$ACTION" in
+    start|status|stop) ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage >&2; exit 2 ;;
+esac
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --machine) MACHINE=1; shift ;;
+        --rw-workspace) RW_WORKSPACE=1; shift ;;
+        --file)
+            [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+            EXPLICIT_FILE=$2; shift 2 ;;
+        --target)
+            [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+            TARGET=$2; shift 2 ;;
+        -h|--help) usage; exit 0 ;;
+        *) usage >&2; exit 2 ;;
+    esac
+done
+
+valid_path "$TARGET" || fail unsafe_target "unsafe mount target: $TARGET"
+valid_path "$TRANSPORT_MOUNTPOINT" || fail unsafe_transport "unsafe transport mountpoint: $TRANSPORT_MOUNTPOINT"
+[ -r "$PROC_MOUNTS" ] || fail mounts_unreadable "cannot read mount table: $PROC_MOUNTS"
+
+case "$ACTION" in
+status)
+    if ! read_state; then
+        [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=status\n'
+        report status inactive
+        exit 0
+    fi
+    [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=status\n'
+    if is_mounted "$STATE_TARGET"; then
+        report status mounted
+    else
+        report status stale
+    fi
+    report target "$STATE_TARGET"
+    report source "$STATE_PAYLOAD"
+    report payload_sha256 "$STATE_HASH"
+    report transport "$STATE_TRANSPORT"
+    report transport_mode "$STATE_TRANSPORT_MODE"
+    report workspace "$STATE_WORKSPACE"
+    if opts=$(mount_options_for "$STATE_TARGET"); then
+        report target_options "$opts"
+    fi
+    if opts=$(mount_options_for "$STATE_TRANSPORT"); then
+        report transport_options "$opts"
+    fi
+    exit 0
+    ;;
+
+stop)
+    read_state || {
+        [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=stop\n'
+        report status not_running
+        exit 0
+    }
+    if ! is_mounted "$STATE_TARGET"; then
+        rm -f "$STATE_DIR/session"
+        [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=stop\n'
+        report status not_running
+        exit 0
+    fi
+    current_source=$(mount_source_for "$STATE_TARGET" || true)
+    # Re-verify the payload before unmounting so a mid-session modification is
+    # detected instead of being silently discarded with the mount.
+    payload_unchanged=0
+    if [ -f "$STATE_PAYLOAD" ]; then
+        now=$(hash_file "$STATE_PAYLOAD")
+        [ "$now" = "$STATE_HASH" ] && payload_unchanged=1
+    fi
+    if [ "$payload_unchanged" -ne 1 ]; then
+        [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=stop\n'
+        report status payload_changed
+        report payload_unchanged 0
+        report evidence "$STATE_PAYLOAD"
+        report expected_sha256 "$STATE_HASH"
+        report actual_sha256 "${now:-UNREADABLE}"
+        exit 1
+    fi
+    "$UMOUNT_CMD" "$STATE_TARGET" || fail unmount_failed "unmount failed: $STATE_TARGET"
+    transport_unmounted=0
+    if [ "$STATE_TRANSPORT_OWNED" = 1 ] && is_mounted "$STATE_TRANSPORT"; then
+        sync 2>/dev/null || true
+        "$UMOUNT_CMD" "$STATE_TRANSPORT" || fail transport_unmount_failed "unmount failed: $STATE_TRANSPORT"
+        transport_unmounted=1
+    fi
+    rm -f "$STATE_DIR/session"
+    [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=stop\n'
+    report status stopped
+    report target "$STATE_TARGET"
+    report source "${current_source:-$STATE_PAYLOAD}"
+    report payload_unchanged 1
+    report transport_unmounted "$transport_unmounted"
+    exit 0
+    ;;
+esac
+
+# ---------------------------------------------------------------- start ------
+
+TRANSPORT_MOUNTED_BY_SESSION=0
+SOURCE_TYPE=file
+
+if [ -n "$EXPLICIT_FILE" ]; then
+    valid_path "$EXPLICIT_FILE" || fail unsafe_payload_path "unsafe payload path: $EXPLICIT_FILE"
+    [ -f "$EXPLICIT_FILE" ] || fail payload_missing "payload file does not exist: $EXPLICIT_FILE"
+    PAYLOAD=$EXPLICIT_FILE
+    SOURCE_TYPE=explicit
+else
+    discover_transport
+    SOURCE_TYPE=discovered
+    if [ "$DISCOVERED_MOUNTPOINT" = NONE ] || [ -z "$DISCOVERED_MOUNTPOINT" ]; then
+        # Transport is not mounted yet; mount it in the requested mode first.
+        mkdir -p "$TRANSPORT_MOUNTPOINT" || fail transport_unavailable "cannot create $TRANSPORT_MOUNTPOINT"
+        if [ "$RW_WORKSPACE" -eq 1 ]; then
+            transport_opts=rw,nosuid,nodev
+        else
+            transport_opts=ro,nosuid,nodev
+        fi
+        "$MOUNT_CMD" -o "$transport_opts" "$DISCOVERED_DEVICE" "$TRANSPORT_MOUNTPOINT" \
+            || fail transport_mount_failed "cannot mount $DISCOVERED_DEVICE"
+        TRANSPORT_MOUNTED_BY_SESSION=1
+    else
+        TRANSPORT_MOUNTPOINT=$DISCOVERED_MOUNTPOINT
+    fi
+    discover_payload "$TRANSPORT_MOUNTPOINT"
+fi
+
+# The transport may already be mounted read-only from a previous inspection
+# session; --rw-workspace must upgrade it explicitly rather than silently.
+if [ "$RW_WORKSPACE" -eq 1 ] && is_mounted "$TRANSPORT_MOUNTPOINT"; then
+    current_opts=$(mount_options_for "$TRANSPORT_MOUNTPOINT" || printf '')
+    if mount_is_ro "$current_opts"; then
+        "$MOUNT_CMD" -o remount,rw "$TRANSPORT_MOUNTPOINT" \
+            || fail transport_remount_failed "cannot remount rw: $TRANSPORT_MOUNTPOINT"
+    fi
+fi
+
+if resolve_expected_hash "$PAYLOAD"; then
+    :
+else
+    [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=start\n'
+    report status unverified
+    report source "$PAYLOAD"
+    report reason no_checksum_metadata
+    exit 1
+fi
+
+PAYLOAD_HASH=$(hash_file "$PAYLOAD")
+if [ "$PAYLOAD_HASH" != "$EXPECTED_HASH" ]; then
+    [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=start\n'
+    report status checksum_mismatch
+    report source "$PAYLOAD"
+    report expected_sha256 "$EXPECTED_HASH"
+    report actual_sha256 "$PAYLOAD_HASH"
+    exit 1
+fi
+
+if is_mounted "$TARGET"; then
+    [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=start\n'
+    report status already_mounted
+    report target "$TARGET"
+    report source "$(mount_source_for "$TARGET" || printf UNKNOWN)"
+    exit 0
+fi
+
+mkdir -p "$TARGET" || fail target_unavailable "cannot create mountpoint: $TARGET"
+TARGET_OPTIONS=loop,ro,nosuid,nodev
+"$MOUNT_CMD" -t squashfs -o "$TARGET_OPTIONS" "$PAYLOAD" "$TARGET" \
+    || fail mount_failed "mount failed: $PAYLOAD"
+
+if [ ! -f "$TARGET/NATIVE-TOOLCHAIN-MANIFEST" ] && [ ! -f "$TARGET/VERSION" ]; then
+    "$UMOUNT_CMD" "$TARGET" 2>/dev/null || true
+    fail payload_unrecognized "payload lacks VERSION and NATIVE-TOOLCHAIN-MANIFEST"
+fi
+
+if [ "$RW_WORKSPACE" -eq 1 ]; then
+    TRANSPORT_MODE=rw
+    WORKSPACE=$TRANSPORT_MOUNTPOINT/$WORKBENCH_NAME
+    for sub in src build log capture projects; do
+        mkdir -p "$WORKSPACE/$sub" \
+            || fail workspace_unavailable "cannot create workspace directory: $WORKSPACE/$sub"
+    done
+    chmod 0700 "$WORKSPACE" 2>/dev/null || true
+    {
+        printf 'schema=1\n'
+        printf 'payload_sha256=%s\n' "$PAYLOAD_HASH"
+        printf 'kernel=%s\n' "$(uname -r 2>/dev/null || printf UNKNOWN)"
+        printf 'created=%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || printf UNKNOWN)"
+    } > "$WORKSPACE/WORKSPACE-INFO" 2>/dev/null \
+        || fail workspace_unwritable "cannot write $WORKSPACE/WORKSPACE-INFO"
+else
+    TRANSPORT_MODE=ro
+    WORKSPACE=NONE
+fi
+
+write_state
+
+[ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=start\n'
+report status mounted
+report source "$PAYLOAD"
+report source_type "$SOURCE_TYPE"
+report payload_sha256 "$PAYLOAD_HASH"
+report target "$TARGET"
+report target_options "$TARGET_OPTIONS"
+report transport "$TRANSPORT_MOUNTPOINT"
+report transport_mode "$TRANSPORT_MODE"
+report workspace "$WORKSPACE"

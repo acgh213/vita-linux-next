@@ -1,0 +1,155 @@
+#!/bin/sh
+# Mount the read-only toolkit payload and the persistent workspace from the
+# SD2Vita game card, waiting for the card to enumerate.
+#
+# Why a waiter: game-card enumeration time is VARIABLE. Measured 5.576 s on one
+# boot and 155.6 s on the next, with no command timeouts and nothing logged in
+# between. Sampling once during init (~5.8 s) therefore misses the card most of
+# the time. This is the same "sample too early" mistake that once produced a
+# false "the hardware is dead" conclusion in this project, so the wait is
+# explicit rather than assumed.
+#
+# The wait runs in the BACKGROUND so boot is never delayed: the login prompt,
+# SSH and networking all come up immediately, and the toolkit appears when the
+# card does.
+#
+# Design constraints (docs/plans/2026-09-07-vita-linux-workbench.md):
+#   - the payload is mounted READ-ONLY and its SHA-256 is verified
+#   - the system must remain fully usable when the card is absent
+#   - nothing here may fail the boot
+#
+# Every failure path exits 0. A missing card is a normal condition, not a fault.
+
+CARD_MNT=/mnt/vita-card
+TOOLKIT_MNT=/opt/vita-toolkit
+WORK_MNT=/mnt/workspace
+PAYLOAD_NAME=vita-toolkit-native.squashfs
+WORKSPACE_IMAGE=workspace.ext4
+EXPECT_SHA_FILE=/etc/vita-toolkit-payload.sha256
+LOG=/run/vita-toolkit.log
+WAIT_SECONDS=${VITA_CARD_WAIT:-240}
+
+log() {
+    echo "vita-toolkit: $1" >> "$LOG" 2>/dev/null
+}
+
+find_card() {
+    # Match by content, not by name: SDIF1 defers behind the syscon, so the game
+    # card already moved mmcblk1 -> mmcblk2 once. Never hardcode the number.
+    for d in /dev/mmcblk*p1; do
+        [ -b "$d" ] || continue
+        case "$d" in
+            /dev/mmcblk0p1) continue ;;   # internal eMMC, never the game card
+        esac
+        case "$(blkid -o value -s TYPE "$d" 2>/dev/null)" in
+            exfat|vfat) echo "$d"; return 0 ;;
+        esac
+    done
+    return 1
+}
+
+do_mounts() {
+    dev=$1
+
+    mkdir -p "$CARD_MNT" 2>/dev/null
+    if ! mountpoint -q "$CARD_MNT" 2>/dev/null; then
+        mount -o rw,noatime "$dev" "$CARD_MNT" 2>/dev/null || {
+            log "card $dev present but would not mount"
+            return 0
+        }
+    fi
+    log "card mounted from $dev"
+
+    # ---- read-only toolkit payload, hash-gated ----
+    payload="$CARD_MNT/$PAYLOAD_NAME"
+    if [ -f "$payload" ]; then
+        ok=1
+        if [ -r "$EXPECT_SHA_FILE" ]; then
+            expect=$(tr -d '[:space:]' < "$EXPECT_SHA_FILE" 2>/dev/null)
+            actual=$(sha256sum "$payload" 2>/dev/null | cut -d' ' -f1)
+            if [ -n "$expect" ] && [ "$expect" != "$actual" ]; then
+                log "PAYLOAD HASH MISMATCH - refusing to mount"
+                log "  expected $expect"
+                log "  actual   $actual"
+                ok=0
+            else
+                log "payload hash verified"
+            fi
+        else
+            log "no recorded hash; mounting payload unverified"
+        fi
+        if [ "$ok" -eq 1 ] && ! mountpoint -q "$TOOLKIT_MNT" 2>/dev/null; then
+            mkdir -p "$TOOLKIT_MNT" 2>/dev/null
+            if mount -t squashfs -o loop,ro,nosuid,nodev "$payload" "$TOOLKIT_MNT" 2>/dev/null; then
+                log "toolkit $(cat "$TOOLKIT_MNT/VERSION" 2>/dev/null || echo '?') mounted at $TOOLKIT_MNT"
+            else
+                log "squashfs mount failed; continuing without the toolkit"
+            fi
+        fi
+    else
+        log "no $PAYLOAD_NAME on card"
+    fi
+
+    # ---- writable persistent workspace (ext4 loop image on the exFAT card) ----
+    image="$CARD_MNT/$WORKSPACE_IMAGE"
+    if [ -f "$image" ]; then
+        if ! mountpoint -q "$WORK_MNT" 2>/dev/null; then
+            mkdir -p "$WORK_MNT" 2>/dev/null
+            if mount -o loop,rw,noatime "$image" "$WORK_MNT" 2>/dev/null; then
+                log "workspace mounted at $WORK_MNT ($(df -h "$WORK_MNT" 2>/dev/null | awk 'NR==2{print $4}') free)"
+            else
+                log "workspace image present but would not mount"
+            fi
+        fi
+    else
+        log "no $WORKSPACE_IMAGE on card; no persistent storage this boot"
+    fi
+}
+
+waiter() {
+    i=0
+    while [ "$i" -lt "$WAIT_SECONDS" ]; do
+        if dev=$(find_card); then
+            [ "$i" -gt 0 ] && log "game card appeared after ${i}s"
+            do_mounts "$dev"
+            return 0
+        fi
+        sleep 2
+        i=$((i + 2))
+    done
+    log "no game card after ${WAIT_SECONDS}s; system is fine without it"
+    return 0
+}
+
+case "$1" in
+start)
+    : > "$LOG" 2>/dev/null
+    if dev=$(find_card); then
+        log "game card already present"
+        do_mounts "$dev"
+    else
+        log "waiting up to ${WAIT_SECONDS}s for the game card (background)"
+        waiter &
+    fi
+    ;;
+stop)
+    sync
+    for m in "$WORK_MNT" "$TOOLKIT_MNT" "$CARD_MNT"; do
+        mountpoint -q "$m" 2>/dev/null && umount "$m" 2>/dev/null
+    done
+    ;;
+status)
+    cat "$LOG" 2>/dev/null || echo "no log"
+    mount | grep -E "vita-card|vita-toolkit|workspace" || echo "nothing mounted"
+    ;;
+restart|reload)
+    "$0" stop
+    "$0" start
+    ;;
+*)
+    echo "usage: $0 {start|stop|status|restart}"
+    exit 1
+    ;;
+esac
+
+exit 0
