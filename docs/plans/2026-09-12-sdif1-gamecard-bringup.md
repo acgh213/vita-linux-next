@@ -63,10 +63,21 @@ quirk means:
 
 Three consequences:
 
-1. **Bit 16 does not gate initialization.** The MMC core already believes a card
-   is present on every SDIF bus and will attempt init regardless. The often-quoted
-   "card-detect pin never asserts" observation is therefore *not* what blocks
-   SDIF1.
+1. **The MMC core does not gate initialization on bit 16 -- but the Vita driver
+   does.** The first revision of this plan collapsed those two layers into one
+   and was wrong; corrected 2026-09-12 after reading `sdhci_vita_reinit_host()`
+   properly:
+   - In the *core*, the quirk means init is attempted on every SDIF bus
+     regardless of the pin, so "the card-detect pin never asserts" is not what
+     stops the *core*.
+   - In the *driver*, `sdhci_vita_reinit_host()` reads `SDHCI_PRESENT_STATE`
+     and wraps its entire power / voltage-select / clock-enable sequence in
+     `if (val & BIT(16))` (`sdhci-vita.c:296` at time of writing). When that
+     bit is clear, reinit returns having powered nothing and clocked nothing.
+   So bit 16 **can** block SDIF1 init -- one layer below where this plan first
+   looked, through our own reinit path rather than the core detect path. That
+   makes it a first-class measurement, not a secondary indicator: it separates
+   "the rail never came up" from "the rail is up and the card is silent".
 2. **The real blocker is that initialization fails** — which is exactly what an
    unpowered card produces: no response to CMD0/CMD8/ACMD41.
 3. **"Polling creates log spam" now has a precise mechanism.** `NEEDS_POLL` plus a
@@ -118,7 +129,7 @@ Two consequences follow, and they are consistent with the observed failure:
 |---|---|---|
 | Card initializes — CID/OCR read, SD command sequence progresses | rail power was the blocker; hypothesis confirmed | Gate B → read-only block validation |
 | Bit 16 asserts, but init still fails | slot is powered, card still does not answer | adapter or media is not functional → Gate 0 becomes mandatory, not optional |
-| Bit 16 never asserts **and** init fails | the `0x888` write had no effect, or is the wrong lever | re-verify the syscon command and the pervasive gate for `bus_index 1` |
+| Bit 16 never asserts **and** init fails | the `0x888` write had no effect or is the wrong lever, **or** the rail is up but no detect signal reaches the controller | re-verify the syscon command and the pervasive gate for `bus_index 1`; if the rail is confirmed up, bypass the `BIT(16)` gate in `sdhci_vita_reinit_host()` for bus 1 -- SD2Vita has no real detect switch and the gate is what leaves the card unpowered |
 | Init fails specifically on CRC errors or command timeouts | signal integrity, or a speed/voltage issue | constrain to 3.3 V and a lower clock before touching the rail again |
 
 Fixing this table in advance is the point. Otherwise a failing run teaches nothing.
@@ -267,6 +278,11 @@ The DT enable must come first.
       bit 16 not asserted.
 - [ ] Capture the full boot log, the raw `SDHCI_PRESENT_STATE` value, and the
       exact init failure and error-interrupt status.
+      The SDIF probe line already carries the pre-power-on baseline --
+      `SDIF1 ... present 0x........` with a `[card present]` / `[no card]`
+      decode -- so the "before" reading costs nothing to obtain.
+- [ ] `cat` the slot attribute for the same register plus the decoded bit at
+      any later point, including after the rail is powered on.
 
 Recording this negative is what makes the next step interpretable.
 
@@ -279,8 +295,12 @@ Recording this negative is what makes the next step interpretable.
 
 ### Task 2.3: Power on, reinit, rescan, observe
 
-- [ ] Write `0x888 = 1`.
-- [ ] Reinit and rescan `bus_index 1`.
+- [ ] Write `0x888 = 1` **first**, then reinit. Order is load-bearing:
+      `sdhci_vita_reinit_host()` only powers the card and enables its clock
+      when bit 16 is set, so the rail has to be up before reinit runs or reinit
+      is a no-op for power and clock.
+- [ ] Reinit and rescan `bus_index 1`, then read the slot attr for the
+      PRESENT_STATE value and the decoded bit.
 - [ ] Record whether the card **initializes** (the pivotal signal), plus bit 16 as
       a secondary electrical indicator.
 - [ ] Apply the discriminator table above **before** drawing a conclusion.
