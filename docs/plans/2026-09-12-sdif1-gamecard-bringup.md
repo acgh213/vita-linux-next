@@ -3,6 +3,9 @@
 **As of 2026-09-12.** Baseline: `vita-linux-next` @ `0d1ba53a4376` (kernel),
 `acgh213/vita-linux-next` @ `ce7e3cd` (project).
 
+**Device: PSTV first** (confirmed). The handheld Vita is a separate,
+separately-characterized pass — PSTV USB results already do not transfer to it.
+
 Goal: make a card in the game-card slot (`SDIF1`) enumerate and read under Linux
 on PSTV, **read-only first**, with a recorded gate at every step.
 
@@ -14,6 +17,11 @@ work, because skipping it would make every later result uninterpretable.
 > (`vita-linux-research`) that is **not part of this repository** and is not
 > published. Those citations are provenance pointers — the evidence behind a
 > claim — not files a fresh clone can open. Everything else resolves in-repo.
+
+> **Revision note (v2, 2026-09-12).** v1 of this plan gated on card-detect bit 16
+> asserting. That was wrong — see "Card detection is already bypassed" below. The
+> pivotal signal is now whether the card *responds to initialization*. Bit 16 is
+> demoted to a secondary electrical indicator.
 
 ---
 
@@ -31,11 +39,11 @@ Four facts, all from our own source or records:
    exactly this problem.
 3. **Protocol negotiation is core MMC's job.** Per the StorageMgr reverse
    engineering recorded in `upstream/vita-linux-port/PROGRESS.md`: no special
-   register writes are needed
-   to move SDIF1 from game-card mode to SD mode — the controller auto-negotiates
-   from card responses (CMD0/CMD8/ACMD41 for SD vs CMD1 for MMC). VitaOS blocked
-   SD-type cards on device index 1 *in software* (`SceSdstor`), and StorageMgr
-   patched those checks. Linux's MMC core has no such block.
+   register writes are needed to move SDIF1 from game-card mode to SD mode — the
+   controller auto-negotiates from card responses (CMD0/CMD8/ACMD41 for SD vs
+   CMD1 for MMC). VitaOS blocked SD-type cards on device index 1 *in software*
+   (`SceSdstor`), and StorageMgr patched those checks. Linux's MMC core has no
+   such block.
 4. **The slot power control is known and has firmware provenance.** Syscon
    command `0x888` is `ksceSysconCtrlSdPower`, recovered from `syscon.skprx.elf`
    disassembly (`lab/battery-re/POWER-SYSCON-TELEMETRY-CHECKPOINT-2026-08-30.md`).
@@ -43,9 +51,50 @@ Four facts, all from our own source or records:
 
 ---
 
+## Card detection is already bypassed — this changes the gates
+
+`sdhci-vita` sets `SDHCI_QUIRK_BROKEN_CARD_DETECTION` **unconditionally** for
+every SDIF host (`drivers/mmc/host/sdhci-vita.c:496`). In the SDHCI core that
+quirk means:
+
+- `sdhci_get_cd()` returns **1 — "card is always present"** — and never reads
+  `SDHCI_PRESENT_STATE` bit 16 (`drivers/mmc/host/sdhci.c`, `sdhci_get_cd()`).
+- The core sets `MMC_CAP_NEEDS_POLL` (`sdhci.c:4491-4494`), so it **polls**.
+
+Three consequences:
+
+1. **Bit 16 does not gate initialization.** The MMC core already believes a card
+   is present on every SDIF bus and will attempt init regardless. The often-quoted
+   "card-detect pin never asserts" observation is therefore *not* what blocks
+   SDIF1.
+2. **The real blocker is that initialization fails** — which is exactly what an
+   unpowered card produces: no response to CMD0/CMD8/ACMD41.
+3. **"Polling creates log spam" now has a precise mechanism.** `NEEDS_POLL` plus a
+   card that never responds means every SDIF host polls and fails continuously.
+   That is why SDIF1 and SDIF3 were disabled
+   (`upstream/vita-linux-port/PROGRESS.md:282`).
+
+### What the device tree therefore needs
+
+**`status = "okay"` and nothing else.** Not `non-removable`, not `broken-cd`, not
+a pwrseq or regulator reference — the quirk already supplies "always present" and
+polling. This also explains the earlier commit
+`24792fa542ad arm: vita: dts: remove non-removable from sdif1` (Cameron Clough,
+Feb 2026): removing it changed only *which error string* appears, not whether
+init is attempted.
+
+The probe-time `present` read in the driver (`sdhci-vita.c:455`) is **diagnostic
+logging only** — it prints `[card present]` / `[no card]` and gates nothing.
+
+`sdif1` is currently disabled on **all three** boards (`vita1000.dts`,
+`vita2000.dts`, `pstv.dts`). Nobody enables it today.
+
+---
+
 ## The hypothesis to test
 
-**Linux powers the game-card rail off and never turns it back on.**
+**Linux powers the game-card rail off and never turns it back on, so the card
+never responds to initialization.**
 
 Our own reboot notifier does this (`drivers/mfd/vita-syscon.c:727`):
 
@@ -63,22 +112,16 @@ Two consequences follow, and they are consistent with the observed failure:
 - Nothing in the normal boot path ever writes `0x888` with data `1`. After the
   first Linux reboot, the game-card rail stays off for the whole session.
 
-An unpowered slot cannot assert card detect, which matches the standing negative:
-the controller registers and takes an IRQ, but `SDHCI_PRESENT_STATE` bit 16 never
-asserts, and forcing `non-removable` yields *"Failed to initialize a non-removable
-card"* (`upstream/vita-linux-port/PROGRESS.md`).
-
 ### Discriminators — decide these before running anything
 
-| Observation after power-on + reinit | Interpretation | Next |
+| Observation after rail power-on + reinit + rescan | Interpretation | Next |
 |---|---|---|
-| bit 16 asserts | power-gated slot confirmed | proceed to card init |
-| bit 16 asserts **without** power-on | slot detect is independent of the rail | re-examine the earlier negative; power is not the blocker |
-| bit 16 never asserts, either way | detect is not the SDIF present bit | investigate Syscon insert status / GPIO, not SDHCI |
-| bit 16 asserts, init then fails on CRC/timeouts | signal integrity or speed mode | retry at 3.3 V only / lower clock, do not chase the rail |
+| Card initializes — CID/OCR read, SD command sequence progresses | rail power was the blocker; hypothesis confirmed | Gate B → read-only block validation |
+| Bit 16 asserts, but init still fails | slot is powered, card still does not answer | adapter or media is not functional → Gate 0 becomes mandatory, not optional |
+| Bit 16 never asserts **and** init fails | the `0x888` write had no effect, or is the wrong lever | re-verify the syscon command and the pervasive gate for `bus_index 1` |
+| Init fails specifically on CRC errors or command timeouts | signal integrity, or a speed/voltage issue | constrain to 3.3 V and a lower clock before touching the rail again |
 
-Writing this table down first is the point. Otherwise a failing run tells us
-nothing.
+Fixing this table in advance is the point. Otherwise a failing run teaches nothing.
 
 ---
 
@@ -86,13 +129,12 @@ nothing.
 
 - **No writes.** No `mkfs`, no `fsck`, no formatting, no partition edits, on any
   medium. Reads only until Gate C explicitly passes.
-- **Not the Sony memory card.** The proprietary memory card (MSIF, syscon
-  `0x89B`) is a separate lane with authentication and crypto work, rated
-  very-high difficulty. It is not this plan.
+- **Not the Sony memory card.** The proprietary memory card (MSIF, syscon `0x89B`)
+  is a separate lane with authentication and crypto work, rated very-high
+  difficulty. It is not this plan.
 - **Not upstreaming.** This is lab work first.
 - **Not the Vita handheld.** PSTV first, because it is the reliably deployable
-  device with SSH and a framebuffer console. Handheld parity is a later,
-  separately-characterized pass — PSTV USB results already do not transfer.
+  device with SSH and a framebuffer console.
 
 ---
 
@@ -115,11 +157,6 @@ comes from project records (`upstream/vita-linux-port/PROGRESS.md:70`;
 repository's current `HARDWARE.md:31` carries the same claim as an
 evidence-ranked row.
 
-**Why it is off:** it was disabled on purpose — *"SDIF1 (game card) and SDIF3
-(microSD) disabled to avoid polling log"* noise
-(`upstream/vita-linux-port/PROGRESS.md:282`). It is not a regression, and
-re-enabling it will bring that noise back. That has to be handled, not ignored.
-
 **Prior attempt:** `lab/bringup-2026-08-17/experimental/gamecard-sdif1-syscon-hooks.patch`
 (DTS enable of `sdif1`+`sdif3`, plus `gamecard_power` and `syscon_cmd` sysfs
 hooks). It was written and **parked without a recorded hardware evaluation**.
@@ -131,14 +168,13 @@ That is the main loose end this plan picks up.
 
 - **Gate 0 — outside Linux (prerequisite).** The same adapter and microSD are
   verified working in VitaOS on the same device.
-- **Gate A.** After rail power-on and reinit, `SDHCI_PRESENT_STATE` bit 16
-  asserts on SDIF1.
-- **Gate B.** Card initialization progresses: OCR and CID read, voltage
-  negotiation, SD command sequence reaching a ready state.
+- **Gate A.** After rail power-on and reinit, SDIF1 **initializes a card**: the
+  SD command sequence progresses and CID/OCR are read.
+- **Gate B.** Initialization completes to a ready state with a stable capacity.
 - **Gate C.** Read-only block reads are stable — partition table readable, repeat
   reads match, no CRC or error-interrupt storms. Still zero writes.
-- **Gate D.** Production posture decided: shipped on by default, opt-in, or
-  off; with the log-noise cost measured and recorded.
+- **Gate D.** Production posture decided: shipped on by default, opt-in, or off;
+  with the polling cost measured and recorded.
 
 A desktop compile is not a hardware pass. Nothing above is claimed until it has a
 recorded gate from the device.
@@ -149,15 +185,19 @@ recorded gate from the device.
 
 ### Task 0.1: Prove the adapter and card work in VitaOS
 
-This is the gate that makes everything else meaningful.
-`upstream/vita-linux-port/PROGRESS.md` states the SD2Vita "has never been
-verified working on this unit," and that no storage plugin is installed
-(`ur0:tai/config.txt` has no storage plugin).
+This is the gate that makes everything else meaningful. Without it, "init fails"
+cannot be attributed: an unpowered card and a dead adapter produce the same
+result.
 
-- [ ] Install a storage plugin (e.g. YAMT) on the target device.
+- [ ] Install a storage plugin (e.g. YAMT) on the PSTV.
 - [ ] Confirm the adapter + microSD mount in VitaOS and that content persists.
-- [ ] If it does **not** work in VitaOS, stop. Fix that first. A Linux failure
-      under an unproven adapter cannot be diagnosed.
+- [ ] If it does **not** work in VitaOS, stop and fix that first.
+
+**Citation care.** The "never verified working on this unit" statement comes from
+`upstream/vita-linux-port/PROGRESS.md` and originally from an upstream
+contributor's commit message (`24792fa542ad`, Feb 2026) describing **their** test
+unit. It is evidence that this was never established upstream — not proof about
+this PSTV. Gate 0 is what establishes it here.
 
 ### Task 0.2: Declare the test media and the rollback
 
@@ -168,8 +208,8 @@ verified working on this unit," and that no storage plugin is installed
 
 ### Task 0.3: Record device metadata
 
-- [ ] Model, firmware version, adapter model, card capacity and class.
-- [ ] Whether the same adapter has ever worked on *any* device.
+- [ ] PSTV model, firmware version, adapter model, card capacity and class.
+- [ ] Whether the same adapter has ever worked on any device.
 
 ---
 
@@ -177,35 +217,34 @@ verified working on this unit," and that no storage plugin is installed
 
 ### Task 1.1: Confirm the driver prerequisites
 
-Done during planning; record it explicitly so nobody re-checks:
+**Resolved during planning.** Recorded so nobody re-checks:
 
 - `sdhci_vita_reinit_host(int bus_index)` — `sdhci-vita.c:130`, exported at `:358`
 - `sdhci_vita_trigger_rescan(int bus_index)` — `sdhci-vita.c:367`, exported at `:377`
 - the reinit path already waits for `CARD_STATE_STABLE` (bit 17) and then up to
-  50 ms for card detect (bit 16) — `sdhci-vita.c:240-256`
+  50 ms for bit 16 — `sdhci-vita.c:240-256`
 
 ### Task 1.2: Re-verify the `0x888` provenance and polarity
 
 - [ ] Cite the firmware provenance (`ksceSysconCtrlSdPower`) in the commit body.
 - [ ] Cite our own reboot handler as the polarity evidence.
-- [ ] Confirm `cmd_len = 2` is correct and consistent with the reboot usage.
+- [ ] Confirm `cmd_len = 2` is consistent with the existing reboot usage.
 
-### Task 1.3: Determine what the DT node actually needs
+### Task 1.3: Determine what the DT node needs
 
-Do not assume `status = "okay"` is sufficient.
+**Resolved during planning.** `status = "okay"` only — no `non-removable`, no
+`broken-cd`, no pwrseq, no regulator, because `SDHCI_QUIRK_BROKEN_CARD_DETECTION`
+already forces "always present" and enables polling. See "Card detection is
+already bypassed".
 
-- [ ] Decide between plain enable, `non-removable`, `broken-cd`, `no-1-8-v`, or
-      a pwrseq/regulator reference.
-- [ ] Note the history: `24792fa542ad arm: vita: dts: remove non-removable from sdif1`
-      — `non-removable` was tried and removed. Understand why before re-adding it.
-- [ ] Check whether the pervasive gate/reset for `bus_index 1` is handled by the
-      existing `sdhci_vita_pervasive_init()` path (`sdhci-vita.c:58`) or needs
-      explicit enablement.
+- [ ] Confirm on hardware that a plain enable is sufficient; revisit only if it
+      is not.
 
-### Task 1.4: Decide the log-noise mitigation
+### Task 1.4: Decide the polling-spam mitigation
 
-Polling an empty controller is why this was disabled. Options: accept it for the
-lab lane only; gate detection behind rail power; ship read-only and off by
+Polling an empty controller is why this was disabled, and the mechanism is now
+known (`MMC_CAP_NEEDS_POLL` + a card that never answers). Options: accept it for
+the lab lane only; gate the host behind rail power; ship read-only and off by
 default with an opt-in overlay. Pick one and write it down.
 
 ### Task 1.5: Make the intent testable without hardware
@@ -224,16 +263,17 @@ The DT enable must come first.
 ### Task 2.1: Reproduce the known negative deliberately
 
 - [ ] Enable only `&sdif1 { status = "okay"; }` on `pstv.dts`.
-- [ ] Boot and confirm the standing failure: host registers, IRQ present, bit 16
-      **not** asserted, no card.
-- [ ] Capture the full boot log and the raw `SDHCI_PRESENT_STATE` value.
+- [ ] Boot and confirm: host registers, IRQ present, **init attempted and fails**,
+      bit 16 not asserted.
+- [ ] Capture the full boot log, the raw `SDHCI_PRESENT_STATE` value, and the
+      exact init failure and error-interrupt status.
 
 Recording this negative is what makes the next step interpretable.
 
 ### Task 2.2: Add a bounded, non-default power control
 
-- [ ] Provide a way to write syscon `0x888` with data `1`, and to write `0` to
-      restore. Prefer an explicit, reversible hook over anything that runs at boot.
+- [ ] Provide a way to write syscon `0x888` with data `1`, and `0` to restore.
+      Prefer an explicit, reversible hook over anything that runs at boot.
 - [ ] It must **not** be enabled by default in a shippable configuration.
 - [ ] Bound it: no unbounded polling, no writes to any block device.
 
@@ -241,20 +281,21 @@ Recording this negative is what makes the next step interpretable.
 
 - [ ] Write `0x888 = 1`.
 - [ ] Reinit and rescan `bus_index 1`.
-- [ ] Read `SDHCI_PRESENT_STATE` bit 16 and capture the log.
+- [ ] Record whether the card **initializes** (the pivotal signal), plus bit 16 as
+      a secondary electrical indicator.
 - [ ] Apply the discriminator table above **before** drawing a conclusion.
 
 ### Task 2.4: Gate A record
 
-- [ ] Write the result up with the raw register values, not a summary.
+- [ ] Write the result up with raw register values, not a summary.
 
 ---
 
 ## Phase 3 — Card initialization (Gate B)
 
-Only if Gate A passes.
+Only if Gate A shows the card responding.
 
-- [ ] Trace OCR and CID read, then voltage negotiation.
+- [ ] Trace OCR and CID read, then voltage negotiation, to a ready state.
 - [ ] Capture where the sequence stops if it fails: CRC error, command timeout,
       or error-interrupt status.
 - [ ] If CRC or timeouts appear, retry constrained to 3.3 V and a lower clock
@@ -276,8 +317,8 @@ after the read path is trustworthy.
 
 ## Phase 5 — Production posture (Gate D)
 
-- [ ] Decide shipped-on / opt-in / off, with the log-noise cost measured.
-- [ ] Update `docs/PROJECT-STATUS.md`, `HARDWARE.md`, and the gap matrix so the
+- [ ] Decide shipped-on / opt-in / off, with the polling cost measured.
+- [ ] Update `docs/PROJECT-STATUS.md`, `HARDWARE.md`, and the roadmap so the
       documented state matches what was actually proven.
 - [ ] Reconcile with the persistence design: an SD card is a candidate home for
       the writable workspace, and that interacts with the filesystem limits
@@ -308,6 +349,15 @@ In this repository:
 - `docs/history/HARDWARE-2026-02-inherited.md` — inherited hardware table, SDIF1 row
 - `docs/WORKBENCH.md` — filesystem limits that constrain any persistence plan
 - issue #10 — SD2Vita read-only characterization
+
+Kernel source (in the pinned submodule):
+
+- `drivers/mmc/host/sdhci-vita.c` — `:496` the card-detect quirk, `:130`/`:367`
+  the reinit/rescan hooks, `:455` the diagnostic present read
+- `drivers/mmc/host/sdhci.c` — `sdhci_get_cd()`, and `:4491-4494` where
+  `MMC_CAP_NEEDS_POLL` is set
+- `drivers/mfd/vita-syscon.c:727` — the reboot notifier that powers the game-card
+  rail off
 
 In the separate local research tree (provenance, not followable from a clone):
 
