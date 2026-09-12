@@ -33,7 +33,9 @@ receives `loop,ro,nosuid,nodev` in every code path; a regression test asserts th
 ### Filesystem reality of the workspace
 
 The workspace is only as capable as the filesystems the pinned kernel actually
-builds. Verified on `vita-linux-next` at `0d1ba53a4376`:
+builds. Verified two independent ways: `arch/arm/configs/vita_defconfig` at
+`0d1ba53a4376`, and `/proc/filesystems` on the running PSTV, which registers
+**only** `squashfs`, `vfat`, and `exfat`.
 
 | Option | State | Consequence |
 |---|---|---|

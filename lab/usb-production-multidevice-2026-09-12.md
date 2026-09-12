@@ -14,7 +14,14 @@ The production `pstv-ohci` driver was loaded from boot. This session exercised s
 
 ### EHCI high-speed storage
 
-A Kingston DataTraveler 3.0 enumerated on the EHCI path as a USB high-speed device. The mass-storage device exposed `sda` and mounted `/dev/sda2` as ext4.
+A Kingston DataTraveler 3.0 (242,417,664 × 512-byte blocks ≈ 116 GiB) enumerated on the EHCI path at USB high speed (`usb 1-1: new high-speed USB device number N using ehci-platform`) and exposed a **single** partition, `sda1`.
+
+> **Correction — 2026-09-12.** An earlier revision of this record claimed the device "mounted `/dev/sda2` as ext4". That claim is withdrawn; it is not supported by evidence.
+>
+> - The device presents `sda1`, not `sda2` (`dmesg`: `sda: sda1`).
+> - An ext4 mount is **impossible** on this kernel. `/proc/filesystems` on the running `6.12.0-g0d1ba53a4376` registers only `squashfs`, `vfat`, and `exfat`. The pinned `vita_defconfig` enables no ext4 support at all.
+>
+> The removed detail had been transcribed from a console description rather than read from a captured mount line. Which filesystem was actually mounted during that session was not retained in this evidence set, and is recorded here as **unverified** rather than guessed. The kernel-side support limit above is the durable finding and is now also documented in [`docs/WORKBENCH.md`](../docs/WORKBENCH.md).
 
 ### OHCI full-speed devices
 

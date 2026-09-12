@@ -40,6 +40,18 @@ You also need standard build dependencies:
 sudo apt install bc flex bison libssl-dev libelf-dev
 ```
 
+The repository test gate cross-compiles a small demo payload to verify the
+toolchain end to end, so it needs a host cross-compiler as well as the kernel
+build dependencies. Point `CART_CROSS_CC` at the `gcc` that matches whichever
+toolchain you installed:
+
+- Bootlin (the toolchain documented above): `arm-linux-gcc`
+- Debian's cross toolchain, if you prefer it: `sudo apt install gcc-arm-linux-gnueabihf`,
+  then use `arm-linux-gnueabihf-gcc`
+
+CI uses the Bootlin path. Leaving `CART_CROSS_CC` unset is only safe on a host
+that already has Debian's cross `gcc` installed.
+
 ## Build
 
 Clone the standalone project and its pinned submodules:
@@ -48,7 +60,7 @@ Clone the standalone project and its pinned submodules:
 git clone --recurse-submodules https://github.com/acgh213/vita-linux-next.git
 cd vita-linux-next
 
-make test     # repository-owned host and build-contract gates
+make test CART_CROSS_CC=arm-linux-gcc   # Bootlin toolchain; see the note above
 make config   # apply vita_defconfig → linux_vita/.config (first time or after config changes)
 make build    # compile zImage + all three DTBs
 make verify-dtb
