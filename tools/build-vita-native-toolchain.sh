@@ -154,6 +154,10 @@ cp -a "$SYSROOT/lib/." "$DEST/sysroot/usr/lib/"
 cat >"$DEST/toolchain-env.sh" <<'EOF'
 # Source this file to activate the Vita Linux native C toolchain.
 : "${VITA_TOOLKIT_ROOT:=/opt/vita-toolkit}"
+if [ ! -d "$VITA_TOOLKIT_ROOT" ]; then
+    printf 'toolchain-env: missing toolkit root: %s\n' "$VITA_TOOLKIT_ROOT" >&2
+    return 1 2>/dev/null || exit 1
+fi
 PATH=$VITA_TOOLKIT_ROOT/bin:$PATH
 CC=cc
 TCC=$VITA_TOOLKIT_ROOT/bin/tcc
