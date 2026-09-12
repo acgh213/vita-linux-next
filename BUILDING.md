@@ -42,18 +42,27 @@ sudo apt install bc flex bison libssl-dev libelf-dev
 
 ## Build
 
-From the outer repo (`vita-linux-port/`):
+Clone the standalone project and its pinned submodules:
 
 ```bash
+git clone --recurse-submodules https://github.com/acgh213/vita-linux-next.git
+cd vita-linux-next
+
+make test     # repository-owned host and build-contract gates
 make config   # apply vita_defconfig → linux_vita/.config (first time or after config changes)
-make build    # compile zImage + DTB
+make build    # compile zImage + all three DTBs
+make verify-dtb
 ```
 
-Or `make deploy` to build, upload to Vita, and boot in one step.
+The `linux_vita` submodule is pinned to a reviewed commit; its configured branch is `vita-linux-next`. Do not replace that pin with the moving branch tip in a reproducible build record.
+
+`make dtb` is independently usable. If the submodule has neither a kernel `.config` nor a built `scripts/dtc/dtc`, the target applies `vita_defconfig` and builds the required host tool before producing the DTBs.
 
 Output:
 - `linux_vita/arch/arm/boot/zImage` — kernel image
 - `linux_vita/arch/arm/boot/dts/vita1000.dtb` — device tree blob
+- `linux_vita/arch/arm/boot/dts/vita2000.dtb` — Vita 2000 device tree blob
+- `linux_vita/arch/arm/boot/dts/pstv.dtb` — PSTV device tree blob
 
 ### What the Makefile does
 
@@ -74,11 +83,11 @@ make build CROSS_COMPILE=arm-linux-gnueabihf-   # Debian package
 
 ## Deploying to the Vita
 
-After building, copy the artifacts to the Vita via FTP:
+Deployment is not part of an ordinary build. Select the target model explicitly, preserve a known-good rollback, and copy artifacts to the Vita through the VitaOS-side loader workflow:
 
 ```bash
-make push     # upload zImage + DTB to Vita via FTP
-make boot     # launch Linux on Vita, stream serial output
+make push VITA_MODEL=vita1000     # or vita2000 / pstv
+make boot VITA_MODEL=vita1000     # launch Linux and stream the configured loader output
 ```
 
 Or manually:
