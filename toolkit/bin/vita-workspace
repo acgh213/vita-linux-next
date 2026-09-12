@@ -1,0 +1,166 @@
+#!/bin/sh
+# Resolve and manage the workbench workspace.
+#
+# The workspace is persistent on the USB transport when the session was started
+# with --rw-workspace, and volatile under /run or /tmp otherwise.  Nothing is
+# ever created under the read-only payload root.
+set -eu
+
+STATE_DIR=${VITA_SESSION_STATE_DIR:-/run/vita-toolkit}
+PERSISTENT_ROOT=${VITA_WORKSPACE_PERSISTENT_ROOT:-/mnt/vita-storage/vita-workbench}
+VOLATILE_ROOT=${VITA_WORKSPACE_VOLATILE_ROOT:-}
+TOOLKIT_ROOT=${VITA_TOOLKIT_ROOT:-/opt/vita-toolkit}
+MACHINE=0
+SUBDIRS='src build log capture projects'
+
+usage() {
+    printf '%s\n' \
+        'usage: vita-workspace init [--machine]' \
+        '       vita-workspace path [--machine]' \
+        '       vita-workspace clean [--persistent] [--machine]' \
+        '  init          create the workspace tree' \
+        '  path          print the resolved workspace root and mode' \
+        '  clean         remove volatile workspace contents' \
+        '  --persistent  allow clean to remove a persistent USB workspace' \
+        '  --machine     stable key=value output'
+}
+
+report() {
+    if [ "$MACHINE" -eq 1 ]; then
+        printf '%s=%s\n' "$1" "$2"
+    else
+        printf '%s: %s\n' "$1" "$2"
+    fi
+}
+
+fail() {
+    if [ "$MACHINE" -eq 1 ]; then
+        printf 'schema=1\naction=%s\nstatus=%s\n' "${ACTION:-unknown}" "$1"
+    else
+        printf 'vita-workspace: %s\n' "$2" >&2
+    fi
+    exit 1
+}
+
+valid_root() {
+    case "$1" in
+        /*) ;;
+        *) return 1 ;;
+    esac
+    case "$1" in
+        *..*) return 1 ;;
+    esac
+    case "$1" in
+        /|/dev|/proc|/sys|/run|/etc|/bin|/sbin|/usr|/var|/home|/tmp|/mnt|/opt) return 1 ;;
+    esac
+    # Never place a workspace inside the read-only payload.
+    case "$1" in
+        "$TOOLKIT_ROOT"|"$TOOLKIT_ROOT"/*) return 1 ;;
+    esac
+    return 0
+}
+
+# Resolve the workspace from session state; fall back to a volatile root.
+resolve_workspace() {
+    WORKSPACE=
+    MODE=
+    if [ -f "$STATE_DIR/session" ]; then
+        recorded=$(awk -F= '$1 == "workspace" { print substr($0, index($0, "=") + 1) }' "$STATE_DIR/session")
+        recorded_mode=$(awk -F= '$1 == "transport_mode" { print $2 }' "$STATE_DIR/session")
+        if [ -n "$recorded" ] && [ "$recorded" != NONE ] && [ "$recorded_mode" = rw ]; then
+            WORKSPACE=$recorded
+            MODE=persistent
+        fi
+    fi
+    if [ -z "$WORKSPACE" ]; then
+        if [ -n "$VOLATILE_ROOT" ]; then
+            WORKSPACE=$VOLATILE_ROOT
+        elif [ -d /run ] && [ -w /run ]; then
+            WORKSPACE=/run/vita-workbench
+        else
+            WORKSPACE=/tmp/vita-workbench
+        fi
+        MODE=volatile
+    fi
+    valid_root "$WORKSPACE" || fail unsafe_workspace "unsafe workspace root: $WORKSPACE"
+}
+
+free_kib() {
+    dir=$1
+    while [ ! -d "$dir" ] && [ "$dir" != / ]; do
+        dir=${dir%/*}
+        [ -n "$dir" ] || dir=/
+    done
+    df -k "$dir" 2>/dev/null | awk 'NR == 2 { print $4; found=1 } END { if (!found) print "UNKNOWN" }'
+}
+
+[ "$#" -gt 0 ] || { usage >&2; exit 2; }
+ACTION=$1
+shift
+case "$ACTION" in
+    init|path|clean) ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage >&2; exit 2 ;;
+esac
+
+ALLOW_PERSISTENT=0
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --machine) MACHINE=1; shift ;;
+        --persistent) ALLOW_PERSISTENT=1; shift ;;
+        -h|--help) usage; exit 0 ;;
+        *) usage >&2; exit 2 ;;
+    esac
+done
+
+resolve_workspace
+[ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=%s\n' "$ACTION"
+
+case "$ACTION" in
+path)
+    if [ -d "$WORKSPACE" ]; then
+        report status present
+    else
+        report status absent
+    fi
+    report workspace "$WORKSPACE"
+    report mode "$MODE"
+    report free_kib "$(free_kib "$WORKSPACE")"
+    ;;
+
+init)
+    mkdir -p "$WORKSPACE" || fail workspace_unavailable "cannot create workspace: $WORKSPACE"
+    for sub in $SUBDIRS; do
+        mkdir -p "$WORKSPACE/$sub" || fail workspace_unavailable "cannot create $WORKSPACE/$sub"
+    done
+    chmod 0700 "$WORKSPACE" 2>/dev/null || true
+    report status ready
+    report workspace "$WORKSPACE"
+    report mode "$MODE"
+    report free_kib "$(free_kib "$WORKSPACE")"
+    for sub in $SUBDIRS; do
+        report "dir_$sub" "$WORKSPACE/$sub"
+    done
+    ;;
+
+clean)
+    if [ "$MODE" = persistent ] && [ "$ALLOW_PERSISTENT" -ne 1 ]; then
+        fail persistent_requires_flag \
+            "refusing to remove a persistent workspace without --persistent: $WORKSPACE"
+    fi
+    if [ ! -d "$WORKSPACE" ]; then
+        report status absent
+        report workspace "$WORKSPACE"
+        exit 0
+    fi
+    # Only ever remove the workspace root itself, never its parent volume.
+    case "$WORKSPACE" in
+        */vita-workbench|*/vita-workbench/) ;;
+        *) fail unexpected_workspace_name "refusing to remove an unexpected path: $WORKSPACE" ;;
+    esac
+    rm -rf "$WORKSPACE" || fail clean_failed "cannot remove workspace: $WORKSPACE"
+    report status removed
+    report workspace "$WORKSPACE"
+    report mode "$MODE"
+    ;;
+esac

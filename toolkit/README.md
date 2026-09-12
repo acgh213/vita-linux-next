@@ -410,6 +410,21 @@ keys and duplicate singleton keys fail closed.
     **Done.** Hardware-validated on both the 3.65 Vita 1000 and 3.60 PSTV.
 16. `vita-inputwatch` — bounded, identity-selected raw input observation.
     **In progress.**
+17. `vita-toolkit-session` — conservative discovery, pre-mount hash verification,
+    explicit `--rw-workspace` transport mode, and reverse-order teardown that
+    re-checks the payload. **Done.** Hardware-validated on the PSTV.
+18. `vita-workspace` — resolves the persistent USB workbench (or a volatile
+    fallback) and guards destructive cleanup. **Done.**
+19. `vita-status` — one read-only machine summary of kernel, CPUs, memory,
+    display, network, toolkit, compiler, and workspace. **Done.**
+20. `vita-example` — lists curated examples and builds them into the writable
+    workspace, never into the payload. **Done.**
+21. `vita-dashboard` — bounded framebuffer/input application with strict
+    ownership rules. **In progress:** host fixtures and the refusal contract pass
+    on hardware; the supervised bounded run is not yet gated.
+
+See [`../docs/WORKBENCH.md`](../docs/WORKBENCH.md) for the workbench contract,
+activation modes, TinyCC boundaries, and rollback procedure.
 
 The toolkit's safety rule is simple: diagnostics are read-only by default;
 network tests are bounded; framebuffer writes require an explicit subcommand;

@@ -1,0 +1,7 @@
+source=src/fb_owner.c
+source=src/render.c
+source=src/status.c
+source=src/input.c
+source=src/main.c
+output=vita-dashboard
+expect_status=0

@@ -1,0 +1,178 @@
+#!/bin/sh
+# One-screen identity summary for the Vita Linux Workbench.
+#
+# Strictly read-only: reads /proc and /sys, never pings, never opens an input
+# device, never writes the framebuffer, never starts a service.  Any component
+# that cannot be determined reports UNKNOWN rather than failing the summary.
+set -eu
+
+ROOT=${VITA_STATUS_ROOT:-}
+PROC_MOUNTS=${VITA_STATUS_PROC_MOUNTS:-$ROOT/proc/mounts}
+STATE_DIR=${VITA_SESSION_STATE_DIR:-/run/vita-toolkit}
+TOOLKIT_ROOT=${VITA_TOOLKIT_ROOT:-/opt/vita-toolkit}
+IP_CMD=${VITA_STATUS_IP_CMD:-ip}
+MODE=pretty
+PRODUCT='Vita Linux Workbench'
+
+usage() {
+    printf '%s\n' \
+        'usage: vita-status [--machine]' \
+        '  --machine    stable key=value output'
+}
+
+if [ "${1:-}" = '--machine' ]; then
+    MODE=machine
+    shift
+elif [ "${1:-}" = '-h' ] || [ "${1:-}" = '--help' ]; then
+    usage
+    exit 0
+fi
+[ "$#" -eq 0 ] || { usage >&2; exit 2; }
+
+read_first() {
+    file=$ROOT$1
+    if [ -r "$file" ]; then
+        head -n 1 "$file" 2>/dev/null | tr -d '\r' | sed 's/[[:space:]]*$//'
+    else
+        printf UNKNOWN
+    fi
+}
+
+blank_to_unknown() {
+    if [ -z "$1" ]; then
+        printf UNKNOWN
+    else
+        printf '%s' "$1"
+    fi
+}
+
+kernel=${VITA_STATUS_UNAME_R:-$(uname -r 2>/dev/null || printf UNKNOWN)}
+arch=${VITA_STATUS_UNAME_M:-$(uname -m 2>/dev/null || printf UNKNOWN)}
+kernel=$(blank_to_unknown "$kernel")
+arch=$(blank_to_unknown "$arch")
+
+cpus_online=$(read_first /sys/devices/system/cpu/online)
+cpus_online=$(blank_to_unknown "$cpus_online")
+
+memory_available_kib=UNKNOWN
+if [ -r "$ROOT/proc/meminfo" ]; then
+    value=$(awk '$1 == "MemAvailable:" { print $2; exit }' "$ROOT/proc/meminfo")
+    memory_available_kib=$(blank_to_unknown "$value")
+fi
+
+uptime_seconds=UNKNOWN
+if [ -r "$ROOT/proc/uptime" ]; then
+    value=$(awk '{ print int($1); exit }' "$ROOT/proc/uptime")
+    uptime_seconds=$(blank_to_unknown "$value")
+fi
+
+# Framebuffer geometry: "1280,720" + bpp -> 1280x720x32
+framebuffer=UNKNOWN
+fb_size=$(read_first /sys/class/graphics/fb0/virtual_size)
+fb_bpp=$(read_first /sys/class/graphics/fb0/bits_per_pixel)
+if [ "$fb_size" != UNKNOWN ] && [ "$fb_bpp" != UNKNOWN ] \
+        && [ -n "$fb_size" ] && [ -n "$fb_bpp" ]; then
+    fb_w=${fb_size%%,*}
+    fb_h=${fb_size#*,}
+    case "$fb_w$fb_h$fb_bpp" in
+        *[!0-9]*) ;;
+        *) framebuffer="${fb_w}x${fb_h}x${fb_bpp}" ;;
+    esac
+fi
+
+# Network: prefer the first non-loopback interface that is up.
+network_interface=UNKNOWN
+network_address=UNKNOWN
+net_root=$ROOT/sys/class/net
+if [ -d "$net_root" ]; then
+    for entry in "$net_root"/*; do
+        [ -e "$entry" ] || continue
+        name=${entry##*/}
+        [ "$name" != lo ] || continue
+        state=$(read_first "/sys/class/net/$name/operstate")
+        [ "$state" = up ] || continue
+        network_interface=$name
+        break
+    done
+fi
+if [ "$network_interface" != UNKNOWN ]; then
+    if command -v "$IP_CMD" >/dev/null 2>&1; then
+        addr=$("$IP_CMD" -4 addr show "$network_interface" 2>/dev/null \
+            | awk '$1 == "inet" { print $2; exit }')
+        network_address=$(blank_to_unknown "$addr")
+    fi
+fi
+
+# Toolkit mount state, read from the mount table rather than session state so a
+# manually mounted payload is still reported honestly.
+toolkit_mounted=0
+toolkit_options=UNKNOWN
+if [ -r "$PROC_MOUNTS" ]; then
+    line=$(awk -v t="$TOOLKIT_ROOT" '$2 == t { print $4; exit }' "$PROC_MOUNTS")
+    if [ -n "$line" ]; then
+        toolkit_mounted=1
+        toolkit_options=$line
+    fi
+fi
+
+toolkit_version=UNKNOWN
+if [ "$toolkit_mounted" -eq 1 ] && [ -r "$TOOLKIT_ROOT/VERSION" ]; then
+    value=$(head -n 1 "$TOOLKIT_ROOT/VERSION" 2>/dev/null)
+    toolkit_version=$(blank_to_unknown "$value")
+fi
+
+compiler=UNKNOWN
+if [ "$toolkit_mounted" -eq 1 ] && [ -x "$TOOLKIT_ROOT/bin/cc" ]; then
+    compiler="$TOOLKIT_ROOT/bin/cc"
+elif command -v cc >/dev/null 2>&1; then
+    compiler=$(command -v cc)
+fi
+
+# Workspace + transport, from session state when present.
+workspace=UNKNOWN
+transport_mode=UNKNOWN
+payload_sha256=UNKNOWN
+if [ -r "$STATE_DIR/session" ]; then
+    value=$(awk -F= '$1 == "workspace" { print substr($0, index($0, "=") + 1) }' "$STATE_DIR/session")
+    workspace=$(blank_to_unknown "$value")
+    value=$(awk -F= '$1 == "transport_mode" { print $2 }' "$STATE_DIR/session")
+    transport_mode=$(blank_to_unknown "$value")
+    value=$(awk -F= '$1 == "payload_sha256" { print $2 }' "$STATE_DIR/session")
+    payload_sha256=$(blank_to_unknown "$value")
+fi
+
+if [ "$MODE" = machine ]; then
+    printf 'schema=1\n'
+    printf 'product=%s\n' "$PRODUCT"
+    printf 'kernel=%s\n' "$kernel"
+    printf 'arch=%s\n' "$arch"
+    printf 'cpus_online=%s\n' "$cpus_online"
+    printf 'memory_available_kib=%s\n' "$memory_available_kib"
+    printf 'uptime_seconds=%s\n' "$uptime_seconds"
+    printf 'framebuffer=%s\n' "$framebuffer"
+    printf 'network_interface=%s\n' "$network_interface"
+    printf 'network_address=%s\n' "$network_address"
+    printf 'toolkit_mounted=%s\n' "$toolkit_mounted"
+    printf 'toolkit_options=%s\n' "$toolkit_options"
+    printf 'toolkit_version=%s\n' "$toolkit_version"
+    printf 'payload_sha256=%s\n' "$payload_sha256"
+    printf 'compiler=%s\n' "$compiler"
+    printf 'transport_mode=%s\n' "$transport_mode"
+    printf 'workspace=%s\n' "$workspace"
+    exit 0
+fi
+
+printf '%s\n' "$PRODUCT"
+printf '  kernel      %s (%s)\n' "$kernel" "$arch"
+printf '  cpus        %s\n' "$cpus_online"
+printf '  memory      %s kiB available\n' "$memory_available_kib"
+printf '  uptime      %s s\n' "$uptime_seconds"
+printf '  display     %s\n' "$framebuffer"
+printf '  network     %s %s\n' "$network_interface" "$network_address"
+if [ "$toolkit_mounted" -eq 1 ]; then
+    printf '  toolkit     %s (%s) %s\n' "$toolkit_version" "$toolkit_options" "$TOOLKIT_ROOT"
+else
+    printf '  toolkit     not mounted\n'
+fi
+printf '  compiler    %s\n' "$compiler"
+printf '  workspace   %s (transport %s)\n' "$workspace" "$transport_mode"

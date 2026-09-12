@@ -1,0 +1,72 @@
+#!/bin/sh
+# Launch the bounded framebuffer dashboard.
+#
+# Refuses to run — with a clear reason and a nonzero status — rather than
+# guessing when the framebuffer or an identity-matching input device is absent.
+set -eu
+
+ROOT=${VITA_TOOLKIT_ROOT:-/opt/vita-toolkit}
+BINARY=${VITA_DASHBOARD_BINARY:-$ROOT/libexec/vita-dashboard.arm}
+SYSFS_ROOT=${VITA_DASHBOARD_SYSFS_ROOT:-/sys}
+DEV_ROOT=${VITA_DASHBOARD_DEV_ROOT:-/dev}
+DEFAULT_PHYS=vita_syscon_buttons
+
+usage() {
+    printf '%s\n' \
+        'usage: vita-dashboard [--machine] [--input-phys ID]' \
+        '                      [--duration-ms N | --forever] [--frames-max N]' \
+        '  --input-phys ID   evdev identity to use (default: vita_syscon_buttons)' \
+        '  --duration-ms N   bounded runtime; default 60000, max 600000' \
+        '  --forever         supervised use only; must be typed explicitly' \
+        '  --machine         stable key=value output'
+}
+
+fail() {
+    printf 'vita-dashboard: %s\n' "$1" >&2
+    exit "${2:-1}"
+}
+
+WANTED_PHYS=$DEFAULT_PHYS
+prev=
+for arg in "$@"; do
+    [ "$prev" = --input-phys ] && WANTED_PHYS=$arg
+    case "$arg" in
+        -h|--help) usage; exit 0 ;;
+    esac
+    prev=$arg
+done
+
+[ -x "$BINARY" ] || fail "dashboard binary not found or not executable: $BINARY" 2
+
+# Refuse before launching rather than letting the binary discover it late.
+[ -e "$DEV_ROOT/fb0" ] || fail "no framebuffer device at $DEV_ROOT/fb0" 3
+
+geometry_file=$SYSFS_ROOT/class/graphics/fb0/virtual_size
+bpp_file=$SYSFS_ROOT/class/graphics/fb0/bits_per_pixel
+[ -r "$geometry_file" ] || fail 'cannot read framebuffer geometry' 3
+[ -r "$bpp_file" ] || fail 'cannot read framebuffer bits_per_pixel' 3
+
+geometry=$(head -n 1 "$geometry_file" | tr -d ' \r')
+bpp=$(head -n 1 "$bpp_file" | tr -d ' \r')
+width=${geometry%%,*}
+height=${geometry#*,}
+case "$width$height$bpp" in
+    ''|*[!0-9]*) fail "unsupported framebuffer geometry: ${geometry}x${bpp}" 3 ;;
+esac
+[ "$width" -gt 0 ] && [ "$height" -gt 0 ] \
+    || fail "unsupported framebuffer geometry: ${geometry}" 3
+[ "$((bpp % 8))" -eq 0 ] && [ "$bpp" -ge 8 ] \
+    || fail "unsupported pixel depth: $bpp" 3
+
+# An identity-matching input device must exist; never fall back to event0.
+found=0
+for phys_file in "$SYSFS_ROOT"/class/input/event*/device/phys; do
+    [ -r "$phys_file" ] || continue
+    if [ "$(head -n 1 "$phys_file" | tr -d ' \r')" = "$WANTED_PHYS" ]; then
+        found=1
+        break
+    fi
+done
+[ "$found" -eq 1 ] || fail "no input device with phys=$WANTED_PHYS" 4
+
+exec "$BINARY" "$@"

@@ -1,0 +1,172 @@
+#!/bin/sh
+# List and build the curated native examples shipped in the toolkit payload.
+#
+# Examples live read-only inside the payload.  Building one copies exactly that
+# example into the writable workspace and invokes vita-dev there; the payload is
+# never modified.
+set -eu
+
+TOOLKIT_ROOT=${VITA_TOOLKIT_ROOT:-/opt/vita-toolkit}
+EXAMPLES_DIR=${VITA_EXAMPLE_DIR:-$TOOLKIT_ROOT/examples}
+WORKSPACE_CMD=${VITA_EXAMPLE_WORKSPACE_CMD:-vita-workspace}
+DEV_CMD=${VITA_EXAMPLE_DEV_CMD:-vita-dev}
+WORKSPACE_OVERRIDE=${VITA_EXAMPLE_WORKSPACE:-}
+MACHINE=0
+
+usage() {
+    printf '%s\n' \
+        'usage: vita-example list [--machine]' \
+        '       vita-example build NAME [--machine]' \
+        '       vita-example path NAME [--machine]' \
+        '  --machine    stable key=value output'
+}
+
+report() {
+    if [ "$MACHINE" -eq 1 ]; then
+        printf '%s=%s\n' "$1" "$2"
+    else
+        printf '%s: %s\n' "$1" "$2"
+    fi
+}
+
+fail() {
+    if [ "$MACHINE" -eq 1 ]; then
+        printf 'schema=1\naction=%s\nstatus=%s\n' "${ACTION:-unknown}" "$1"
+    else
+        printf 'vita-example: %s\n' "$2" >&2
+    fi
+    exit 1
+}
+
+# An example name is a single path component from a fixed alphabet: no
+# traversal, no absolute paths, no shell metacharacters.
+valid_name() {
+    case "$1" in
+        ''|.|..) return 1 ;;
+        *[!A-Za-z0-9_-]*) return 1 ;;
+    esac
+    return 0
+}
+
+resolve_workspace() {
+    if [ -n "$WORKSPACE_OVERRIDE" ]; then
+        WORKSPACE=$WORKSPACE_OVERRIDE
+        return 0
+    fi
+    command -v "$WORKSPACE_CMD" >/dev/null 2>&1 \
+        || fail workspace_command_missing "cannot find $WORKSPACE_CMD"
+    out=$("$WORKSPACE_CMD" init --machine) \
+        || fail workspace_init_failed 'vita-workspace init failed'
+    WORKSPACE=$(printf '%s\n' "$out" | awk -F= '$1 == "workspace" { print substr($0, index($0, "=") + 1) }')
+    WORKSPACE_MODE=$(printf '%s\n' "$out" | awk -F= '$1 == "mode" { print $2 }')
+    [ -n "$WORKSPACE" ] || fail workspace_unresolved 'vita-workspace did not report a path'
+}
+
+[ "$#" -gt 0 ] || { usage >&2; exit 2; }
+ACTION=$1
+shift
+case "$ACTION" in
+    list|build|path) ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage >&2; exit 2 ;;
+esac
+
+NAME=
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --machine) MACHINE=1; shift ;;
+        -h|--help) usage; exit 0 ;;
+        -*) usage >&2; exit 2 ;;
+        *)
+            [ -z "$NAME" ] || { usage >&2; exit 2; }
+            NAME=$1; shift ;;
+    esac
+done
+
+[ -d "$EXAMPLES_DIR" ] || fail examples_unavailable "examples directory not found: $EXAMPLES_DIR"
+
+if [ "$ACTION" = list ]; then
+    [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=list\n'
+    count=0
+    names=
+    for entry in "$EXAMPLES_DIR"/*; do
+        [ -d "$entry" ] || continue
+        [ -f "$entry/vita.project" ] || continue
+        base=${entry##*/}
+        valid_name "$base" || continue
+        count=$((count + 1))
+        names="$names$base
+"
+    done
+    report example_count "$count"
+    index=1
+    printf '%s' "$names" | while IFS= read -r base; do
+        [ -n "$base" ] || continue
+        report "example_${index}" "$base"
+        index=$((index + 1))
+    done
+    exit 0
+fi
+
+[ -n "$NAME" ] || { usage >&2; exit 2; }
+valid_name "$NAME" || fail invalid_example_name "invalid example name: $NAME"
+SOURCE_DIR=$EXAMPLES_DIR/$NAME
+[ -d "$SOURCE_DIR" ] || fail unknown_example "unknown example: $NAME"
+[ -f "$SOURCE_DIR/vita.project" ] || fail example_incomplete "example has no vita.project: $NAME"
+
+if [ "$ACTION" = path ]; then
+    [ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=path\n'
+    report status found
+    report example "$NAME"
+    report source "$SOURCE_DIR"
+    report manifest "$SOURCE_DIR/vita.project"
+    exit 0
+fi
+
+# ------------------------------------------------------------------ build ----
+
+resolve_workspace
+PROJECT_DIR=$WORKSPACE/projects/$NAME
+BUILD_DIR=$WORKSPACE/build/$NAME
+
+# Copy the example out of the read-only payload.  A stale copy is replaced so a
+# rebuild always reflects the payload, never a half-edited leftover.
+rm -rf "$PROJECT_DIR" || fail project_dir_unavailable "cannot clear $PROJECT_DIR"
+mkdir -p "$PROJECT_DIR" "$BUILD_DIR" \
+    || fail project_dir_unavailable "cannot create $PROJECT_DIR"
+cp -R "$SOURCE_DIR/." "$PROJECT_DIR/" \
+    || fail copy_failed "cannot copy example into the workspace"
+
+# Refuse to proceed if the copy somehow landed inside the payload.
+case "$PROJECT_DIR" in
+    "$TOOLKIT_ROOT"|"$TOOLKIT_ROOT"/*)
+        fail workspace_inside_payload "workspace resolved inside the payload: $PROJECT_DIR" ;;
+esac
+
+command -v "$DEV_CMD" >/dev/null 2>&1 || fail dev_command_missing "cannot find $DEV_CMD"
+
+set +e
+BUILD_OUTPUT=$("$DEV_CMD" test --machine \
+    --workdir "$BUILD_DIR" \
+    --manifest "$PROJECT_DIR/vita.project" 2>&1)
+BUILD_STATUS=$?
+set -e
+
+[ "$MACHINE" -eq 1 ] && printf 'schema=1\naction=build\n'
+if [ "$BUILD_STATUS" -eq 0 ]; then
+    report status built
+else
+    report status build_failed
+fi
+report example "$NAME"
+report source "$SOURCE_DIR"
+report project "$PROJECT_DIR"
+report workdir "$BUILD_DIR"
+report workspace_mode "${WORKSPACE_MODE:-UNKNOWN}"
+report dev_status "$BUILD_STATUS"
+if [ "$MACHINE" -eq 1 ]; then
+    printf '%s\n' "$BUILD_OUTPUT" | sed 's/^/dev_/'
+else
+    printf '%s\n' "$BUILD_OUTPUT"
+fi
+exit "$BUILD_STATUS"

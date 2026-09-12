@@ -1,0 +1,10 @@
+# hello-native project manifest.
+#
+# Paths are resolved relative to this file, so the manifest works both from the
+# read-only payload and from a copy in the writable workspace.
+source=src/main.c
+source=src/system.c
+output=hello-native
+link=-lm
+link=-lpthread
+expect_status=0

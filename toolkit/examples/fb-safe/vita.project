@@ -1,0 +1,3 @@
+source=src/main.c
+output=fb-safe
+expect_status=0
