@@ -25,6 +25,18 @@ fi
 records=
 count=0
 
+mmc_card_type() {
+    entry=$1
+    while [ "$entry" != "$SYSFS_ROOT" ] && [ "$entry" != / ]; do
+        if [ -r "$entry/type" ]; then
+            tr -d '[:space:]' < "$entry/type"
+            return 0
+        fi
+        entry=${entry%/*}
+    done
+    return 1
+}
+
 for partition in "$SYSFS_ROOT"/class/block/*/partition; do
     [ -f "$partition" ] || continue
     name=${partition%/partition}
@@ -36,7 +48,16 @@ for partition in "$SYSFS_ROOT"/class/block/*/partition; do
     parent=${parent##*/}
     removable_file="$SYSFS_ROOT/class/block/$parent/removable"
     removable=$(tr -d '[:space:]' < "$removable_file" 2>/dev/null || true)
-    [ "$removable" = 1 ] || continue
+    if [ "$removable" != 1 ]; then
+        # SD2Vita is a real SD card on an MMC host, yet its block device may
+        # advertise removable=0. Use the MMC card ABI to include SD media while
+        # still excluding the internal eMMC card (type MMC).
+        card_type=$(mmc_card_type "$real_entry" 2>/dev/null || true)
+        case "$card_type" in
+            SD|SDcombo) ;;
+            *) continue ;;
+        esac
+    fi
 
     device="/dev/$name"
     device_path="$DEV_ROOT/$name"
