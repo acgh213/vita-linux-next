@@ -121,7 +121,7 @@ CACHE_REMOTES := \
 	upstream=https://github.com/xerpi/linux_vita.git \
 	techflashYT=https://github.com/techflashYT/linux-custom.git
 
-.PHONY: config olddefconfig savedefconfig build build-zimage build-dtb dtb verify-dtb test push push-setup boot deploy help watch serial serial-bridge lsp clean
+.PHONY: config olddefconfig savedefconfig build build-zimage prepare-dtc build-dtb dtb verify-dtb test push push-setup boot deploy help watch serial serial-bridge lsp clean
 .PHONY: rootfs rootfs-config rootfs-savedefconfig rootfs-menuconfig rootfs-clean
 .PHONY: setup-cache update-cache worktree kernel-worktree kernel-use kernel-bump setup-git-config
 
@@ -174,7 +174,16 @@ build-zimage:
 	$(check-kernel-dir)
 	$(KMAKE) -C $(LOCAL_KERNEL_DIR) zImage -j$(NPROC)
 
-build-dtb dtb: ## compile all device trees (vita1000, vita2000, pstv)
+prepare-dtc:
+	$(check-kernel-dir)
+	@if [ ! -x "$(LOCAL_KERNEL_DIR)/scripts/dtc/dtc" ]; then \
+		if [ ! -f "$(KCONFIG)" ]; then \
+			$(KMAKE) -C $(LOCAL_KERNEL_DIR) vita_defconfig; \
+		fi; \
+		$(KMAKE) -C $(LOCAL_KERNEL_DIR) scripts_dtc -j$(NPROC); \
+	fi
+
+build-dtb dtb: prepare-dtc ## compile all device trees (vita1000, vita2000, pstv)
 	$(check-kernel-dir)
 	$(check-dts-dir)
 	@for model in $(VITA_MODELS); do \

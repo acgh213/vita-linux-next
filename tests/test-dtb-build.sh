@@ -110,6 +110,53 @@ run_both_layouts_test() {
 	done
 }
 
+run_missing_dtc_test() {
+	kernel="$tmp/kernel-missing-dtc"
+	mkdir -p "$kernel/arch/arm/configs" "$kernel/arch/arm/boot/dts" \
+		"$kernel/scripts/dtc"
+	: >"$kernel/arch/arm/configs/vita_defconfig"
+	: >"$kernel/arch/arm/boot/dts/vita.dtsi"
+	for model in vita1000 vita2000 pstv; do
+		printf '/dts-v1/;\n/ { model = "%s"; };\n' "$model" \
+			>"$kernel/arch/arm/boot/dts/$model.dts"
+	done
+
+	fake_kmake="$tmp/fake-kmake"
+	cat >"$fake_kmake" <<'EOF'
+#!/bin/sh
+set -eu
+test "$1" = -C
+kernel=$2
+shift 2
+case "$1" in
+	vita_defconfig)
+		: >"$kernel/.config"
+		printf 'vita_defconfig\n' >>"$KMAKE_CALLED"
+		;;
+	scripts_dtc)
+		test -f "$kernel/.config"
+		cp "$FAKE_DTC_SOURCE" "$kernel/scripts/dtc/dtc"
+		chmod +x "$kernel/scripts/dtc/dtc"
+		printf 'scripts_dtc\n' >>"$KMAKE_CALLED"
+		;;
+	*)
+		echo "unexpected fake kernel target: $1" >&2
+		exit 2
+		;;
+esac
+EOF
+	chmod +x "$fake_kmake"
+
+	FAKE_DTC_SOURCE="$fake_dtc" KMAKE_CALLED="$tmp/kmake-called" \
+		"$make_cmd" -s -C "$repo_dir" dtb \
+		LINUX_VITA_DIR="$kernel" CPP="$fake_cpp" KMAKE="$fake_kmake"
+	test "$(cat "$tmp/kmake-called")" = "vita_defconfig
+scripts_dtc"
+	for model in vita1000 vita2000 pstv; do
+		test -s "$kernel/arch/arm/boot/dts/$model.dtb"
+	done
+}
+
 run_cpp_failure_test() {
 	kernel="$tmp/kernel-cpp-failure"
 	new_kernel_tree "$kernel"
@@ -259,17 +306,9 @@ run_ci_contract_test() {
 		/^  build-macos:/ { inside = 1; next }
 		inside
 	' "$workflow" | normalize_ci_commands)
-	# These are literal workflow command contracts; do not expand substitutions.
-	# shellcheck disable=SC2016
-	expected_linux_dtc='make ARCH=arm CROSS_COMPILE=arm-linux- scripts_dtc -j$(nproc)'
-	# shellcheck disable=SC2016
-	expected_macos_dtc='gmake ARCH=arm LLVM=1 HOSTCFLAGS="-Iscripts/macos-include -I$(brew --prefix libelf)/include" scripts_dtc -j$(sysctl -n hw.ncpu)'
-	linux_dtc_count=$(printf '%s\n' "$linux_commands" |
-		grep -Fxc "$expected_linux_dtc" || true)
-	macos_dtc_count=$(printf '%s\n' "$macos_commands" |
-		grep -Fxc "$expected_macos_dtc" || true)
-	if test "$linux_dtc_count" -ne 1 || test "$macos_dtc_count" -ne 1; then
-		echo "expected the exact scripts_dtc make command in each CI job; found Linux=$linux_dtc_count macOS=$macos_dtc_count" >&2
+	if printf '%s\n%s\n' "$linux_commands" "$macos_commands" |
+		grep -Eq '(^|[[:space:]])g?make([[:space:]].*)?[[:space:]]scripts_dtc([[:space:]]|$)'; then
+		echo "CI builds scripts_dtc directly instead of delegating to the outer dtb target" >&2
 		exit 1
 	fi
 	full_scripts_pattern='g?make.*[[:space:]]scripts([^[:alnum:]_-]|$)'
@@ -292,6 +331,7 @@ case "$test_case" in
 	root) run_layout_test root ;;
 	sony) run_layout_test sony ;;
 	both) run_both_layouts_test ;;
+	missing-dtc) run_missing_dtc_test ;;
 	cpp-failure) run_cpp_failure_test ;;
 	invalid-dtb) run_invalid_dtb_test ;;
 	missing) run_missing_layout_test ;;
@@ -300,10 +340,11 @@ case "$test_case" in
 		run_layout_test root
 		run_layout_test sony
 		run_both_layouts_test
+		run_missing_dtc_test
 		run_cpp_failure_test
 		run_invalid_dtb_test
 		run_missing_layout_test
 		run_ci_contract_test
 		;;
-	*) echo "usage: $0 [root|sony|both|cpp-failure|invalid-dtb|missing|ci|all]" >&2; exit 2 ;;
+	*) echo "usage: $0 [root|sony|both|missing-dtc|cpp-failure|invalid-dtb|missing|ci|all]" >&2; exit 2 ;;
 esac
