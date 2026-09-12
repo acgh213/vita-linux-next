@@ -24,10 +24,12 @@ A Kingston DataTraveler 3.0 (242,417,664 × 512-byte blocks ≈ 116 GiB) enumera
 > The removed detail had been transcribed from a console description rather than read from a captured mount line. The filesystem itself is well established, though: the same Kingston removable media is recorded as `/dev/sda1` mounted **exfat** in three earlier lab records —
 >
 > - [`./toolkit-mounted-validation-2026-09-07.md`](./toolkit-mounted-validation-2026-09-07.md) — `exFAT storage: /dev/sda1 → /mnt/vita-storage (ro)`
-> - [`./workbench-baseline-2026-09-07.md`](./workbench-baseline-2026-09-07.md) — `/dev/sda1 on /mnt/vita-storage type exfat (ro,relatime,fmask=0077,dmask=0077,iocharset=utf8)`
-> - [`./workbench-dashboard-2026-09-07.md`](./workbench-dashboard-2026-09-07.md) — `/dev/sda1 /mnt/vita-storage exfat rw`
+> - [`./workbench-baseline-2026-09-07.md`](./workbench-baseline-2026-09-07.md) — `/dev/sda1 on /mnt/vita-storage type exfat (ro,relatime,fmask=0077,dmask=0077,iocharset=utf8,…)`
+> - [`./workbench-dashboard-2026-09-07.md`](./workbench-dashboard-2026-09-07.md) — `/dev/sda1 /mnt/vita-storage exfat rw,relatime,…`
 >
-> What this session did not retain is its own mount line. The September 12 mount is therefore recorded as **consistent with** those records rather than directly evidenced by this session's logs. The kernel-side support limit is separately confirmed: the same `squashfs`/`vfat`/`exfat`-only `/proc/filesystems` reading was already captured on 2026-09-07 in [`./workbench-baseline-2026-09-07.md`](./workbench-baseline-2026-09-07.md), and is now also documented in [`docs/WORKBENCH.md`](../docs/WORKBENCH.md).
+> What this session did not retain is its own mount line. The September 12 mount is therefore recorded as **consistent with** those records rather than directly evidenced by this session's logs.
+>
+> The kernel-side support limit, by contrast, is evidenced directly for the build this record describes: `/proc/filesystems` on `6.12.0-g0d1ba53a4376` registers **only** `squashfs`, `vfat`, and `exfat`, and the pinned `vita_defconfig` enables no ext4 support. A separate reading on the previous build `6.12.0-g1ee3edf3c90a` recorded the same three filesystems as **present** ([`./workbench-baseline-2026-09-07.md`](./workbench-baseline-2026-09-07.md), which asserts presence, not exclusivity, and is a different kernel build). Both the reading and the resulting limitation are documented in [`docs/WORKBENCH.md`](../docs/WORKBENCH.md).
 
 ### OHCI full-speed devices
 
