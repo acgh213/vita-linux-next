@@ -35,16 +35,26 @@ See [`lab/usb-production-multidevice-2026-09-12.md`](lab/usb-production-multidev
 
 ## Persistent userspace
 
-The Vita Linux Workbench is implemented through its core PSTV gates:
+The 2026-09-12 game-card baseline is usable and persistent on real PSTV hardware
+with the old rootfs (`168082d`, kernel `6.12.0-g321732d0fde7`):
 
 - RAM-backed rescue initramfs remains independent of removable storage;
 - deterministic SquashFS toolkit mounts read-only;
-- an explicit RW USB workspace holds source, builds, logs, and captures;
-- session activation verifies hashes and tears down in reverse order;
-- pinned TinyCC plus the matching glibc sysroot compiles multi-file C with pthreads and `libm` on-device;
-- curated native examples and the status tooling have hardware passes.
+- the card-mounted toolkit is hash-verified and read-only;
+- a 4 GiB journalled workspace image on the card preserves POSIX metadata and survives a power cycle;
+- a disposable dirty-image test mounted after `recovery complete`, with zero corrupt recovered files;
+- the native C toolchain and 21 login-path tools were available without USB or host setup.
 
-Still open: rebuild and rerun the fixed framebuffer dashboard payload, then prove workspace persistence across reboot. Workbench implementation is tracked in repository PR #1.
+The current branch's full toolchain rootfs (`a63020d` + `78917a1`) also packed
+`make`, `git`, `python3`, `opkg`, and `e2fsprogs`, but its 91 MiB image failed to
+return after upload and is **not boot-proven**. The 64 MiB trimmed image (without
+`git`/`python3`) is built but not deployed or boot-proven. The earlier explicit
+USB Workbench session/build/example gates remain valid, but must not be merged
+with the game-card boot result. See [`lab/usable-system-2026-09-12.md`](lab/usable-system-2026-09-12.md).
+
+Still open: diagnose and produce a bootable toolchain rootfs, then run the
+dashboard and exact-image persistence gates. Workbench implementation is tracked
+in repository PR #1.
 
 ## Next hardware work
 

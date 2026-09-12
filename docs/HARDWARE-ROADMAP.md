@@ -19,7 +19,8 @@ Do not regress these real-hardware gates:
 - production OHCI full-speed HID traffic and low-speed HID enumeration/binding;
 - corrected 165.6675 MHz timer rate;
 - ARM PMU hardware-event counting;
-- deterministic SquashFS toolkit, explicit RW Workbench workspace, native TinyCC/sysroot, and curated examples.
+- deterministic SquashFS toolkit, explicit RW Workbench workspace, native TinyCC/sysroot, and curated examples;
+- old-rootfs game-card boot with journalled workspace, power-cycle persistence, and disposable journal-replay proof.
 
 ## Priority 1 — finish production OHCI lifecycle acceptance
 
@@ -33,14 +34,22 @@ The data path is no longer the question. Remaining gates are about ownership and
 
 A real 1.5 Mb/s device is **complete**: `17ef:608d` PixArt Lenovo USB Optical Mouse enumerated through `pstv-ohci` and bound `hid-generic`. See [`../lab/usb-production-multidevice-2026-09-12.md`](../lab/usb-production-multidevice-2026-09-12.md).
 
-## Priority 2 — close Workbench persistence gates
+## Priority 2 — recover the bootable toolchain Workbench
 
-Core persistence is implemented: the immutable toolkit and explicit RW USB workspace passed their PSTV session/build/example gates. Remaining work:
+The old-rootfs game-card system is usable and persistent on PSTV hardware. A
+4 GiB journalled workspace image survived a power cycle, and a disposable dirty
+image mounted after ext4 journal replay with zero corrupt recovered files. The
+explicit USB session/build/example gates are also recorded. Remaining work is
+now bounded by the newer rootfs candidate:
 
-1. rebuild and upload the payload containing the fixed framebuffer size probe;
-2. run the bounded dashboard gate with one supervised physical input;
-3. reboot and prove workspace source/build/log persistence;
-4. record the expected loss of RAM-initramfs state, including Bluetooth pairing under `/var/lib/bluetooth`.
+1. diagnose the unbooted 91 MiB full toolchain image (`make`, `git`, `python3`,
+   `opkg`, `e2fsprogs`) using the loader's HDMI progress output;
+2. keep the 64 MiB trimmed image (without `git`/`python3`) marked built-only until
+   it is deployed and boot-proven;
+3. once a candidate boots, rebuild/upload the fixed dashboard payload and run the
+   bounded dashboard gate with one supervised physical input;
+4. repeat the persistence gate against that exact image and record expected loss
+   of RAM-initramfs state, including Bluetooth pairing under `/var/lib/bluetooth`.
 
 This unlocks sustained on-device utilities and experiments without turning the rescue rootfs writable.
 
