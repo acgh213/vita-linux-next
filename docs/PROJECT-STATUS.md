@@ -36,9 +36,9 @@ research result.
 | IFTU/DRM display | **DONE** | Mapping bug fixed; mode enumeration, vblank IRQ, inactive-plane programming, one user-confirmed flip, and repeated page flips all passed the M2 ladder. | Wire the tested flip path into normal DRM atomic/page-flip userspace ABI. |
 | SGX/GPU | **ON HOLD** | Register/gate surveys, secure-RAZ behavior, KBL decryption, SMC 0x107 denial, and VDDG revision-gate refusal are documented. | No more guessed secure SMCs; resume only with secure-world provenance or a new safe lever. |
 | Audio | **ON HOLD / NEW TEST PATH** | No supported Vita audio driver or hardware playback gate. A HyperX Amp now enumerates through production OHCI, but only its HID control interface is proven. | Enable and test USB Audio Class streaming before returning to Vita codec work. |
-| Rootfs and Buildroot | **DONE / IN PROGRESS** | A RAM-backed rescue initramfs boots independently; the immutable SquashFS toolkit and explicit RW USB workspace have passed their core PSTV gates. | Close the Workbench rebuilt-dashboard and reboot-persistence gates; keep local secrets out of public artifacts. |
+| Rootfs and Buildroot | **IN PROGRESS** | The old-rootfs game-card baseline boots to a usable persistent PSTV system; its journalled workspace and crash-replay behavior are proven. The current `a63020d`/`78917a1` full toolchain image packed successfully but did not boot after upload. | Diagnose the unbooted full image from the loader's HDMI progress output; the 64 MiB trimmed image is built but not deployed or boot-proven. Keep the known-good rollback separate. |
 | Native toolkit | **DONE** | `vita-diag`, `vita-netdiag`, `vita-storage`, `vita-fb`, `vita-fbserve`, `vita-usbinfo`, input tools, control, and native C development flows have host tests and hardware validation records. The native SquashFS is now mounted read-only on the PSTV; diagnostics, two-file pthread/`libm` linking, and a 320×180 read-only framebuffer HTTP snapshot passed. | Add new commands only with machine output, bounded behavior, and a host fake-root test. |
-| Vita Linux Workbench | **IN PROGRESS** | Plan: [`docs/plans/2026-09-07-vita-linux-workbench.md`](plans/2026-09-07-vita-linux-workbench.md); contract: [`docs/WORKBENCH.md`](WORKBENCH.md). Phases 0-3 COMPLETE and hardware-gated on the PSTV: `vita-toolkit-session` (hash-verified, `--rw-workspace`, reverse teardown), `vita-workspace`, `vita-status`, `vita-example`, and the curated `hello-native`/`fb-safe` examples all pass; payload immutability demonstrated (`Read-only file system`), payload builds byte-identical twice (`1c425b74…`). Dashboard is host-complete (fixtures pass under ASAN/UBSAN) and its refusal contract passes on hardware, but the bounded run is NOT yet gated: the first attempt found a real bug (`ftell` is not a valid size probe for the `/dev/fb0` character device), now fixed with `fstat`/`FBIOGET_FSCREENINFO` plus a regression test. | Rebuild and re-upload the payload with the fixed probe, re-run the bounded dashboard gate with one supervised physical button press, then the reboot-persistence gate. Expect to redo PSTV Bluetooth pairing after that reboot (RAM initramfs discards `/var/lib/bluetooth`). |
+| Vita Linux Workbench | **IN PROGRESS** | The separate 2026-09-12 game-card gate proves a usable PSTV login with a hash-verified read-only toolkit and a persistent 4 GiB journalled workspace; a marker and compiled program survived a power cycle, and a disposable dirty-image test produced successful ext4 journal replay with zero corrupt recovered files. The earlier USB Workbench session/build/example gates and dashboard refusal contract also remain recorded. | Do not upgrade the current full toolchain rootfs to booted status: its 91 MiB image failed to return after upload. The 64 MiB trimmed image is not deployed. Rebuild/re-upload a bootable candidate, then re-run the dashboard and persistence gates against that exact image. Evidence: [`lab/usable-system-2026-09-12.md`](../lab/usable-system-2026-09-12.md). |
 | Native ARM compiler | **DONE** | Pinned TinyCC plus matching glibc development sysroot works on PSTV for multi-file C, linking, pthreads, `libm`, and bounded project tests. | Keep static GCC cross-builds as the production-artifact path. |
 | Demo cart | **DONE** | Framebuffer canvas/scenes, worker pool, input/control, framebuffer ownership, runtime, and temporary candidate lifecycle have passed the recorded gates. | Promote only after a fresh artifact/provenance gate; do not overwrite the known-good rollback. |
 | External toolkit payload | **DONE** | Deterministic SquashFS payload builder, manifest, USB staging, read-only loop mount, native tools, and cleanup were validated. | Keep payload and embedded rescue image as separate layers. |
@@ -54,6 +54,15 @@ research result.
 - A battery power-supply ABI/driver.
 - A network mutation/control service.
 - A consumer-ready distribution image.
+
+## 2026-09-12 evidence boundary
+
+The game-card usable-system result and journal/replay proof were run with Linux
+`6.12.0-g321732d0fde7` and rootfs commit `168082d`. They are not evidence that
+the current full toolchain rootfs boots. The current branch tip is `78917a1`;
+its full 91 MiB image was size-verified after upload but did not return to the
+network, and its 64 MiB trimmed alternative has not been deployed. The concise
+record is [`lab/usable-system-2026-09-12.md`](../lab/usable-system-2026-09-12.md).
 
 ## Evidence rules
 

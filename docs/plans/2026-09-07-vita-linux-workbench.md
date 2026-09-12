@@ -1,5 +1,13 @@
 # Vita Linux Workbench 1.0 Implementation Plan
 
+> **Scope note (2026-09-12):** This dated plan describes the explicit USB
+> Workbench milestone. The later SD2Vita game-card path and the expanded rootfs
+> toolchain are tracked separately in [`lab/usable-system-2026-09-12.md`](../../lab/usable-system-2026-09-12.md).
+> The game-card system is usable on its old-rootfs baseline, while the newer
+> full toolchain image is not boot-proven; do not read this plan's earlier
+> "no package manager" or "no automatic boot dependency" statements as a
+> current status claim.
+
 > **For Hermes:** Use the Vita Linux development workflow with host gates before PSTV action. Execute tasks in order; do not deploy a candidate until its host tests, artifact checks, and rollback procedure pass.
 
 **Goal:** Turn the existing Vita Linux toolkit payload into a coherent, removable development environment with an immutable verified tool layer, a persistent writable USB workspace, native ARM compile/run/test loops, and a small interactive framebuffer application.

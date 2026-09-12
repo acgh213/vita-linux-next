@@ -33,7 +33,7 @@ The hardware-tested kernel integration is `acgh213/linux_vita:vita-linux-next` a
 | Internal audio | Clock/codec/UDC clues exist; no playback gate. | Remains on hold behind cheaper external USB audio. |
 | USB audio | A HyperX Amp reaches production OHCI and binds its HID control interface. | Enable ALSA/`snd-usb-audio`, inventory without playback, then run a short bounded external-output gate. |
 | Battery / power supply | No production Linux battery ABI. | Read-only Vita-handheld driver first; PSTV must not instantiate it. |
-| Persistent userspace | Rescue initramfs, immutable SquashFS toolkit, explicit RW USB Workbench workspace, native TinyCC/sysroot, and curated examples are implemented. | Rebuilt dashboard and reboot-persistence gates remain. |
+| Persistent userspace | Old-rootfs game-card boot is hardware-proven with a hash-verified read-only toolkit, a journalled workspace, power-cycle persistence, and journal replay with zero corrupt recovered files. | Current 91 MiB full toolchain rootfs did not boot after upload; 64 MiB trimmed image is not deployed. Re-run dashboard/persistence gates only against a booted exact image. |
 
 ## Evidence and safety rules
 

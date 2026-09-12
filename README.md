@@ -4,7 +4,7 @@ An independent continuation of the work to bring Linux to the PlayStation Vita a
 
 Vita Linux Next is an experimental ARM/Linux bring-up project: part kernel port, part boot-chain work, part hardware archaeology. The goal is not to pretend that a consumer console is an ordinary SBC. The goal is to make the machine useful, observable, and increasingly complete while preserving the evidence that tells us why each piece works.
 
-> **Status (2026-09-12):** Linux 6.12 boots on the Vita 1000 and PSTV. The project is active research and development, not a finished distribution.
+> **Status (2026-09-12):** Linux 6.12 boots on the Vita 1000 and PSTV. A PSTV game-card boot with a persistent journalled workspace is hardware-proven on the old-rootfs baseline; the newer full toolchain image is not boot-proven. The project is active research and development, not a finished distribution.
 >
 > See the [work matrix](docs/PROJECT-STATUS.md) for what is done, in progress, not implemented, or on hold. Every hardware claim is tied to a dated gate rather than inferred from a successful build.
 
@@ -35,7 +35,7 @@ The PSTV additionally has a validated external Type-A USB path:
 
 The current timer/OHCI kernel integration is under review in [`acgh213/linux_vita#10`](https://github.com/acgh213/linux_vita/pull/10) at the hardware-tested commit `0d1ba53a4376`. The detailed evidence is recorded in the associated [vita-linux-research](https://github.com/acgh213/vita-linux-research) repository and the [September 12 multi-device gate](lab/usb-production-multidevice-2026-09-12.md).
 
-The [Vita Linux Workbench](docs/WORKBENCH.md) adds a verified, immutable SquashFS toolkit and an explicitly writable USB workspace for persistent source, builds, logs, and captures. The base system remains a RAM-backed rescue initramfs and does not require USB storage to boot.
+The [Vita Linux Workbench](docs/WORKBENCH.md) adds a verified, immutable SquashFS toolkit and persistent workspace paths. The 2026-09-12 game-card gate proves a usable PSTV system with a journalled workspace and persistence across a power cycle; the base system remains a RAM-backed rescue initramfs. The detailed [integration record](lab/usable-system-2026-09-12.md) distinguishes that old-rootfs result from the newer full toolchain image.
 
 ## What is still experimental
 
@@ -43,7 +43,7 @@ The [Vita Linux Workbench](docs/WORKBENCH.md) adds a verified, immutable SquashF
 - The Vita handheld's external USB behavior still needs separate, careful characterization.
 - SD2Vita and the proprietary Vita memory-card path are not production-ready.
 - Display support is currently framebuffer/IF-TU focused; GPU/SGX access remains a separate research lane.
-- The persistent Workbench exists and has passed its core PSTV gates; its rebuilt dashboard and reboot-persistence gates remain open.
+- The game-card-backed usable system and journal-replay proof passed on the old-rootfs baseline. The current full 91 MiB toolchain image did not boot after upload, and the 64 MiB trimmed image is built but not deployed or boot-proven; dashboard acceptance against a booted candidate remains open.
 
 Negative results are part of the project. A failed gate is recorded and explained rather than silently converted into a success story. The current sequencing lives in the [hardware roadmap](docs/HARDWARE-ROADMAP.md); [GPU and display paths](docs/GPU-DISPLAY.md) explains why standard DRM/KMS progress is real without calling it SGX acceleration.
 

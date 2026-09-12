@@ -26,3 +26,15 @@ done
 if [ -f "${TARGET_DIR}/root/.ssh/authorized_keys" ]; then
     chmod 600 "${TARGET_DIR}/root/.ssh/authorized_keys"
 fi
+
+# --- Game-card workbench mountpoints ---
+# S06toolkit creates these at runtime too, but pre-creating them keeps the
+# mount table predictable and lets a rescue shell mount by hand without mkdir.
+mkdir -p "${TARGET_DIR}/mnt/vita-card"
+mkdir -p "${TARGET_DIR}/mnt/workspace"
+mkdir -p "${TARGET_DIR}/opt/vita-toolkit"
+
+# --- opkg state ---
+# opkg refuses to run without its lists dir and lock dir present.
+mkdir -p "${TARGET_DIR}/var/lib/opkg/lists"
+mkdir -p "${TARGET_DIR}/usr/lib/opkg"

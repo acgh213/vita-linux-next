@@ -65,6 +65,29 @@ a separate, bounded kernel lane. It is tracked as a candidate, not a promise, an
 the project's rule applies: a config change is not a hardware pass until a
 formatted EXT4 volume has been mounted and exercised on the device.
 
+### 2026-09-12 game-card path: separate hardware result
+
+The USB transport contract above remains valid for the pinned integration kernel,
+whose running `/proc/filesystems` evidence is limited to `squashfs`, `vfat`, and
+`exfat`. Separately, the SD2Vita game-card path was hardware-gated with the old
+rootfs on Linux `6.12.0-g321732d0fde7` and a kernel carrying `CONFIG_EXT4_FS=y`.
+That path stores a 4 GiB ext4 image file on the exFAT card, mounts it at
+`/mnt/workspace`, and leaves the SquashFS payload at `/opt/vita-toolkit`
+read-only. The card was not repartitioned or reformatted.
+
+The game-card gate proves a marker and compiled program survived a full power
+cycle, plus POSIX mode/ownership, symlink, hardlink, and executable-bit
+semantics. A separate disposable dirty-image test produced `EXT4-fs (loop2):
+recovery complete`, mounted without manual fsck, and recovered 52/123 files with
+zero unreadable/corrupt files. Unsynced writes were intentionally lost; replay
+proves consistency, not durability for data that was never synced. See the
+[2026-09-12 integration record](../lab/usable-system-2026-09-12.md).
+
+Do not use this result to claim that the current full toolchain initramfs boots:
+that 91 MiB image was uploaded and size-verified but did not return to the
+network. Its 64 MiB trimmed alternative is built but not deployed or
+boot-proven.
+
 ## Explicit versus discovered activation
 
 ```sh
@@ -187,6 +210,7 @@ persistent workbench is deliberately **not** deleted by ordinary teardown.
 
 ## Validation status
 
-See `lab/workbench-baseline-2026-09-07.md`,
+See `lab/usable-system-2026-09-12.md`,
+`lab/workbench-baseline-2026-09-07.md`,
 `lab/workbench-native-example-2026-09-07.md`, and
 `lab/workbench-dashboard-2026-09-07.md` for dated evidence and artifact hashes.
