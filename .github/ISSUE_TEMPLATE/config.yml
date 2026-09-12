@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Deep reverse-engineering evidence
+    url: https://github.com/acgh213/vita-linux-research
+    about: Preserve long-form hardware archaeology and supporting records in the research repository.

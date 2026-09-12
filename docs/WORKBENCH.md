@@ -30,6 +30,41 @@ vita-toolkit-session stop        -> hash re-checked, mounts removed in reverse
 A read-write transport does **not** make the payload writable. The SquashFS mount
 receives `loop,ro,nosuid,nodev` in every code path; a regression test asserts this.
 
+### Filesystem reality of the workspace
+
+The workspace is only as capable as the filesystems the pinned kernel actually
+builds. Verified two independent ways: `arch/arm/configs/vita_defconfig` at
+`0d1ba53a4376`, and `/proc/filesystems` on the running PSTV, which registers
+**only** `squashfs`, `vfat`, and `exfat`.
+
+| Option | State | Consequence |
+|---|---|---|
+| `CONFIG_SQUASHFS` / `_ZSTD` | `y` | payload mounts read-only through loop |
+| `CONFIG_BLK_DEV_LOOP` | `y` | loop mounts available |
+| `CONFIG_USB_STORAGE` | `y` | EHCI mass storage works |
+| `CONFIG_VFAT_FS` | `y` | small FAT volumes usable |
+| `CONFIG_EXFAT_FS` | `y` | **this is what the workbench actually uses** |
+| `CONFIG_TMPFS` | `y` | volatile `/tmp`, `/run` |
+| `CONFIG_EXT4_FS` | `n` | **no POSIX-permission filesystem available** |
+| `CONFIG_OVERLAY_FS` | `n` | no writable overlay over the read-only root |
+
+The practical limit follows from exFAT, not from the workbench tooling:
+
+- no POSIX ownership or permission bits — every file presents as one uid/gid;
+- no symlinks, hardlinks, or special files;
+- case-insensitive name matching;
+- `chmod`/`chown` do not behave as they do on the build host.
+
+This is adequate for the verified uses — source trees, native TinyCC builds,
+scripts, logs, captured evidence — and it is *not* a general-purpose Linux root
+filesystem. Do not stage a rootfs, a package database, or anything that depends
+on Unix metadata onto the workspace and expect it to behave.
+
+Enabling `CONFIG_EXT4_FS` (and deciding whether `CONFIG_OVERLAY_FS` is wanted) is
+a separate, bounded kernel lane. It is tracked as a candidate, not a promise, and
+the project's rule applies: a config change is not a hardware pass until a
+formatted EXT4 volume has been mounted and exercised on the device.
+
 ## Explicit versus discovered activation
 
 ```sh
