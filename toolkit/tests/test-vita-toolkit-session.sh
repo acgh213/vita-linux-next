@@ -206,10 +206,9 @@ grep -qx 'status=ambiguous_storage' "$CASE/out" || fail_test "case4 status: $(ca
 [ ! -s "$LOG" ] || fail_test "case4 must not invoke mount: $(cat "$LOG")"
 ok 'ambiguous discovery fails closed without calling mount'
 
-# ------------------------------- case 5: non-removable disk, misleading label --
-# vita-storage only reports removable partitions, so a misleading label on an
-# internal disk must never reach discovery.  Model it as an unsupported
-# filesystem candidate that is correctly skipped.
+# ------------------------------- case 5: unsupported disk, misleading label --
+# Discovery accepts USB-removable media and real MMC SD cards, but a misleading
+# label on an unsupported filesystem must never reach session activation.
 
 new_case misleading-label
 make_storage "/dev/mmcblk0p1|ext4|VITA|NONE"
