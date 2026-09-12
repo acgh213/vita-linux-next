@@ -1,7 +1,43 @@
-# SDIF1 / game-card (SD2Vita) bring-up plan
+# SDIF1 / game-card (SD2Vita) bring-up plan and outcome
 
-**As of 2026-09-12.** Baseline: `vita-linux-next` @ `0d1ba53a4376` (kernel),
-`acgh213/vita-linux-next` @ `ce7e3cd` (project).
+> **Historical plan — outcome recorded 2026-09-12.** This document began as a
+> read-only-first bring-up plan. The PSTV result is now hardware-proven: SDIF1
+> enumerates the SD2Vita automatically, the 128 GB exFAT card mounts cleanly,
+> and the card hosts both the hash-verified toolkit payload and a persistent
+> journalled ext4 workspace image. Read the outcome below before treating any
+> unchecked plan item as current work.
+>
+> The remaining work is deliberately narrow: issue #16 separates the combined
+> rail/rescan lever, issue #17 measures the generous 800 ms settle delay, and
+> issue #19 explains the observed 5.297–155.633 s enumeration spread. The
+> bounded background mount waiter is the shipped mitigation; it avoids making
+> login or SSH wait for a late card.
+
+## Outcome — hardware-proven 2026-09-12
+
+- **Rail power was the blocker.** Syscon command `0x888` is firmware-proven;
+  the earlier boot path left the game-card rail off. `sdhci_vita_probe()` now
+  requests the rail before `sdhci_add_host()` and defers until the syscon is
+  ready, so first MMC initialization is not issued against an unpowered slot.
+- **The ordering fix worked.** The card registered and mounted read-only with
+  zero command timeouts. The original 10 s failure timestamp was an init command
+  issued before the rail came up, not evidence that a longer hardware timeout was
+  needed.
+- **Host numbering changed as a consequence of the defer.** SDIF2/Wi-Fi is now
+  `mmc1`; SDIF1/game-card is `mmcblk2`. Consumers must identify the card by its
+  filesystem and skip internal eMMC, never hard-code an `mmcblkN` name.
+- **Persistence is real but deliberately isolated.** The writable store is a
+  journalled ext4 *file* on the exFAT card, not a card repartition. Its POSIX
+  semantics and journal recovery were tested without risking the card. See issue
+  #20 for the complete record.
+- **Do not overclaim the follow-on toolchain work.** A Buildroot image containing
+  e2fsprogs, make, git, python3 and opkg packed successfully, but its full kernel
+  image has not booted. Those tools are built artifacts, not yet a hardware-proven
+  deployed capability. The current known-good running system remains the smaller
+  toolkit-plus-workspace image.
+
+**As of 2026-09-12.** Original planning baseline: `vita-linux-next` @
+`0d1ba53a4376` (kernel), `acgh213/vita-linux-next` @ `ce7e3cd` (project).
 
 **Device: PSTV first** (confirmed). The handheld Vita is a separate,
 separately-characterized pass — PSTV USB results already do not transfer to it.
