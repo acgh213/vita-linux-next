@@ -1,5 +1,27 @@
 # Vita Linux Next — work matrix
 
+## September 13 system milestone — current sequencing
+
+The [Linux architecture](architecture/linux-system.md) and
+[sectioned implementation plan](plans/2026-09-13-linux-system-roadmap.md) now define
+the next milestone under [#18](https://github.com/acgh213/vita-linux-next/issues/18).
+The user selected a general-purpose package-managed environment while preserving
+the existing exFAT card/data; Debian armhf is the first gated candidate.
+
+The full safety-pinned zImage is now boot-proven on PSTV; the root is still RAM.
+The main kernel pin is `37b9348710dfe1751dae0ef0fd2954b2714d08d4`.
+Kernel PRs #11 and #12 are merged (`#10` was closed as a no-op — its head already equalled the branch); outer PRs #24, #25 and #26 are merged. The current console image predates #26: merged exfatprogs is not proof that its binary is deployed. The outer canonical checkout on this host lags `origin/main` and must be fetched before it is used as a base.
+See the [read-only audit](../lab/system-roadmap-audit-2026-09-13/RESULTS.md).
+
+Priority is storage/boot contract + reproducible distro trial, then persistent
+boot/state and programs, with USB/display/audio work in parallel where independent.
+PSTV gates do not establish handheld parity. SGX remains independent, not a blocker.
+
+**Historical snapshot below:** the September 12 tables/ordering retain dated gate
+context. Statements there about pending integration or unbooted full images are
+superseded by this section; they are not the current task queue.
+
+
 **Status snapshot:** 2026-09-12
 **Canonical home:** [acgh213/vita-linux-next](https://github.com/acgh213/vita-linux-next)
 

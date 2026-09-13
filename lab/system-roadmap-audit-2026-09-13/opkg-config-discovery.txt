@@ -1,0 +1,19 @@
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/libopkg.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/usr/lib/libopkg.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/lib/libc.so.6", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/lib/libarchive.so.13", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/usr/lib/libarchive.so.13", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/lib/libcrypto.so.3", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/usr/lib/libcrypto.so.3", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/lib/libexpat.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/usr/lib/libexpat.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/lib/libz.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/usr/lib/libz.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/lib/libatomic.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/lib/libm.so.6", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/lib/libgcc_s.so.1", O_RDONLY|O_LARGEFILE|O_CLOEXEC) = 3
+openat(AT_FDCWD, "/etc/opkg", O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_CLOEXEC|O_DIRECTORY) = -1 ENOENT (No such file or directory)
+error: resolve_pkg_dest_list: Unknown dest name: `workspace'.
++++ exited with 255 +++

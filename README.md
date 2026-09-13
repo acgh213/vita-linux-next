@@ -4,7 +4,9 @@ An independent continuation of the work to bring Linux to the PlayStation Vita a
 
 Vita Linux Next is an experimental ARM/Linux bring-up project: part kernel port, part boot-chain work, part hardware archaeology. The goal is not to pretend that a consumer console is an ordinary SBC. The goal is to make the machine useful, observable, and increasingly complete while preserving the evidence that tells us why each piece works.
 
-> **Status (2026-09-12):** Linux 6.12 boots on the Vita 1000 and PSTV. A PSTV game-card boot with a persistent journalled workspace is hardware-proven on the old-rootfs baseline; the newer full toolchain image is not boot-proven. The project is active research and development, not a finished distribution.
+> **Status (2026-09-13):** Linux 6.12 boots on the Vita 1000 and PSTV. The safety-pinned full rescue image now boots on PSTV with SD2Vita, a read-only toolkit and a journalled ext4 workspace. The root remains RAM-backed; a full package-managed distro is **not yet implemented**. The project is active research and development, not a finished distribution.
+>
+> **Next system milestone:** [general-purpose Linux architecture](docs/architecture/linux-system.md) and [agent-ready implementation plan](docs/plans/2026-09-13-linux-system-roadmap.md), tracked in [#18](https://github.com/acgh213/vita-linux-next/issues/18). Debian armhf is the first candidate, not a hardware-proven result. Preserve the existing exFAT card and data; no repartitioning is implied.
 >
 > See the [work matrix](docs/PROJECT-STATUS.md) for what is done, in progress, not implemented, or on hold. Every hardware claim is tied to a dated gate rather than inferred from a successful build.
 
@@ -15,7 +17,9 @@ Both targets currently have working paths for the core system:
 - ARM Cortex-A9 SMP with all four cores online
 - framebuffer and console output
 - Vita buttons and touchscreen where the hardware provides them
-- RTC and clean reboot/poweroff paths
+- RTC and clean reboot/poweroff paths **on today's RAM-rescue baseline** — this is not
+  evidence for the nested persistent-root path in the system roadmap, where shutdown
+  ordering (dependents → ext4 → loops → outer exFAT) is still unproven
 - read-only VitaOS/eMMC storage access
 - Wi-Fi through the Marvell SD8787 and Linux networking
 - Bluetooth controller support through the shared SD8787 firmware path
@@ -33,7 +37,7 @@ The PSTV additionally has a validated external Type-A USB path:
 - sustained mouse/numpad interrupt traffic and an interactive Keychron HDMI-console login
 - EHCI high-speed storage hotplug while the OHCI companion remains resident
 
-The current timer/OHCI kernel integration is under review in [`acgh213/linux_vita#10`](https://github.com/acgh213/linux_vita/pull/10) at the hardware-tested commit `0d1ba53a4376`. The detailed evidence is recorded in the associated [vita-linux-research](https://github.com/acgh213/vita-linux-research) repository and the [September 12 multi-device gate](lab/usb-production-multidevice-2026-09-12.md).
+The timer/OHCI work is in the branch history at `0d1ba53a4376`. [`acgh213/linux_vita#10`](https://github.com/acgh213/linux_vita/pull/10) was **closed as a no-op, not merged** — its head already equalled `vita-linux-next`, so a merge would have produced an empty commit implying a gate ran; do not reopen it. The current outer kernel pin is **`37b9348710dfe1751dae0ef0fd2954b2714d08d4`** (tip of `vita-linux-next`), including the SDIF1 rail-safety follow-up; earlier per-device gates retain their own tested commits. The detailed evidence is recorded in the associated [vita-linux-research](https://github.com/acgh213/vita-linux-research) repository and the [September 12 multi-device gate](lab/usb-production-multidevice-2026-09-12.md).
 
 The [Vita Linux Workbench](docs/WORKBENCH.md) adds a verified, immutable SquashFS toolkit and persistent workspace paths. The 2026-09-12 game-card gate proves a usable PSTV system with a journalled workspace and persistence across a power cycle; the base system remains a RAM-backed rescue initramfs. The detailed [integration record](lab/usable-system-2026-09-12.md) distinguishes that old-rootfs result from the newer full toolchain image.
 
@@ -43,7 +47,7 @@ The [Vita Linux Workbench](docs/WORKBENCH.md) adds a verified, immutable SquashF
 - The Vita handheld's external USB behavior still needs separate, careful characterization.
 - SD2Vita and the proprietary Vita memory-card path are not production-ready.
 - Display support is currently framebuffer/IF-TU focused; GPU/SGX access remains a separate research lane.
-- The game-card-backed usable system and journal-replay proof passed on the old-rootfs baseline. The current full 91 MiB toolchain image did not boot after upload, and the 64 MiB trimmed image is built but not deployed or boot-proven; dashboard acceptance against a booted candidate remains open.
+- The 31,910,504-byte full zImage is now boot-proven on PSTV. Original failure causality remains unresolved: this does not uniquely prove a Wi-Fi explanation. Package persistence, deterministic storage shutdown, and full-distro boot still need the [new system gates](docs/plans/2026-09-13-linux-system-roadmap.md).
 
 Negative results are part of the project. A failed gate is recorded and explained rather than silently converted into a success story. The current sequencing lives in the [hardware roadmap](docs/HARDWARE-ROADMAP.md); [GPU and display paths](docs/GPU-DISPLAY.md) explains why standard DRM/KMS progress is real without calling it SGX acceleration.
 
