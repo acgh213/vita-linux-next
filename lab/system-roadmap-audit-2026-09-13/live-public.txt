@@ -1,0 +1,67 @@
+6.12.0-g37b9348710df
+ 18:21:56 up  1:21,  0 users,  load average: 0.09, 0.06, 0.01
+--- filesystems ---
+nodev	sysfs
+nodev	tmpfs
+nodev	bdev
+nodev	proc
+nodev	devtmpfs
+nodev	configfs
+nodev	debugfs
+nodev	sockfs
+nodev	pipefs
+nodev	ramfs
+nodev	devpts
+	ext3
+	ext2
+	ext4
+	squashfs
+	vfat
+	exfat
+--- mounts ---
+rootfs / rootfs rw,size=232268k,nr_inodes=58067 0 0
+devtmpfs /dev devtmpfs rw,relatime,size=232268k,nr_inodes=58067,mode=755 0 0
+proc /proc proc rw,relatime 0 0
+devpts /dev/pts devpts rw,relatime,gid=5,mode=620,ptmxmode=666 0 0
+tmpfs /dev/shm tmpfs rw,relatime 0 0
+tmpfs /tmp tmpfs rw,relatime 0 0
+tmpfs /run tmpfs rw,nosuid,nodev,relatime,mode=755 0 0
+sysfs /sys sysfs rw,relatime 0 0
+debugfs /sys/kernel/debug debugfs rw,relatime 0 0
+/dev/mmcblk2p1 /mnt/vita-card exfat rw,noatime,fmask=0022,dmask=0022,iocharset=utf8,errors=remount-ro 0 0
+/dev/loop0 /opt/vita-toolkit squashfs ro,nosuid,nodev,relatime,errors=continue 0 0
+/dev/loop1 /mnt/workspace ext4 rw,noatime 0 0
+--- memory ---
+               total        used        free      shared  buff/cache   available
+Mem:             480         127         340          95         118         353
+Swap:              0           0           0
+--- commands ---
+/usr/bin/opkg
+/usr/bin/make
+/usr/bin/git
+/usr/bin/python3
+/usr/sbin/chroot
+/sbin/switch_root
+/usr/bin/strace
+--- opkg explicit config ---
+error: opkg_conf_parse_file: /etc/opkg.conf:22: Ignoring invalid line: `lists_dir ext /var/lib/opkg/lists'
+pyrrha-demo - 1.0
+explicit_rc=0
+--- default config ---
+error: resolve_pkg_dest_list: Unknown dest name: `workspace'.
+default_rc=255
+--- package files ---
+Package pyrrha-demo (1.0) is installed on root and has the following files:
+/usr/bin/hello-pyrrha
+/usr/bin
+/usr
+--- selected lifecycle ---
+[    3.166606] sdhci-vita e0c00000.mmc: game-card rail on at boot failed: -517
+[    5.413405] sdhci-vita e0c00000.mmc: game-card rail raised before init
+[    5.494858] mmc2: Invalid maximum block size, assuming 512 bytes
+[    5.563403] mmc2: SDHCI controller on (null) [e0c00000.mmc] using ADMA
+[    5.745953] mmc2: new high speed SDXC card at address 59b4
+[    5.765942] mmcblk2: mmc2:59b4 GD2S5 119 GiB
+[    5.786317]  mmcblk2: p1
+[    9.646696] exFAT-fs (mmcblk2p1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+[   11.723168] EXT4-fs (loop1): mounted filesystem d6d17d11-1c1e-451a-b5c1-9536e770b7be r/w with ordered data mode. Quota mode: disabled.
