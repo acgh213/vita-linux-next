@@ -17,6 +17,33 @@ ext4 loop over exFAT, distro apt/dpkg, shell/Python host fixtures, native ARM te
 development and preserving exFAT/data. Debian support on this device is a hypothesis
 with a gate. No new device deployment, repartitioning or repair in this planning PR.
 
+**User decisions recorded 2026-09-13 (these are settled; do not re-litigate in a PR):**
+
+1. **Debian is the primary userland.** The user's words on musl: *"makes it weird."*
+2. **Alpine armv7 is a welcome second target, not a fallback** (**#35**). The user explicitly
+   likes Alpine. Sequencing puts Debian first because glibc answers more questions per
+   hour; Alpine's gates are package coverage and genuine glibc dependence, and it may
+   pass or fail those on its own merits. Do not write Alpine off as a rejection.
+| 3 | **A Linux-native partition is the intended end state** (#34 / Lane H), not a nice-to-have.
+   Nothing repartitions until the backup/rollback and VitaOS `ux0:` compatibility
+   gates pass.
+4. **Trial root image is 32 GiB**, fully allocated. Rationale below.
+5. **Vita 1000 is online and available** (VitaOS; 1337/1338 open, 22 closed at
+   192.168.18.36), so handheld lanes are not hardware-blocked.
+
+### Why 32 GiB rather than 16 GiB
+
+The card has **111.2 GiB free** (119.4 GiB total, 8.1 GiB used as of 2026-09-13), so
+the choice is about headroom, not scarcity. Sizing is dominated by native development,
+not by the OS: a Debian armhf base plus GCC/G++/git/python3 is roughly 2.5–3.5 GB
+installed, but a kernel build tree is another ~1.5–2 GB, `ccache` is worth 2–10 GB if
+enabled, Python venvs and package caches are 1–3 GB, and distro upgrades keep old
+package versions around. 16 GiB works for the system and then starts pinching on the
+first serious build — which is exactly the workload this whole effort exists to
+support. 32 GiB leaves ~79 GiB on the card and is the size at which a build failure is
+unlikely to be "out of disk." **Fully allocated, not sparse:** exFAT sparse behavior
+is not something to rely on for a root filesystem.
+
 ---
 
 ## Read this first
@@ -58,8 +85,13 @@ E programs (#30): fixtures early, chroot tiers after B; reboot after C/D       |
 USB (#3), display (#8), audio (#5), dashboard (#4): independent HW lanes ------+
                                                         |
                                     F release (#13) -> G handheld (#31)
+
+C exit criteria ---> H native partition migration (user-stated destination)
+
 ```
 
+Lane H (native partition) is gated on C meeting its exit criteria, because a native
+partition is only worth having once something reliable boots from a nested image.
 #17 settle-delay tuning follows #19 and safe #16 experiments, not the critical
 path. #32 opkg config repair is useful parallel rescue maintenance, not a
 prerequisite to the normal-distro path. Read-only observations can start before
@@ -264,8 +296,11 @@ Small steps:
    hashing, `fsck.exfat -n`, mount moves, rescue shell). A chroot can pass while
    PID1, cgroups, devpts, udev, `/run`, networking or shutdown all fail — so state
    the bootstrap/second-stage method and service-start suppression explicitly.
-4. Once A1's write gate passes, stage a separately allocated ext4 image. Record
-   hash/manifest prior to trial; no edits to `workspace.ext4` or old bundles.
+4. Once A1's write gate passes, stage a separately allocated **32 GiB, fully
+   allocated** ext4 image (see the sizing rationale above). Record hash/manifest prior
+   to trial; no edits to `workspace.ext4` or old bundles. Leave `workspace.ext2.old`
+   alone — reclaiming that 4 GiB archive is a separate, user-approved cleanup, not a
+   step in this lane.
 5. In a supervised trusted chroot, no new PID1 or network changes: verify shell,
    libc/ELF ABI, `dpkg --print-architecture`, signed `apt-get update`, a small
    dependency install/list/remove, **an upgrade transaction**, Python and minimal
@@ -276,8 +311,10 @@ Small steps:
    behaviour rather than assuming dpkg did the right thing silently. Reboot
    persistence is proven in C/D, not here.
 6. Tear down completely, remount, check DB/files, preserve rescue access. Document
-   image size, RSS/time and logs. Failure -> smallest specific fix or Alpine
-   armv7 comparison; do not silently mix distro libraries into Buildroot `/`.
+   image size, RSS/time and logs. On failure, prefer the smallest specific fix; then
+   hand the question to the **Alpine lane as a genuine second target** rather than
+   parking it as a rejected comparison. Do not silently mix distro libraries into
+   Buildroot `/` — that is the one outcome that makes a later failure undiagnosable.
 
 **Exit:** real userland/package gate, NOT distro boot. Store exact package versions
 and inputs; then select PID1 based on its requirements rather than a hunch.
@@ -416,6 +453,53 @@ file presence alone never closes a program tier.
 
 **Exit:** a per-model capability matrix and evidence; PSTV release remains valid
 if handheld support is still gated. No unsupported 'all Vita models' claims.
+
+## H — Native Linux partition migration (#34) — user-stated destination
+
+**Objective:** replace the loop-file-over-exFAT root with a real ext4 partition, removing
+the nested filesystem, the loop device, and the unjournaled outer boundary in one move.
+**Gate:** do not start before C meets its exit criteria. A native partition is only worth
+having once something reliable boots from a nested image; doing it first means debugging
+the partition and the boot at the same time.
+
+**Files:** `system/storage/partition-layout.md`, `system/tests/test-partition-plan.sh`,
+`docs/STORAGE-RECOVERY.md` updates, and a host-side `system/storage/backup-card.sh`.
+
+Small steps:
+
+1. **Backup before anything else, and prove the restore.** The existing
+   2026-09-12 backup covers the exFAT *content*, not the partition table. A partition
+   migration needs a whole-device image plus a tested restore on disposable media. Pick
+   the destination medium for that image (server disk has ~9 GiB free; `disk1` has more)
+   before starting, and verify the restore actually mounts.
+2. **Answer the VitaOS question by test, not assumption.** VitaOS reads `ux0:` as a FAT
+   volume. Whether it tolerates a FAT partition that does not span the whole card is
+   **unknown**. Test on a disposable card first: partition it exFAT + ext4, confirm
+   VitaOS still mounts `ux0:` and that Linux sees both. A card Linux likes and VitaOS
+   cannot read is a regression. If it fails, the fallback is a **second card** rather
+   than an exotic layout.
+3. **Choose the layout explicitly, and record the loser.** Candidates: (a) one card,
+   exFAT `ux0:` + ext4 Linux root; (b) two cards, one per OS; (c) **PSTV only:** root on
+   USB, card untouched, since PSTV's EHCI host storage is already hardware-proven. Note
+   that (c) does not exist for the handheld.
+4. **Partition operations are a supervised, backed-up, user-present event.** No in-place
+   resize of a mounted card, no repair command run blind, no "it is probably fine."
+   Prepare exact commands and the rollback path in advance; if the rollback is not
+   tested, the migration does not happen.
+5. **Migrate the root and re-run the same gates as C,** not a shortcut subset: card
+   identity, root selection, rescue entry, reboot persistence, and shutdown ordering
+   (now simpler — one filesystem, but it still must flush and unmount cleanly).
+6. **Keep the image-file path working.** Native partition is the destination; it is not
+   grounds to delete the nested-image design before the replacement has survived real
+   reboots. Retire the old path only on explicit user approval.
+
+**Exit:** Linux boots from a native ext4 partition; VitaOS still reads `ux0:` (or the
+two-card decision is recorded with the evidence); restore from backup demonstrated; the
+image-file path retained or retired by explicit decision.
+
+**Non-goals:** multi-boot cleverness, exotic partition schemes, encrypting a card whose
+failure modes we have not yet characterized, or repartitioning the card the user is
+currently using before the backup restore has been proven.
 
 ## Ready-to-dispatch lanes and handoff
 
