@@ -27,22 +27,38 @@ with a gate. No new device deployment, repartitioning or repair in this planning
 | 3 | **A Linux-native partition is the intended end state** (#34 / Lane H), not a nice-to-have.
    Nothing repartitions until the backup/rollback and VitaOS `ux0:` compatibility
    gates pass.
-4. **Trial root image is 32 GiB**, fully allocated. Rationale below.
+4. **Trial root image is 16 GiB**, fully allocated (revised by the user from a 32 GiB
+   recommendation). Rationale and the growth path below.
 5. **Vita 1000 is online and available** (VitaOS; 1337/1338 open, 22 closed at
    192.168.18.36), so handheld lanes are not hardware-blocked.
 
-### Why 32 GiB rather than 16 GiB
+### Why 16 GiB, and how it grows
 
-The card has **111.2 GiB free** (119.4 GiB total, 8.1 GiB used as of 2026-09-13), so
-the choice is about headroom, not scarcity. Sizing is dominated by native development,
-not by the OS: a Debian armhf base plus GCC/G++/git/python3 is roughly 2.5–3.5 GB
-installed, but a kernel build tree is another ~1.5–2 GB, `ccache` is worth 2–10 GB if
-enabled, Python venvs and package caches are 1–3 GB, and distro upgrades keep old
-package versions around. 16 GiB works for the system and then starts pinching on the
-first serious build — which is exactly the workload this whole effort exists to
-support. 32 GiB leaves ~79 GiB on the card and is the size at which a build failure is
-unlikely to be "out of disk." **Fully allocated, not sparse:** exFAT sparse behavior
-is not something to rely on for a root filesystem.
+**User decision: 16 GiB, fully allocated.** An earlier draft recommended 32 GiB on
+headroom grounds; the user chose the smaller commitment, which is the *reversible* one.
+
+Where the space goes: a Debian armhf base plus GCC/G++/git/python3 is roughly 2.5–3.5 GB
+installed, leaving ~12 GB for the work — kernel build trees (~1.5–2 GB each), `ccache`,
+Python venvs, package caches, and distro upgrades that retain old package versions. That
+is workable; it does mean **budgeting `ccache` and pruning build trees is a real chore,
+not an afterthought.**
+
+**The important part — this is not a one-way door.** Growing a loop-image ext4 later is
+routine and can be done host-side with no repartitioning and no data loss:
+
+```sh
+truncate -s 32G <image>          # extend the container file
+e2fsck -f <image>                # required before resize
+resize2fs <image>                # grow the filesystem to fill it
+```
+
+Shrinking is the direction that is painful, so starting at 16 GiB commits us to nothing.
+If the first kernel or CMake build hits ENOSPC, the answer is a growth step, not a
+rebuild-and-migrate. **Record the chosen size in the artifact manifest** so a later
+resize is a deliberate, logged event rather than a surprise.
+
+**Fully allocated, not sparse:** exFAT sparse behavior is not something to rely on for a
+root filesystem.
 
 ---
 
@@ -296,7 +312,7 @@ Small steps:
    hashing, `fsck.exfat -n`, mount moves, rescue shell). A chroot can pass while
    PID1, cgroups, devpts, udev, `/run`, networking or shutdown all fail — so state
    the bootstrap/second-stage method and service-start suppression explicitly.
-4. Once A1's write gate passes, stage a separately allocated **32 GiB, fully
+4. Once A1's write gate passes, stage a separately allocated **16 GiB, fully
    allocated** ext4 image (see the sizing rationale above). Record hash/manifest prior
    to trial; no edits to `workspace.ext4` or old bundles. Leave `workspace.ext2.old`
    alone — reclaiming that 4 GiB archive is a separate, user-approved cleanup, not a

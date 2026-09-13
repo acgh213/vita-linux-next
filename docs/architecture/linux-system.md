@@ -11,7 +11,7 @@ by this document alone. Work is sequenced in the
 | Primary userland | **Debian.** "musl is just… makes it weird" — glibc is the target for the first complete system. |
 | Alpine / musl (**#35**) | **Welcome, not a fallback.** The user likes Alpine explicitly and is not against it. It is sequenced *after* Debian because musl ABI coverage is the real unknown, not because it is less wanted. |
 | End-state storage (**#34**) | **A Linux-native partition is wanted eventually.** Image-files-on-exFAT is the prototype path, not the destination. The migration is gated (backup, rollback, VitaOS coexistence test) and is its own lane. |
-| Trial image size | **32 GiB** — see the sizing rationale in the plan; the card is 111.2 GiB free, so this is cheap and native builds are the thing that eats space. |
+| Trial image size | **16 GiB**, fully allocated (user decision, revised from an initial 32 GiB recommendation). Not a one-way door — a loop image can be **grown** later host-side (`truncate` + `e2fsck -f` + `resize2fs`) with no repartition and no data loss. Shrinking is the hard direction, so 16 GiB is the reversible choice. |
 | Handheld availability | **Vita 1000 is online and available** (VitaOS, 1337/1338 open, 22 closed on 192.168.18.36), so handheld lanes are not blocked on hardware access. |
 
 ## Recommendation
