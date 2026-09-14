@@ -1,0 +1,144 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          vita-loopdetach
+# Required-Start:
+# Required-Stop:     umountfs
+# Should-Stop:       networking
+# Default-Start:
+# Default-Stop:      0 6
+# X-Stop-After:      sendsigs umountnfs.sh
+# Short-Description: Detach non-root card-backed loops before umountfs
+# Description:       The real root loop is owned by umountroot and is never
+#                    detached here.  Only other loop devices backed by the
+#                    Vita card are synchronously unmounted and detached.
+### END INIT INFO
+
+PATH=${PATH:-/sbin:/usr/sbin:/bin:/usr/bin}
+NAME=vita-loopdetach
+CARD_MNT=${CARD_MNT:-/mnt/vita-card}
+PROC_MOUNTS=${PROC_MOUNTS:-/proc/mounts}
+LOSETUP_CMD=${LOSETUP_CMD:-losetup}
+UMOUNT_CMD=${UMOUNT_CMD:-umount}
+SYNC_CMD=${SYNC_CMD:-sync}
+RECORD=${RECORD:-$CARD_MNT/boot-attempt.log}
+
+log() {
+    echo "[$NAME] $*"
+    [ -w /dev/tty0 ] && echo "[$NAME] $*" > /dev/tty0 2>/dev/null
+}
+
+mounted_card() {
+    mountpoint -q "$CARD_MNT" 2>/dev/null
+}
+
+record_unclean() {
+    mounted_card || return 0
+    printf 'unclean-shutdown %s %s\n' \
+        "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" >> "$RECORD" 2>/dev/null || \
+        log "could not record unclean shutdown"
+    "$SYNC_CMD" -f "$CARD_MNT" 2>/dev/null || \
+        log "could not sync failure record on $CARD_MNT"
+}
+
+fail() {
+    log "FAILED: $*"
+    record_unclean "$*"
+    return 1
+}
+
+root_loop_device() {
+    root_source=$(awk '$2 == "/" { print $1; exit }' "$PROC_MOUNTS" 2>/dev/null) || return 0
+    case "$root_source" in
+        /dev/loop[0-9]*) printf '%s\n' "$root_source" ;;
+        /dev/*)
+            resolved=$(readlink -f "$root_source" 2>/dev/null || true)
+            case "$resolved" in /dev/loop[0-9]*) printf '%s\n' "$resolved" ;; esac
+            ;;
+    esac
+}
+
+card_loops() {
+    prefix=${CARD_MNT%/}/
+    root_loop=$1
+    "$LOSETUP_CMD" -a 2>/dev/null | awk -v prefix="$prefix" -v root="$root_loop" '
+        {
+            open = index($0, "(")
+            if (!open) next
+            backing = substr($0, open + 1, length($0) - open - 1)
+            device = $1
+            sub(/:$/, "", device)
+            # The slash is intentional: /mnt/vita-card-old is not the card.
+            if (index(backing, prefix) == 1 && device != root) print device
+        }
+    '
+}
+
+unmount_loop_mounts() {
+    dev=$1
+    awk -v d="$dev" '$1 == d { print $2 }' "$PROC_MOUNTS" 2>/dev/null | sort -r |
+    while IFS= read -r mount_path; do
+        [ -n "$mount_path" ] || continue
+        # The root loop was excluded above; keep this guard fail-closed too.
+        [ "$mount_path" = / ] && continue
+        log "unmounting $mount_path (from $dev)"
+        "$UMOUNT_CMD" "$mount_path" 2>&1 || {
+            fail "could not unmount $mount_path from $dev"
+            return 1
+        }
+    done
+}
+
+do_stop() {
+    root_loop=$(root_loop_device)
+    log "leaving root loop ${root_loop:-unknown} for umountroot"
+
+    "$SYNC_CMD" || { fail "initial sync failed"; return 1; }
+
+    loops=$(card_loops "$root_loop") || {
+        fail "could not enumerate loop devices"
+        return 1
+    }
+    if [ -n "$loops" ]; then
+        log "non-root card-backed loops: $(printf '%s ' "$loops")"
+    else
+        log "no non-root card-backed loops"
+    fi
+
+    for dev in $loops; do
+        unmount_loop_mounts "$dev" || return 1
+        log "detaching $dev"
+        "$LOSETUP_CMD" -d "$dev" 2>&1 || {
+            fail "could not detach $dev"
+            return 1
+        }
+    done
+
+    remaining=$(card_loops "$root_loop") || {
+        fail "could not verify loop devices"
+        return 1
+    }
+    [ -z "$remaining" ] || {
+        fail "non-root card-backed loops remain: $(printf '%s ' "$remaining")"
+        return 1
+    }
+    "$SYNC_CMD" || { fail "final sync failed"; return 1; }
+    log "clean: non-root card-backed loops are detached; root loop remains for umountroot"
+    return 0
+}
+
+case "$1" in
+    start) : ;;
+    stop) do_stop || exit 1 ;;
+    status)
+        root_loop=$(root_loop_device)
+        card_loops "$root_loop" || exit 1
+        ;;
+    restart|force-reload)
+        echo "$NAME: teardown-only, nothing to restart" >&2
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status}" >&2
+        exit 3
+        ;;
+esac
+exit 0

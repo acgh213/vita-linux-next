@@ -1,0 +1,10 @@
+auto lo
+iface lo inet loopback
+
+auto mlan0
+iface mlan0 inet dhcp
+    pre-up /usr/bin/timeout 60 /bin/sh -c 'until /sbin/ip link show dev mlan0 >/dev/null 2>&1; do sleep 1; done'
+    wpa-conf /etc/wpa_supplicant.conf
+
+allow-hotplug eth0
+iface eth0 inet dhcp

@@ -1,0 +1,13 @@
+### BEGIN INIT INFO
+# Provides:          sendsigs
+# Required-Start:
+# Required-Stop:     umountroot
+# Default-Start:
+# Default-Stop:      0 6
+# Short-Description: Kill all remaining processes (Vita override)
+# Description:       Vita override. Processes are killed while / is still
+#                    mounted, so the root filesystem is genuinely required to be
+#                    available during this step. Stating that dependency is what
+#                    keeps sendsigs ahead of umountroot instead of relying on
+#                    both happening to land in the same K layer.
+### END INIT INFO
