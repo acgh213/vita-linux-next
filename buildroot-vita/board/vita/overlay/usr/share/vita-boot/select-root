@@ -51,23 +51,25 @@ log() { echo "[select-root] $*" >&2; }
 # Prints the count, or "corrupt" if the file is not the plain-text record we
 # wrote (binary, NUL bytes, or no recognisable verb anywhere).
 count_unconfirmed() {
-    [ -r "$RECORD" ] || { echo 0; return; }
+    [ -e "$RECORD" ] || { echo 0; return; }
+    [ -f "$RECORD" ] && [ -r "$RECORD" ] || { echo corrupt; return; }
 
-    # A record we wrote is plain text whose lines start with a known verb.
-    # Anything else means we cannot trust our own history -> fail closed.
-    if LC_ALL=C grep -qP '\x00' "$RECORD" 2>/dev/null; then
-        echo corrupt; return
-    fi
-    if [ -s "$RECORD" ] && \
-       ! grep -qE '^(opened|confirmed|rescue|override)( |$)' "$RECORD" 2>/dev/null; then
-        echo corrupt; return
-    fi
-
+    # BusyBox grep has no -P, and grep's binary handling is not a NUL test.
+    # Compare byte counts after deleting NULs, then validate EVERY record.
+    bytes=$(wc -c < "$RECORD") || { echo corrupt; return; }
+    textbytes=$(LC_ALL=C tr -d '\000' < "$RECORD" | wc -c)
+    [ "$bytes" -eq "$textbytes" ] || { echo corrupt; return; }
     awk '
-        $1 == "opened"    { open++ }
-        $1 == "confirmed" { open = 0 }
-        $1 == "rescue"    { }            # rescue boots do not count against normal
-        END { print open + 0 }
+        $1 == "opened" { open++; next }
+        $1 == "confirmed" { open = 0; unclean = 0; next }
+        $1 == "unclean-shutdown" { unclean = 1; next }
+        $1 == "rescue" || $1 == "override" || $1 == "shutdown-synced" { next }
+        { bad = 1 }
+        END {
+            if (bad) print "corrupt"
+            else if (unclean) print "unclean"
+            else print open + 0
+        }
     ' "$RECORD" 2>/dev/null || echo corrupt
 }
 
@@ -81,13 +83,13 @@ read_override() {
 open_record() {
     # Must be durable BEFORE switch_root, or a hard hang leaves no evidence.
     printf 'opened %s attempt=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$1" \
-        >> "$RECORD" 2>/dev/null
+        >> "$RECORD" 2>/dev/null || return 1
     sync
 }
 
 note() {
     printf '%s %s %s\n' "$1" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${2:-}" \
-        >> "$RECORD" 2>/dev/null
+        >> "$RECORD" 2>/dev/null || return 1
     sync
 }
 
@@ -112,8 +114,8 @@ case "${ov:-}" in
         ;;
     normal)
         log "operator override: force one normal attempt"
-        note override normal-forced
-        open_record forced
+        note override normal-forced && open_record forced &&
+            rm -f "$OVERRIDE" && sync || { echo rescue; exit 0; }
         echo normal
         exit 0
         ;;
@@ -123,9 +125,8 @@ case "${ov:-}" in
         # (corrupt/binary), and appending a 'confirmed' line to a file we
         # cannot parse would leave the operator stuck in rescue forever.
         printf 'confirmed %s operator-reset\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            > "$RECORD" 2>/dev/null
-        rm -f "$OVERRIDE" 2>/dev/null     # one-shot: do not reset every boot
-        sync
+            > "$RECORD" 2>/dev/null || { echo rescue; exit 0; }
+        sync && rm -f "$OVERRIDE" && sync || { echo rescue; exit 0; }
         ;;
     "")
         : # no override, normal path
@@ -140,7 +141,7 @@ esac
 
 fails=$(count_unconfirmed)
 
-if [ "$fails" = corrupt ]; then
+if [ "$fails" = corrupt ] || [ "$fails" = unclean ]; then
     log "boot-attempt record is unreadable/corrupt -- history unknown"
     log "SELECT: rescue (fail-closed)"
     log "to retry: write 'reset' to $OVERRIDE (FTP port 1337 works)"
@@ -158,7 +159,11 @@ if [ "$fails" -ge "$MAX_FAILURES" ]; then
     exit 0
 fi
 
-open_record "$((fails + 1))"
+open_record "$((fails + 1))" || {
+    log "could not durably record attempt -- staying in rescue"
+    echo rescue
+    exit 0
+}
 log "SELECT: normal (attempt $((fails + 1)))"
 echo normal
 exit 0
