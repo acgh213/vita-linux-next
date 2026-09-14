@@ -27,52 +27,141 @@
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
-CARD_MNT=/mnt/vita-card
-NEWROOT=/mnt/newroot
+CARD_MNT=${VITA_CARD_MNT:-/mnt/vita-card}
+NEWROOT=${VITA_NEWROOT:-/mnt/newroot}
+DEV_ROOT=${VITA_DEV_ROOT:-/dev}
 ROOT_IMAGE_NAME=debian-trial.img
-SELECT_ROOT=/usr/share/vita-boot/select-root
-LOOP_DEV=/dev/loop7          # high number: the toolkit owns loop0/loop1
-
-# --- early mounts (stock behaviour, preserved) -------------------------------
-/bin/mount -t devtmpfs devtmpfs /dev 2>/dev/null
-/bin/mount -t proc proc /proc 2>/dev/null
-/bin/mount -t sysfs sysfs /sys 2>/dev/null
-
-if (exec 0</dev/console) 2>/dev/null; then
-    exec 0</dev/console
-    exec 1>/dev/console
-    exec 2>/dev/console
+ROOT_USB_UUID=${VITA_ROOT_USB_UUID:-}
+if [ -z "$ROOT_USB_UUID" ] && [ -r /etc/vita-root-usb-uuid ]; then
+    read -r ROOT_USB_UUID < /etc/vita-root-usb-uuid
 fi
+LOOP_DEV=${VITA_LOOP_DEV:-/dev/loop7}  # high number: toolkit owns loop0/loop1
+MOUNT_CMD=${VITA_MOUNT_CMD:-/bin/mount}
+UMOUNT_CMD=${VITA_UMOUNT_CMD:-/bin/umount}
+LOSETUP_CMD=${VITA_LOSETUP_CMD:-losetup}
+BLKID_CMD=${VITA_BLKID_CMD:-blkid}
+SELECT_ROOT=${VITA_SELECT_ROOT:-/usr/share/vita-boot/select-root}
+E2FSCK_CMD=${VITA_E2FSCK_CMD:-e2fsck}
+SWITCH_ROOT_CMD=${VITA_SWITCH_ROOT_CMD:-switch_root}
+RESCUE_INIT=${VITA_RESCUE_INIT:-/sbin/init}
+CONSOLE=${VITA_CONSOLE:-/dev/console}
+export CARD_MNT NEWROOT
 
 log() {
-    echo "[boot] $*"
-    [ -w /dev/tty0 ] && echo "[boot] $*" > /dev/tty0 2>/dev/null
+    msg="[boot] $*"
+    echo "$msg"
+    [ -w /dev/tty0 ] && echo "$msg" > /dev/tty0 2>/dev/null
+    # Once the card is mounted this init's own record is durable and readable
+    # from either Linux or VitaOS FTP. Without it, a boot that dies between
+    # switch_root and userspace leaves nothing to diagnose but HDMI.
+    [ -n "${BOOT_LOG:-}" ] && echo "$msg" >> "$BOOT_LOG" 2>/dev/null
+    return 0
 }
 
 rescue() {
     log "RESCUE: $*"
     log "staying in the initramfs; SSH will come up as usual"
-    exec /sbin/init
+    exec "$RESCUE_INIT"
 }
-
-log "=== persistent-root selection ==="
 
 # --- find the card -----------------------------------------------------------
 # Match by CONTENT, not by name. SDIF1 defers behind the syscon and the game
 # card has already renumbered mmcblk1 -> mmcblk2 once in this project's history.
-# Never hardcode the number.
+# Never hardcode the number. USB targets additionally require LABEL=VITA so a
+# random thumb drive cannot become the root merely because it is exFAT/vFAT.
+device_present() {
+    if [ "${VITA_TEST_DEVICES:-0}" = 1 ]; then
+        [ -e "$1" ]
+    else
+        [ -b "$1" ]
+    fi
+}
+
 find_card() {
-    for d in /dev/mmcblk*p1; do
-        [ -b "$d" ] || continue
-        case "$d" in
-            /dev/mmcblk0p1) continue ;;   # internal eMMC, never the game card
+    usb_vita=
+    usb_count=0
+    for d in "$DEV_ROOT"/sd*[0-9]; do
+        device_present "$d" || continue
+        case "$("$BLKID_CMD" -o value -s TYPE "$d" 2>/dev/null)" in
+            exfat|vfat) ;;
+            *) continue ;;
         esac
-        case "$(blkid -o value -s TYPE "$d" 2>/dev/null)" in
-            exfat|vfat) echo "$d"; return 0 ;;
+        [ "$("$BLKID_CMD" -o value -s LABEL "$d" 2>/dev/null)" = VITA ] || continue
+        if [ -n "$ROOT_USB_UUID" ]; then
+            [ "$("$BLKID_CMD" -o value -s UUID "$d" 2>/dev/null)" = "$ROOT_USB_UUID" ] || continue
+        fi
+        usb_count=$((usb_count + 1))
+        usb_vita=$d
+    done
+    # More than one explicitly identified USB target is ambiguous. Do not
+    # choose based on enumeration order.
+    [ "$usb_count" -le 1 ] || return 1
+    [ "$usb_count" -eq 1 ] && { printf '%s\n' "$usb_vita"; return 0; }
+    # A pinned USB root must never fall through to a stale root on SD.
+    [ -z "$ROOT_USB_UUID" ] || return 1
+
+    mmc_card=
+    mmc_count=0
+    for d in "$DEV_ROOT"/mmcblk*p[0-9]; do
+        device_present "$d" || continue
+        case "$d" in
+            "$DEV_ROOT"/mmcblk0p*) continue ;;   # internal eMMC, never root
+        esac
+        case "$("$BLKID_CMD" -o value -s TYPE "$d" 2>/dev/null)" in
+            exfat|vfat)
+                mmc_count=$((mmc_count + 1))
+                mmc_card=$d
+                ;;
         esac
     done
-    return 1
+    # Preserve the external-SD fallback, but never guess between two cards.
+    [ "$mmc_count" -eq 1 ] || return 1
+    printf '%s\n' "$mmc_card"
 }
+
+# Move the mounts only as a single handoff. A partial handoff cannot be made
+# safe by warning and continuing: switch_root would then exec without the card
+# or /dev that the new PID 1 requires.
+handoff_cleanup() {
+    "$MOUNT_CMD" --move "$NEWROOT$CARD_MNT" "$CARD_MNT" 2>/dev/null
+    "$UMOUNT_CMD" "$NEWROOT" 2>/dev/null
+    "$LOSETUP_CMD" -d "$LOOP_DEV" 2>/dev/null
+}
+
+handoff_to_newroot() {
+    mkdir -p "$NEWROOT$CARD_MNT" || return 1
+    if ! "$MOUNT_CMD" --move "$CARD_MNT" "$NEWROOT$CARD_MNT" 2>/dev/null; then
+        log "WARN: could not move the card mount"
+        handoff_cleanup
+        return 1
+    fi
+    if ! "$MOUNT_CMD" --move /dev "$NEWROOT/dev" 2>/dev/null; then
+        log "WARN: could not move /dev"
+        handoff_cleanup
+        return 1
+    fi
+    return 0
+}
+
+# Host-side behavioral gates call the real functions without entering the
+# production mount/exec path. This branch is inert in the initramfs.
+case "${VITA_INIT_TEST:-}" in
+    find_card) find_card; exit $? ;;
+    handoff) handoff_to_newroot; exit $? ;;
+esac
+
+log "=== persistent-root selection ==="
+
+# --- early mounts (stock behaviour, preserved) -------------------------------
+"$MOUNT_CMD" -t devtmpfs devtmpfs /dev 2>/dev/null
+"$MOUNT_CMD" -t proc proc /proc 2>/dev/null
+"$MOUNT_CMD" -t sysfs sysfs /sys 2>/dev/null
+
+if (exec 0<"$CONSOLE") 2>/dev/null; then
+    exec 0<"$CONSOLE"
+    exec 1>"$CONSOLE"
+    exec 2>"$CONSOLE"
+fi
 
 # Enumeration time is VARIABLE: measured 5.576 s on one boot and 155.6 s on the
 # next, with nothing logged in between and no command timeouts. Sampling once
@@ -91,9 +180,13 @@ done
 log "card: $CARD_DEV (after ${i}s)"
 
 mkdir -p "$CARD_MNT"
-mount -t exfat -o rw,noatime "$CARD_DEV" "$CARD_MNT" 2>/dev/null \
-  || mount -o rw,noatime "$CARD_DEV" "$CARD_MNT" 2>/dev/null \
+"$MOUNT_CMD" -t exfat -o rw,noatime "$CARD_DEV" "$CARD_MNT" 2>/dev/null \
+  || "$MOUNT_CMD" -o rw,noatime "$CARD_DEV" "$CARD_MNT" 2>/dev/null \
   || rescue "card present but would not mount"
+
+# From here the boot decision is on durable media, so record it there.
+BOOT_LOG="$CARD_MNT/vita-boot.log"
+log "--- attempt: root media $CARD_DEV ---"
 
 # --- the decision ------------------------------------------------------------
 # select-root reads the boot-attempt record and the operator override. It is
@@ -115,32 +208,32 @@ ROOT_IMAGE="$CARD_MNT/$ROOT_IMAGE_NAME"
 [ -f "$ROOT_IMAGE" ] || rescue "root image $ROOT_IMAGE_NAME not on card"
 
 # --- attach and check the root image ----------------------------------------
-losetup -d "$LOOP_DEV" 2>/dev/null
-losetup "$LOOP_DEV" "$ROOT_IMAGE" 2>/dev/null || rescue "losetup failed"
+"$LOSETUP_CMD" -d "$LOOP_DEV" 2>/dev/null
+"$LOSETUP_CMD" "$LOOP_DEV" "$ROOT_IMAGE" 2>/dev/null || rescue "losetup failed"
 
 # Check before mounting rw. A dirty ext4 mounted rw replays a journal we have
 # not inspected; on removable media that is how a bad shutdown becomes a bad
 # filesystem. -p fixes only what is unambiguously safe.
-if command -v e2fsck >/dev/null 2>&1; then
-    e2fsck -p "$LOOP_DEV" >/dev/null 2>&1
+if command -v "$E2FSCK_CMD" >/dev/null 2>&1; then
+    "$E2FSCK_CMD" -p "$LOOP_DEV" >/dev/null 2>&1
     rc=$?
     # 0 = clean, 1 = errors corrected. >=2 means do not trust it.
     if [ $rc -ge 2 ]; then
-        losetup -d "$LOOP_DEV" 2>/dev/null
+        "$LOSETUP_CMD" -d "$LOOP_DEV" 2>/dev/null
         rescue "e2fsck returned $rc on the root image"
     fi
     [ $rc -eq 1 ] && log "e2fsck corrected errors"
 fi
 
 mkdir -p "$NEWROOT"
-mount -t ext4 -o rw,noatime,errors=remount-ro "$LOOP_DEV" "$NEWROOT" 2>/dev/null \
-  || { losetup -d "$LOOP_DEV" 2>/dev/null; rescue "could not mount the root image"; }
+"$MOUNT_CMD" -t ext4 -o rw,noatime,errors=remount-ro "$LOOP_DEV" "$NEWROOT" 2>/dev/null \
+  || { "$LOSETUP_CMD" -d "$LOOP_DEV" 2>/dev/null; rescue "could not mount the root image"; }
 
 # Sanity: is this actually a root filesystem? A successful mount of the wrong
 # image is worse than a failed one, because switch_root would exec into nothing.
 [ -x "$NEWROOT/sbin/init" ] || [ -x "$NEWROOT/usr/sbin/init" ] || {
-    umount "$NEWROOT" 2>/dev/null
-    losetup -d "$LOOP_DEV" 2>/dev/null
+    "$UMOUNT_CMD" "$NEWROOT" 2>/dev/null
+    "$LOSETUP_CMD" -d "$LOOP_DEV" 2>/dev/null
     rescue "image mounted but has no /sbin/init"
 }
 
@@ -148,20 +241,17 @@ mount -t ext4 -o rw,noatime,errors=remount-ro "$LOOP_DEV" "$NEWROOT" 2>/dev/null
 # The new root's shutdown path (vita-loopdetach) needs the card at the same
 # path, and vita-boot-confirm needs to write the confirmation there. Move the
 # mount rather than remounting: the loop device backing / lives on it.
-mkdir -p "$NEWROOT$CARD_MNT"
-mount --move "$CARD_MNT" "$NEWROOT$CARD_MNT" 2>/dev/null \
-  || log "WARN: could not move the card mount; confirm may fail"
+handoff_to_newroot || rescue "could not hand off mounts"
 
 log "switch_root -> Debian (PID 1 = $(readlink -f "$NEWROOT/sbin/init" 2>/dev/null))"
 log "if this is the last line you see, the new root did not come up"
 
 # Housekeeping before the exec. /dev must be moved, not unmounted: the loop
 # device node lives there and the new root needs it immediately.
-mount --move /dev "$NEWROOT/dev" 2>/dev/null
-umount /proc 2>/dev/null
-umount /sys  2>/dev/null
+"$UMOUNT_CMD" /proc 2>/dev/null
+"$UMOUNT_CMD" /sys  2>/dev/null
 
-exec switch_root "$NEWROOT" /sbin/init
+exec "$SWITCH_ROOT_CMD" "$NEWROOT" /sbin/init
 
 # Unreachable if switch_root succeeded. If we are here, the exec itself failed,
 # which means the record stays open and the NEXT boot will count it.
