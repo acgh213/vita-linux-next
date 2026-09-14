@@ -10,6 +10,28 @@ fakebin="$TMP/bin"
 devroot="$TMP/dev"
 mkdir -p "$fakebin" "$devroot"
 
+# Guard against a class of bug this gate already shipped once: a log file being
+# read and written at the same time. Under set -e, a `cat` that refuses a
+# self-redirect ("input file is output file") aborts the whole gate -- and
+# whether it refuses depends on the coreutils version, so it passed on one host
+# and failed in CI. Install a cat that always refuses, so the failure shows up
+# here instead. On a host without /proc the guard is inert and harmless.
+strictbin="$TMP/strictbin"
+mkdir -p "$strictbin"
+cat >"$strictbin/cat" <<'STRICT'
+#!/bin/sh
+# Refuse reading and writing the same regular file, like coreutils does when it
+# takes the checking path. Fall through to the real cat otherwise.
+if [ "$#" -eq 1 ] && [ -f "$1" ] && [ -e /proc/self/fd/1 ] && [ "$1" -ef /proc/self/fd/1 ]; then
+	printf 'cat: %s: input file is output file\n' "$1" >&2
+	exit 1
+fi
+exec /usr/bin/env -i PATH=/usr/bin:/bin cat "$@"
+STRICT
+chmod +x "$strictbin/cat"
+PATH="$strictbin:$PATH"
+export PATH
+
 cat >"$fakebin/blkid" <<'EOF'
 #!/bin/sh
 set -eu
@@ -166,7 +188,13 @@ run_find no-target FAIL
 grep -q 'CARD_WAIT=\${VITA_CARD_WAIT:-90}' "$INIT"
 grep -q 'handoff_to_newroot' "$INIT"
 
-dash -n "$INIT"
+# dash is what actually runs this init on the console, so prefer it; fall back to
+# the system sh so the gate is still runnable on a host without dash.
+if command -v dash >/dev/null 2>&1; then
+	dash -n "$INIT"
+else
+	sh -n "$INIT"
+fi
 
 mount_stub="$fakebin/mount-stub"
 umount_stub="$fakebin/umount-stub"
@@ -213,7 +241,11 @@ run_handoff() {
 		echo "$name handoff failure was not propagated" >&2
 		exit 1
 	}
-	cat "$log"
+	# Do NOT cat "$log" here. The caller redirects this function's stdout into
+	# the same path the stubs append to, so catting it back out is a
+	# self-redirect: some cats refuse it ("input file is output file"), and
+	# because this script runs under set -e that turned a green gate into a red
+	# one on a newer coreutils. The log is read by the caller instead.
 }
 
 card_log="$TMP/card-failure.log"
