@@ -20,6 +20,119 @@ CONFIRM = INIT / "vita-boot-confirm"
 OVERRIDES = ROOT / "debian/insserv-overrides"
 
 
+class CardMountTests(unittest.TestCase):
+    """vita-card-mounts must never turn an optional convenience into a failed boot."""
+
+    SCRIPT = INIT / "vita-card-mounts"
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.t = Path(self.tmp.name)
+        self.bin = self.t / "bin"
+        self.bin.mkdir()
+        self.log = self.t / "calls.log"
+        self.log.write_text("")
+        self.mounted = self.t / "mounted.list"
+        self.mounted.write_text("")
+        # mount: logs the call and fails only when FAIL_MATCH appears in its args
+        (self.bin / "mount").write_text(
+            "#!/bin/sh\n"
+            'printf "mount %s\\n" "$*" >>"$CALL_LOG"\n'
+            'case "$*" in *"${FAIL_MATCH:-@@never@@}"*) exit 32 ;; esac\n'
+            "exit 0\n"
+        )
+        # umount: logs the call
+        (self.bin / "umount").write_text(
+            "#!/bin/sh\n"
+            'printf "umount %s\\n" "$*" >>"$CALL_LOG"\n'
+            "exit 0\n"
+        )
+        # mountpoint -q <path>: true only for paths listed in MOUNTED_FILE
+        (self.bin / "mountpoint").write_text(
+            "#!/bin/sh\n"
+            'grep -qxF "$2" "$MOUNTED_FILE"\n'
+        )
+        for f in self.bin.iterdir():
+            f.chmod(0o755)
+        self.card = self.t / "card"
+        self.card.mkdir()
+        self.env = dict(
+            os.environ,
+            PATH=str(self.bin) + ":" + os.environ["PATH"],
+            CALL_LOG=str(self.log),
+            MOUNTED_FILE=str(self.mounted),
+            CARD_MNT=str(self.card),
+            WORKBENCH_SRC=str(self.card / "vita-workbench"),
+            WORKBENCH_MNT=str(self.t / "workspace"),
+            TOOLKIT_IMAGE=str(self.card / "vita-toolkit-native.squashfs"),
+            TOOLKIT_MNT=str(self.t / "toolkit"),
+        )
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _run(self, action, **env):
+        return subprocess.run(
+            ["dash", str(self.SCRIPT), action],
+            env=dict(self.env, **env), capture_output=True, text=True,
+        )
+
+    def _mark_mounted(self, *paths):
+        with open(self.mounted, "a") as fh:
+            for path in paths:
+                fh.write(str(path) + "\n")
+
+    def test_missing_workbench_is_skipped_not_failed(self):
+        result = self._run("start")
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("no workbench", result.stdout)
+        self.assertNotIn("mount ", self.log.read_text())
+
+    def test_present_workbench_is_bound_to_the_stable_path(self):
+        (self.card / "vita-workbench").mkdir()
+        result = self._run("start")
+        self.assertEqual(result.returncode, 0)
+        self.assertIn(
+            "mount --bind %s %s" % (self.card / "vita-workbench", self.t / "workspace"),
+            self.log.read_text(),
+        )
+
+    def test_toolkit_mounts_read_only(self):
+        (self.card / "vita-workbench").mkdir()
+        (self.card / "vita-toolkit-native.squashfs").write_text("x")
+        result = self._run("start")
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("-o loop,ro", self.log.read_text())
+
+    def test_unmountable_toolkit_does_not_fail_the_boot(self):
+        (self.card / "vita-workbench").mkdir()
+        (self.card / "vita-toolkit-native.squashfs").write_text("x")
+        result = self._run("start", FAIL_MATCH="loop,ro")
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("continuing without it", result.stdout)
+
+    def test_already_mounted_paths_are_not_mounted_twice(self):
+        (self.card / "vita-workbench").mkdir()
+        (self.card / "vita-toolkit-native.squashfs").write_text("x")
+        self._mark_mounted(self.t / "workspace", self.t / "toolkit")
+        result = self._run("start")
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("already mounted", result.stdout)
+        self.assertEqual(self.log.read_text().strip(), "")
+
+    def test_stop_unmounts_both_and_leaves_loops_alone(self):
+        self._mark_mounted(self.t / "workspace", self.t / "toolkit")
+        result = self._run("stop")
+        self.assertEqual(result.returncode, 0)
+        calls = self.log.read_text()
+        self.assertIn("umount %s" % (self.t / "toolkit"), calls)
+        self.assertIn("umount %s" % (self.t / "workspace"), calls)
+        self.assertNotIn("losetup", calls)
+
+    def test_stop_teardown_precedes_umountfs(self):
+        self.assertIn("# Required-Stop:     umountfs", self.SCRIPT.read_text())
+
+
 class LifecycleTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

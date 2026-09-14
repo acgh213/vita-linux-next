@@ -1,10 +1,17 @@
 auto lo
 iface lo inet loopback
 
+# mlan0 waits out the mwifiex asynchronous probe before ifup touches it.
 auto mlan0
 iface mlan0 inet dhcp
     pre-up /usr/bin/timeout 60 /bin/sh -c 'until /sbin/ip link show dev mlan0 >/dev/null 2>&1; do sleep 1; done'
     wpa-conf /etc/wpa_supplicant.conf
 
-allow-hotplug eth0
-iface eth0 inet dhcp
+# Wired Ethernet: the console's internal Realtek RTL8152 on the bus-2 host port.
+# Debian derives this name from the adapter MAC, so it is stable for this unit;
+# on another console read the real name from `ip -br link`. Not "auto": an
+# unplugged cable must never delay or fail the boot. The higher metric keeps
+# Wi-Fi as the primary default route when a cable is connected.
+allow-hotplug enx00d9d1531abf
+iface enx00d9d1531abf inet dhcp
+    metric 100
