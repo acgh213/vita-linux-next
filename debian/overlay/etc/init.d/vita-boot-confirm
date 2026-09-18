@@ -1,0 +1,123 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          vita-boot-confirm
+# Required-Start:    $local_fs $remote_fs $syslog $all
+# Should-Start:      networking sshd ssh
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# X-Start-After:     networking ssh sshd rc.local
+# Short-Description: Confirm a fully usable Debian boot
+# Description:       Confirmation is deliberately late and does not wait for
+#                    networking.  It requires the intended init, writable
+#                    root and card, an SSH listener, and configured IPv4.
+### END INIT INFO
+
+PATH=${PATH:-/sbin:/usr/sbin:/bin:/usr/bin}
+NAME=vita-boot-confirm
+CARD_MNT=${CARD_MNT:-/mnt/vita-card}
+RECORD=${RECORD:-$CARD_MNT/boot-attempt.log}
+PROC_MOUNTS=${PROC_MOUNTS:-/proc/mounts}
+PROC1_COMM=${PROC1_COMM:-/proc/1/comm}
+EXPECTED_INIT=${EXPECTED_INIT:-init}
+SSH_PORT=${SSH_PORT:-22}
+SS_CMD=${SS_CMD:-ss}
+IP_CMD=${IP_CMD:-ip}
+SYNC_CMD=${SYNC_CMD:-sync}
+
+log() {
+    echo "[$NAME] $*"
+    [ -w /dev/tty0 ] && echo "[$NAME] $*" > /dev/tty0 2>/dev/null
+}
+
+root_is_rw() {
+    awk '$2 == "/" && $4 ~ /(^|,)rw(,|$)/ { ok = 1 } END { exit !ok }' \
+        "$PROC_MOUNTS" 2>/dev/null
+}
+
+card_is_rw() {
+    mountpoint -q "$CARD_MNT" 2>/dev/null || return 1
+    awk -v card="$CARD_MNT" '$2 == card && $4 ~ /(^|,)rw(,|$)/ { ok = 1 } END { exit !ok }' \
+        "$PROC_MOUNTS" 2>/dev/null
+}
+
+expected_init_running() {
+    [ -r "$PROC1_COMM" ] || return 1
+    [ "$(cat "$PROC1_COMM" 2>/dev/null)" = "$EXPECTED_INIT" ]
+}
+
+ssh_listening() {
+    "$SS_CMD" -H -ltn 2>/dev/null | awk -v port=":$SSH_PORT" \
+        '$1 == "LISTEN" && $4 ~ port "$" { found = 1 } END { exit !found }'
+}
+
+non_loopback_ipv4() {
+    "$IP_CMD" -4 -o addr show scope global 2>/dev/null | awk '
+        $3 == "inet" {
+            split($4, a, "/")
+            if (a[1] !~ /^127\./) found = 1
+        }
+        END { exit !found }
+    '
+}
+
+default_ipv4_route() {
+    "$IP_CMD" -4 route show default 2>/dev/null | awk '$1 == "default" { found = 1 } END { exit !found }'
+}
+
+record_unclean() {
+    card_is_rw || return 0
+    printf 'unclean-shutdown %s %s\n' \
+        "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" >> "$RECORD" 2>/dev/null || \
+        log "could not record unclean shutdown"
+}
+
+refuse() {
+    log "NOT confirming this boot: $*"
+    return 1
+}
+
+do_start() {
+    card_is_rw || { refuse "backing card is not mounted read-write"; return 1; }
+    root_is_rw || { refuse "root is not mounted read-write"; return 1; }
+    expected_init_running || { refuse "PID 1 is not expected init ($EXPECTED_INIT)"; return 1; }
+    ssh_listening || { refuse "SSH port $SSH_PORT is not listening"; return 1; }
+    non_loopback_ipv4 || { refuse "no non-loopback IPv4 address"; return 1; }
+    default_ipv4_route || { refuse "no IPv4 default route"; return 1; }
+
+    printf 'confirmed %s pid1=%s kernel=%s\n' \
+        "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+        "$(cat "$PROC1_COMM" 2>/dev/null)" "$(uname -r)" >> "$RECORD" 2>/dev/null || {
+        refuse "could not append confirmation record"
+        return 1
+    }
+    "$SYNC_CMD" -f "$CARD_MNT" 2>&1 || {
+        record_unclean "confirmation record could not be synced"
+        refuse "could not sync confirmation record"
+        return 1
+    }
+    log "boot confirmed: root/card writable, init expected, SSH and IPv4 ready"
+    return 0
+}
+
+case "$1" in
+    start) do_start || exit 1 ;;
+    stop) : ;;
+    status)
+        if root_is_rw && card_is_rw && expected_init_running && ssh_listening && \
+           non_loopback_ipv4 && default_ipv4_route; then
+            echo "$NAME: usable"
+        else
+            echo "$NAME: not usable" >&2
+            exit 1
+        fi
+        ;;
+    restart|reload|force-reload)
+        echo "$NAME: confirmation-only, nothing to restart" >&2
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status}" >&2
+        exit 3
+        ;;
+esac
+exit 0

@@ -1,0 +1,20 @@
+### BEGIN INIT INFO
+# Provides:          umountfs
+# Required-Start:
+# Required-Stop:     halt reboot
+# Default-Start:
+# Default-Stop:      0 6
+# Short-Description: Turn off swap and unmount local filesystems (Vita override)
+# Description:       Vita override. Stock declares "Required-Stop: umountroot",
+#                    which in insserv places umountroot AFTER umountfs. That is
+#                    the wrong direction on this platform: the root filesystem
+#                    is a loop file stored on an exFAT volume that umountfs
+#                    cannot unmount (the loop device holds it open), so it would
+#                    remount that volume read-only while / was still writable,
+#                    and the later root flush would have nowhere to land.
+#
+#                    Here umountfs instead runs LAST of the filesystem steps:
+#                    umountroot makes / read-only, vita-root-sync flushes the
+#                    exFAT volume, and only then does umountfs unmount what is
+#                    left.
+### END INIT INFO
