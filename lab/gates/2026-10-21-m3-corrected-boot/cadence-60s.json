@@ -1,0 +1,93 @@
+{
+  "samples": [
+    {
+      "before_ns": 1347722629102,
+      "after_ns": 1347723544767,
+      "state": {
+        "selector": 0,
+        "live_cfg": 0,
+        "flip_pending": 0,
+        "scanline": 232,
+        "scanout_byte": 1218560,
+        "vblank_count": 80676
+      }
+    },
+    {
+      "before_ns": 1357731182970,
+      "after_ns": 1357731829627,
+      "state": {
+        "selector": 0,
+        "live_cfg": 0,
+        "flip_pending": 0,
+        "scanline": 160,
+        "scanout_byte": 817408,
+        "vblank_count": 81276
+      }
+    },
+    {
+      "before_ns": 1367741229437,
+      "after_ns": 1367742079471,
+      "state": {
+        "selector": 0,
+        "live_cfg": 0,
+        "flip_pending": 0,
+        "scanline": 152,
+        "scanout_byte": 798720,
+        "vblank_count": 81876
+      }
+    },
+    {
+      "before_ns": 1377751194602,
+      "after_ns": 1377751827171,
+      "state": {
+        "selector": 0,
+        "live_cfg": 0,
+        "flip_pending": 0,
+        "scanline": 136,
+        "scanout_byte": 687872,
+        "vblank_count": 82476
+      }
+    },
+    {
+      "before_ns": 1387761192713,
+      "after_ns": 1387761753215,
+      "state": {
+        "selector": 0,
+        "live_cfg": 0,
+        "flip_pending": 0,
+        "scanline": 120,
+        "scanout_byte": 618496,
+        "vblank_count": 83076
+      }
+    },
+    {
+      "before_ns": 1397771195363,
+      "after_ns": 1397771736006,
+      "state": {
+        "selector": 0,
+        "live_cfg": 0,
+        "flip_pending": 0,
+        "scanline": 104,
+        "scanout_byte": 553216,
+        "vblank_count": 83676
+      }
+    },
+    {
+      "before_ns": 1407781201116,
+      "after_ns": 1407781744367,
+      "state": {
+        "selector": 0,
+        "live_cfg": 0,
+        "flip_pending": 0,
+        "scanline": 96,
+        "scanout_byte": 493056,
+        "vblank_count": 84276
+      }
+    }
+  ],
+  "irq_delta": 3600,
+  "elapsed_mid_s": 60.058385807,
+  "hz_lower_bound": 59.940942921247675,
+  "hz_upper_bound": 59.942399002054,
+  "scope": "software IRQ cadence against corrected kernel clock; no clock writes"
+}

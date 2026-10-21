@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-/* M3-B2: fixed inherited mode, two distinct dumb buffers, one event flip.
+/* M3-B2/C: fixed inherited mode, two distinct buffers, bounded event flips.
  * No libdrm linkage. Requires DRM master; refuses an already-active CRTC.
  * Run under an external timeout: the poll is bounded, kernel ioctls may not be.
  * Closing disables this probe's CRTC; physical scanout is driver-defined.
@@ -25,7 +25,7 @@
 struct buffer { uint32_t handle, fb; uint64_t size; void *map; };
 static int fd = -1;
 static uint32_t crtc_id;
-static int modeset;
+static int modeset, cleanup_errors;
 static struct buffer buffers[2];
 
 static void cleanup(void)
@@ -34,19 +34,20 @@ static void cleanup(void)
 	if (modeset) {
 		struct drm_mode_crtc off = { .crtc_id = crtc_id };
 		printf("cleanup: disable probe CRTC\n");
-		if (ioctl(fd, DRM_IOCTL_MODE_SETCRTC, &off))
-			perror("cleanup SETCRTC");
+		if (ioctl(fd, DRM_IOCTL_MODE_SETCRTC, &off)) {
+			perror("cleanup SETCRTC"); cleanup_errors++;
+		}
 	}
 	for (unsigned i = 0; i < 2; i++) {
 		struct buffer *b = &buffers[i];
-		if (b->fb && ioctl(fd, DRM_IOCTL_MODE_RMFB, &b->fb)) perror("RMFB");
+		if (b->fb && ioctl(fd, DRM_IOCTL_MODE_RMFB, &b->fb)) { perror("RMFB"); cleanup_errors++; }
 		if (b->map && b->map != MAP_FAILED) munmap(b->map, b->size);
 		if (b->handle) {
 			struct drm_mode_destroy_dumb d = { .handle = b->handle };
-			if (ioctl(fd, DRM_IOCTL_MODE_DESTROY_DUMB, &d)) perror("DESTROY_DUMB");
+			if (ioctl(fd, DRM_IOCTL_MODE_DESTROY_DUMB, &d)) { perror("DESTROY_DUMB"); cleanup_errors++; }
 		}
 	}
-	close(fd);
+	close(fd); fd = -1;
 }
 
 static void check(int ok, const char *what)
@@ -104,10 +105,21 @@ static void make_buffer(struct buffer *b, const struct drm_mode_modeinfo *mode,
 	       b->fb, d.pitch, b->size, colour);
 }
 
+static unsigned number(const char *s, unsigned max)
+{
+	char *end;
+	unsigned long n;
+	errno = 0; n = strtoul(s, &end, 10);
+	if (!*s || *s < '0' || *s > '9' || *end || errno || !n || n > max) {
+		fprintf(stderr, "invalid bounded argument: %s\n", s); exit(2);
+	}
+	return (unsigned)n;
+}
+
 int main(int argc, char **argv)
 {
-	const char *card = argc > 1 ? argv[1] : "/dev/dri/card0";
-	const char *state = argc > 2 ? argv[2] : "/sys/kernel/debug/dri/0/iftu_state";
+	const char *card = "/dev/dri/card0", *state = "/sys/kernel/debug/dri/0/iftu_state";
+	unsigned frames = 1, seconds = 0, hold = 0, refresh = 60, positional = 0, selection = 0;
 	uint32_t crtcs[8], connectors[8], encoders[8];
 	struct drm_mode_card_res r = { .count_crtcs = 8, .count_connectors = 8,
 		.count_encoders = 8, .crtc_id_ptr = (uintptr_t)crtcs,
@@ -117,16 +129,34 @@ int main(int argc, char **argv)
 	struct drm_mode_crtc c = {0};
 	uint32_t encoder_ids[8];
 	struct drm_mode_modeinfo modes[8];
-	const uint64_t cookie = 0x4d334232;
-	struct drm_mode_crtc_page_flip flip = { .flags = DRM_MODE_PAGE_FLIP_EVENT,
-		.user_data = cookie };
+	struct drm_mode_crtc_page_flip flip = { .flags = DRM_MODE_PAGE_FLIP_EVENT };
 	struct drm_event_vblank ev;
 	struct pollfd pfd;
-	uint64_t start, elapsed, budget;
+	uint64_t start, returned, done, elapsed, budget, begin, previous_stamp = 0;
+	uint32_t previous_seq = 0;
+	unsigned completed = 0;
+	int cadence_ok = 1;
 	int ret;
 
 	setvbuf(stdout, NULL, _IONBF, 0);
-	if (argc > 3) { fprintf(stderr, "usage: %s [card [iftu_state]]\n", argv[0]); return 2; }
+	for (int i = 1; i < argc; i++) {
+		if (!strcmp(argv[i], "--hold")) hold = 1;
+		else if ((!strcmp(argv[i], "--frames") || !strcmp(argv[i], "--seconds") ||
+			  !strcmp(argv[i], "--refresh-hz")) && i + 1 < argc) {
+			const char *option = argv[i++];
+			if (!strcmp(option, "--refresh-hz")) refresh = number(argv[i], 240);
+			else {
+				if (selection++) { fputs("choose frames OR seconds\n", stderr); return 2; }
+				if (!strcmp(option, "--frames")) frames = number(argv[i], 3000);
+				else { seconds = number(argv[i], 30); frames = 3000; }
+			}
+		} else if (argv[i][0] != '-' && positional < 2) {
+			if (positional++) state = argv[i]; else card = argv[i];
+		} else {
+			fprintf(stderr, "usage: %s [card [iftu_state]] [--frames 1..3000 | "
+				"--seconds 1..30] [--refresh-hz 1..240] [--hold]\n", argv[0]); return 2;
+		}
+	}
 	printf("M3-B2 modeset-first probe: %s\n", card);
 	fd = open(card, O_RDWR | O_CLOEXEC | O_NONBLOCK);
 	check(fd >= 0, "open card");
@@ -166,7 +196,8 @@ int main(int argc, char **argv)
 	printf("mode: %ux%u clock=%u htotal=%u vtotal=%u\n", mode.hdisplay,
 	       mode.vdisplay, mode.clock, mode.htotal, mode.vtotal);
 	make_buffer(&buffers[0], &mode, 0x00202020); /* initial grey */
-	make_buffer(&buffers[1], &mode, 0x00ff00ff); /* distinct magenta */
+	/* Repeated tests must not strobe full-screen high-contrast colours. */
+	make_buffer(&buffers[1], &mode, (frames > 1 || seconds) ? 0x00212121 : 0x00ff00ff);
 	snapshot(state, "before modeset");
 	c.fb_id = buffers[0].fb; c.mode = mode; c.mode_valid = 1;
 	c.set_connectors_ptr = (uintptr_t)connectors; c.count_connectors = 1;
@@ -179,33 +210,69 @@ int main(int argc, char **argv)
 	check(!ioctl(fd, DRM_IOCTL_MODE_GETCRTC, &c), "GETCRTC after modeset");
 	check(c.mode_valid && c.fb_id == buffers[0].fb, "modeset state mismatch");
 	snapshot(state, "after modeset / before flip");
-	flip.crtc_id = crtc_id; flip.fb_id = buffers[1].fb;
-	/* Five frame periods from the connector's reported timing, ceiling ns. */
-	budget = ((uint64_t)mode.htotal * mode.vtotal * 5000000 + mode.clock - 1) / mode.clock;
-	printf("PAGE_FLIP (magenta), event budget=%" PRIu64 " ns\n", budget);
-	start = now_ns();
-	check(!ioctl(fd, DRM_IOCTL_MODE_PAGE_FLIP, &flip), "PAGE_FLIP");
-	pfd = (struct pollfd){ .fd = fd, .events = POLLIN };
-	do {
-		elapsed = now_ns() - start;
-		check(elapsed < budget, "flip exceeded five-frame budget");
-		ret = poll(&pfd, 1, (int)((budget - elapsed + 999999) / 1000000));
-	} while (ret < 0 && errno == EINTR);
-	check(ret > 0 && (pfd.revents & POLLIN), "no flip event within five frames");
-	ret = read(fd, &ev, sizeof(ev));
-	elapsed = now_ns() - start;
-	check(ret == sizeof(ev) && ev.base.length == sizeof(ev) &&
-	      ev.base.type == DRM_EVENT_FLIP_COMPLETE && ev.user_data == cookie &&
-	      ev.crtc_id == crtc_id, "invalid flip event");
-	check(elapsed <= budget, "late flip event");
-	printf("DRM_EVENT received: crtc=%u sequence=%u elapsed_ns=%" PRIu64 "\n",
-	       ev.crtc_id, ev.sequence, elapsed);
+	flip.crtc_id = crtc_id;
+	/* Five periods of independently measured refresh, NOT connector clock metadata. */
+	budget = (5000000000ULL + refresh - 1) / refresh;
+	printf("refresh reference=%u Hz (%s); event budget=%" PRIu64 " ns\n", refresh,
+	       refresh == 60 ? "default measured approximately 60" : "operator supplied", budget);
+	begin = now_ns();
+	for (unsigned i = 0; i < frames; i++) {
+		uint64_t stamp;
+		if (seconds && now_ns() - begin >= (uint64_t)seconds * 1000000000) break;
+		flip.fb_id = buffers[(i + 1) % 2].fb;
+		flip.user_data = 0x4d334232ULL + i;
+		printf("PAGE_FLIP index=%u fb=%u cookie=%" PRIu64 ", event budget=%" PRIu64 " ns\n",
+		       i + 1, flip.fb_id, (uint64_t)flip.user_data, budget);
+		start = now_ns();
+		check(!ioctl(fd, DRM_IOCTL_MODE_PAGE_FLIP, &flip), "PAGE_FLIP");
+		returned = now_ns();
+		pfd = (struct pollfd){ .fd = fd, .events = POLLIN };
+		do {
+			elapsed = now_ns() - start;
+			check(elapsed < budget, "flip exceeded five-frame budget");
+			ret = poll(&pfd, 1, (int)((budget - elapsed + 999999) / 1000000));
+		} while (ret < 0 && errno == EINTR);
+		check(ret > 0 && (pfd.revents & POLLIN) && !(pfd.revents & (POLLERR | POLLHUP | POLLNVAL)),
+		      "no flip event within five frames");
+		ret = read(fd, &ev, sizeof(ev));
+		done = now_ns(); elapsed = done - start;
+		check(ret == sizeof(ev) && ev.base.length == sizeof(ev) &&
+		      ev.base.type == DRM_EVENT_FLIP_COMPLETE && ev.user_data == flip.user_data &&
+		      ev.crtc_id == crtc_id && ev.tv_usec < 1000000, "invalid flip event");
+		stamp = (uint64_t)ev.tv_sec * 1000000000 + (uint64_t)ev.tv_usec * 1000;
+		check(!i || (stamp > previous_stamp && (uint32_t)(ev.sequence - previous_seq) > 0 &&
+		      (uint32_t)(ev.sequence - previous_seq) < 0x80000000U), "nonmonotonic flip event");
+		previous_stamp = stamp; previous_seq = ev.sequence;
+		check(elapsed <= budget, "late flip event");
+		printf("DRM_EVENT received: crtc=%u sequence=%u elapsed_ns=%" PRIu64
+		       " ioctl_ns=%" PRIu64 " event_wait_ns=%" PRIu64 " cookie=%" PRIu64 "\n",
+		       ev.crtc_id, ev.sequence, elapsed, returned - start, done - returned,
+		       (uint64_t)ev.user_data);
+		completed++;
+		if (frames > 1 && (i == 0 || completed % 61 == 0)) {
+			char label[48];
+			snprintf(label, sizeof(label), "flip sample %u", completed);
+			snapshot(state, label);
+		}
+	}
+	elapsed = now_ns() - begin;
+	printf("total: flips=%u elapsed_ns=%" PRIu64 " cadence_hz=%.3f reference_hz=%u\n",
+	       completed, elapsed, elapsed ? completed * 1e9 / elapsed : 0.0, refresh);
+	puts("ioctl_ns includes all ioctl work (not exclusively CPU copy); event_wait_ns follows return.");
+	if (selection && (frames > 1 || seconds)) {
+		cadence_ok = elapsed && completed * 1e9 / elapsed >= refresh * 0.95;
+		printf("cadence gate: %s (>=95%% refresh required); not a hardware presentation PASS\n",
+		       cadence_ok ? "threshold met" : "BELOW threshold");
+	}
 	snapshot(state, "after flip");
-	/* Read again before cleanup, so scanout movement is separately observable. */
-	usleep(2000);
-	snapshot(state, "after flip sample 2");
-	usleep(3000);
-	snapshot(state, "after flip sample 3");
+	usleep(2000); snapshot(state, "after flip sample 2");
+	usleep(3000); snapshot(state, "after flip sample 3");
+	if (hold) {
+		snapshot(state, "before hold");
+		puts("HOLD ready: kill-test window 30 seconds; SIGKILL bypasses userspace cleanup");
+		sleep(30);
+	}
 	puts("DRM-side completion only; compare selector and scanout evidence separately.");
-	return 0;
+	cleanup(); snapshot(state, "after cleanup");
+	return cadence_ok && !cleanup_errors ? 0 : 1;
 }
