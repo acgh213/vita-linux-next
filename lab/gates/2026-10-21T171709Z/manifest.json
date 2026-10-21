@@ -1,0 +1,53 @@
+{
+  "gate": "2026-10-21T171709Z",
+  "host": "192.168.18.43",
+  "repo": {
+    "head": "8f50680cbcfb97e71c427d2c20139a6f5ed015b7",
+    "branch": "fix/push-setup-loader-path",
+    "describe": "8f50680-dirty"
+  },
+  "submodule_checkout": {
+    "head": "96c225f1192d22d43064308be8d7aedb0827d036",
+    "branch": "HEAD",
+    "describe": "96c225f"
+  },
+  "payload_source_ref": "435791f",
+  "inputs": {
+    "payload": {
+      "path": "/home/cassie/.hermes/cache/scratch/loader-vita-port/vita-baremetal-linux-loader.bin",
+      "bytes": 105928,
+      "sha256": "f5712184208467d56cc6626a9d3a17118057e126b34e63113a4f50ff8b0204ab"
+    },
+    "zImage": {
+      "path": "linux_vita/arch/arm/boot/zImage",
+      "bytes": 31965752,
+      "sha256": "8715816a9076d7dbe4ea33ba73e054c181a74f9fa63f73fdc282468c29ae160d"
+    },
+    "dtb": {
+      "path": "linux_vita/arch/arm/boot/dts/pstv.dtb",
+      "bytes": 6133,
+      "sha256": "72ddd25262dcbeb827059eea246fa9ea03cf56020f375665549d147106ee0317"
+    }
+  },
+  "started_utc": "2026-10-21T17:17:10.210046+00:00",
+  "zImage_remote_sha256": "8715816a9076d7dbe4ea33ba73e054c181a74f9fa63f73fdc282468c29ae160d",
+  "pstv.dtb_remote_sha256": "72ddd25262dcbeb827059eea246fa9ea03cf56020f375665549d147106ee0317",
+  "deploy": {
+    "previous_sha256": "f5712184208467d56cc6626a9d3a17118057e126b34e63113a4f50ff8b0204ab",
+    "previous_bytes": 105928,
+    "parked_as": "payload.bin.prev-f57121842084-3",
+    "deployed_sha256": "f5712184208467d56cc6626a9d3a17118057e126b34e63113a4f50ff8b0204ab",
+    "deployed_bytes": 105928
+  },
+  "destroy_response": "Apps destroyed.",
+  "launch_response": "Launched.",
+  "launch_utc": "2026-10-21T17:17:52.416333+00:00",
+  "loader_takeover_seconds": 7.3,
+  "loader_took_over": true,
+  "seconds_to_ssh": 286.3,
+  "ssh_up": true,
+  "wait_outcome": "ssh",
+  "boot_report": "Linux 6.12.0-g37b9348710df armv7l\n4\n               total        used        free      shared  buff/cache   available\nMem:             480          36         340           1         113         443\n/dev/loop7      7.8G  1.5G  5.9G  20% /\nlo               UNKNOWN        127.0.0.1/8 ::1/128 \nsit0@NONE        DOWN           \nenx00d9d1531abf  DOWN           fe80::2d9:d1ff:fe53:1abf/64 \nmlan0            UP             192.168.18.43/24 fd24:d93:ab13:6c45:4639:c4ff:fed6:eef6/64 fe80::4639:c4ff:fed6:eef6/64 \n 17:22:51 up 4 min,  0 user,  load average: 2.30, 1.60, 0.69",
+  "result": "PASS",
+  "finished_utc": "2026-10-21T17:22:52.689966+00:00"
+}

@@ -8,6 +8,13 @@ Vita Linux Next is an experimental ARM/Linux bring-up project: part kernel port,
 >
 > **Next system milestone:** [general-purpose Linux architecture](docs/architecture/linux-system.md) and [agent-ready implementation plan](docs/plans/2026-09-13-linux-system-roadmap.md), tracked in [#18](https://github.com/acgh213/vita-linux-next/issues/18). Debian armhf is the first candidate, not a hardware-proven result. Preserve the existing exFAT card and data; no repartitioning is implied.
 >
+> **Rebuilt and re-verified 2026-10-21.** The whole tree was built from scratch on Debian
+> (`zImage` 31,965,752 B, `pstv.dtb` byte-identical to the DTB already on the card, loader
+> payload rebuilt with VitaSDK) and booted on the PSTV at 326 s to SSH. The loader submodule
+> pin was **not** bootable and was corrected in the same pass — see
+> [`lab/fresh-build-boot-2026-10-21.md`](lab/fresh-build-boot-2026-10-21.md). Boot
+> verification is now an executable gate, not a manual ritual: `tools/hardware-gate.py`.
+>
 > See the [work matrix](docs/PROJECT-STATUS.md) for what is done, in progress, not implemented, or on hold. Every hardware claim is tied to a dated gate rather than inferred from a successful build.
 
 ## What works
@@ -95,6 +102,35 @@ make verify-dtb LINUX_VITA_DIR="$LINUX_VITA_DIR" CROSS_COMPILE="$CROSS_COMPILE"
 
 See [`BUILDING.md`](BUILDING.md) for the longer build notes and [`WORKFLOW.md`](WORKFLOW.md) for the development sequence. A deploy requires a VitaOS-side loader, a reachable target, and explicit artifact/hash verification; it is not part of an ordinary build.
 
+## Hardware gates
+
+A build that compiles is not a build that boots, and on this hardware the difference is not
+visible from the build output — see [`docs/LOADER-OBSERVABILITY.md`](docs/LOADER-OBSERVABILITY.md)
+for why the loader phase cannot report anything about itself.
+
+`tools/hardware-gate.py` turns the verification loop into a recorded gate:
+
+```sh
+python3 tools/hardware-gate.py \
+    --payload vita-baremetal-linux-loader/vita-baremetal-linux-loader.bin \
+    --zimage  linux_vita/arch/arm/boot/zImage \
+    --dtb     linux_vita/arch/arm/boot/dts/pstv.dtb \
+    --host    <device-ip>
+```
+
+It deploys the payload to the live path (preserving the outgoing one under a hash-named
+sibling), pushes and readback-verifies any kernel/DTB, sends exactly one `destroy` and one
+`launch PLGINLDR0`, waits for SSH, and captures a boot report. Every run writes
+`lab/gates/<utc>/{manifest.json,RESULT.md}` containing the SHA-256 of every input and the
+repository state — so the evidence exists on disk whether or not anyone was watching.
+
+It deliberately does **not** control power. Power cycling stays a physical action; the gate
+refuses to start unless the device is already sitting in VitaOS.
+
+CI (`.github/workflows/build.yml`) compiles the kernel image and the loader payload on every
+pull request, and fails any change that reintroduces a deploy to the inert
+`ux0:/baremetal/payload.bin` path.
+
 Contributions are welcome. [`CONTRIBUTING.md`](CONTRIBUTING.md) explains the repository split, test gates, hardware-evidence standard, and safety boundaries.
 
 ### Local secrets
@@ -110,7 +146,10 @@ This project writes software to a real console. Keep these rules in view:
 - do not treat a reachable loader port as proof that the loader is ready;
 - preserve a known-good rollback image before a hardware gate;
 - change one experimental variable at a time where practical;
-- use the HDMI console as authoritative evidence when SSH disappears;
+- use the HDMI console as authoritative evidence **only once Linux owns it** — during the
+  loader phase nothing is scanned out on PSTV, so a black screen is not evidence that the
+  device hung, and a payload that boots Linux is evidence it *ran*, not that it did the
+  right thing (see [`docs/LOADER-OBSERVABILITY.md`](docs/LOADER-OBSERVABILITY.md));
 - stop on a fault, timeout, checksum mismatch, or unexplained input/storage regression.
 
 ## Origins and acknowledgments
