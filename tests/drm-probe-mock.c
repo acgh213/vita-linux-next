@@ -12,7 +12,7 @@
 #include <sys/mman.h>
 #include <drm/drm.h>
 #include <drm/drm_mode.h>
-static int creates, enabled, flipped;
+static int creates, enabled, flipped, discovered;
 static unsigned long scenario(void)
 {
 	const char *s = getenv("MOCK_SCENARIO");
@@ -42,9 +42,13 @@ int __wrap_ioctl(int fd, unsigned long req, ...)
 	case DRM_IOCTL_MODE_GETCONNECTOR: {
 		struct drm_mode_get_connector *c = p;
 		struct drm_mode_modeinfo *m = (void *)(uintptr_t)c->modes_ptr;
-		*m = (struct drm_mode_modeinfo){ .hdisplay = 1280, .vdisplay = 720,
-			.htotal = 1650, .vtotal = 750, .clock = 64473 };
-		c->connection = 1; c->count_modes = c->count_encoders = 1;
+		if (c->count_props && !c->props_ptr) { errno = EFAULT; return -1; }
+		if (!c->count_modes) discovered = 1;
+		if (c->modes_ptr && discovered)
+			*m = (struct drm_mode_modeinfo){ .hdisplay = 1280, .vdisplay = 720,
+				.htotal = 1650, .vtotal = 750, .clock = 64473 };
+		c->connection = 1; c->count_modes = discovered; c->count_encoders = 1;
+		c->count_props = 4;
 		return 0;
 	}
 	case DRM_IOCTL_MODE_CREATE_DUMB: {

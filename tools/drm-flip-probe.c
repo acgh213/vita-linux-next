@@ -145,9 +145,18 @@ int main(int argc, char **argv)
 	       c.mode.hdisplay, c.mode.vdisplay, c.fb_id, c.mode_valid);
 	check(!c.mode_valid && !c.fb_id, "refusing to replace active userspace state");
 	conn.connector_id = connectors[0];
+	/* A zero-count query forces fill_modes for the current DRM master. */
+	puts("GETCONNECTOR (discover modes/counts)");
+	check(!ioctl(fd, DRM_IOCTL_MODE_GETCONNECTOR, &conn), "GETCONNECTOR counts");
+	printf("connector: id=%u connection=%u modes=%u encoders=%u\n",
+	       conn.connector_id, conn.connection, conn.count_modes, conn.count_encoders);
+	check(conn.connection == 1 && conn.count_modes == 1 && conn.count_encoders <= 8,
+	      "expected connected fixed-mode connector");
 	conn.count_modes = 8; conn.modes_ptr = (uintptr_t)modes;
 	conn.count_encoders = 8; conn.encoders_ptr = (uintptr_t)encoder_ids;
-	puts("GETCONNECTOR");
+	/* Counts query also returns property count; no property arrays requested. */
+	conn.count_props = 0;
+	puts("GETCONNECTOR (fetch mode)");
 	check(!ioctl(fd, DRM_IOCTL_MODE_GETCONNECTOR, &conn), "GETCONNECTOR");
 	check(conn.connection == 1 && conn.count_modes == 1 && conn.count_encoders <= 8,
 	      "expected connected fixed-mode connector");

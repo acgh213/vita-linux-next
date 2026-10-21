@@ -340,7 +340,8 @@ def main() -> int:
 
         log("  destroy")
         record["destroy_response"] = send_cmd(a.host, "destroy")
-        time.sleep(3)
+        # Let Plugin Loader settle before the single launch attempt.
+        time.sleep(30)
         log("  launch PLGINLDR0")
         record["launch_response"] = send_cmd(a.host, "launch PLGINLDR0")
 
