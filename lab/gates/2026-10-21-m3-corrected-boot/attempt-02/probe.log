@@ -1,0 +1,9 @@
+M3-B2 modeset-first probe: /dev/dri/card0
+SET_MASTER
+GETRESOURCES
+GETCRTC
+before: crtc=34 mode=0x0 fb=0 valid=0
+GETCONNECTOR (discover modes/counts)
+connector: id=36 connection=1 modes=1 encoders=1
+GETCONNECTOR (fetch mode)
+FAIL GETCONNECTOR (errno=14: Bad address)

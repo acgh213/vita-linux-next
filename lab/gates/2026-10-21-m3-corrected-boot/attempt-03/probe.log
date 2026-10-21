@@ -1,0 +1,58 @@
+M3-B2 modeset-first probe: /dev/dri/card0
+SET_MASTER
+GETRESOURCES
+GETCRTC
+before: crtc=34 mode=0x0 fb=0 valid=0
+GETCONNECTOR (discover modes/counts)
+connector: id=36 connection=1 modes=1 encoders=1
+GETCONNECTOR (fetch mode)
+mode: 1280x720 clock=64473 htotal=1650 vtotal=750
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB
+buffer: fb=38 pitch=5120 bytes=3686400 colour=00202020
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB
+buffer: fb=39 pitch=5120 bytes=3686400 colour=00ff00ff
+=== before modeset (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 720
+scanout_byte 3686400
+vblank_count 22650
+SETCRTC (first commit, grey)
+SETCRTC returned success
+=== after modeset / before flip (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 8
+scanout_byte 1280
+vblank_count 22653
+PAGE_FLIP (magenta), event budget=95970407 ns
+DRM_EVENT received: crtc=34 sequence=5 elapsed_ns=49589437
+=== after flip (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 22656
+=== after flip sample 2 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 512
+scanout_byte 2632960
+vblank_count 22656
+=== after flip sample 3 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 208
+scanout_byte 1092608
+vblank_count 22657
+DRM-side completion only; compare selector and scanout evidence separately.
+cleanup: disable probe CRTC
