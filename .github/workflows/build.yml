@@ -72,15 +72,14 @@ jobs:
         run: |
           export PATH="${{ github.workspace }}/.toolchains/${{ env.BOOTLIN_DIR }}/bin:$PATH"
           make build CROSS_COMPILE=arm-linux-
-          ls -l linux_vita/arch/arm/boot/zImage
+          make stage CROSS_COMPILE=arm-linux-
 
       - name: Upload kernel artifacts
         uses: actions/upload-artifact@v4
         with:
           name: zimage-bootlin
-          path: |
-            linux_vita/arch/arm/boot/zImage
-            linux_vita/arch/arm/boot/dts/*.dtb
+          # staged by `make stage` - CI must not know the kernel's internal layout
+          path: dist/ci/
           if-no-files-found: error
           retention-days: 14
 
