@@ -1,6 +1,9 @@
 # GPU lane — M3 gate: userspace page flips through the standard DRM ABI
 
-**Status:** design, not started. **Date:** 2026-10-21.
+**Status:** PARTIAL — B2 PASS; C throughput FAIL (~20 FPS against ~59.94 Hz); scoped D recovery checks passed; E fbcon/readback/reboot passed, physical HDMI confirmation open. **Date:** 2026-10-21.
+
+Latest evidence: [`lab/gpu-m3-cde-results-2026-10-21.md`](../../lab/gpu-m3-cde-results-2026-10-21.md).
+The rationale below preserves the original design context; it is not a claim the gate is unstarted.
 **Depends on:** IFTU/DRM M2 (hardware-passed 2026-09-01), `vita-linux-next` `c8540dc`.
 **Explicitly not:** SGX. This gate touches no secure world, no SMC, no firmware.
 
@@ -87,7 +90,7 @@ Boot the new kernel. The driver registers, enumerates connector/CRTC, and claims
 but **does not** commit a frame.
 
 - **PASS:** `/sys/class/drm/*/status` shows the connector; the vblank IRQ is claimed exactly once
-  in `/proc/interrupts` and increments at ~52 Hz; the box boots to SSH normally. Verify inherited
+  in `/proc/interrupts` and increments at the independently measured ~59.94 Hz; the box boots to SSH normally. Verify inherited
   selector/config0 addresses via `iftu_state` before the first userspace commit. Raw IRQ activity
   does not establish DRM-core vblank operation or visually unchanged scanout.
 - **FAIL:** IRQ storm; oops on probe; a hang at any point; SSH never arrives.
@@ -149,10 +152,12 @@ arrived within ~5 vblanks **and** the scanout position is advancing.
 
 ### M3-C — repeated flips at rate
 
-Alternate two buffers for a fixed window (target: 30 s ≈ 1,560 flips).
+Alternate two low-contrast buffers for a fixed 30-second window; judge against the
+current ~59.94 Hz cadence, not the superseded pre-timer-correction 52 Hz assumption.
+Do not repeatedly flash high-contrast full-screen colours.
 
 - **PASS:** flip completions ≥ 95% of the vblank cadence; selector observed toggling on repeated
-  readback; vblank rate stays ≈ 52.1 Hz; no WARN/oops in `dmesg`.
+  readback; vblank rate stays ≈ 59.94 Hz; no new WARN/oops in `dmesg`.
 - **FAIL:** completion rate collapses, cadence drifts, selector stops toggling mid-run, or the box
   locks (lock = hard fail, power cycle, record).
 
@@ -185,8 +190,9 @@ restore that production capability, not merely claim that it was optional.
 - **PASS:** fbcon comes up on the DRM device; text is legible; SSH unaffected; a clean shutdown from
   the DRM console returns to a working boot; no wedge.
 - **FAIL:** console lost with no replacement, corrupt output, or a boot that needs a power cycle.
-- **Rollback:** the phase is a single call to remove; record it before running so the revert is a
-  one-line change and not an archaeology exercise.
+- **Opt-in/rollback:** `vita_iftu.fbdev=1` gates setup; default is disabled. The experimental
+  DTB appends only that boot parameter. Restore the standard DTB to disable takeover.
+  The prior image is preserved locally and on-device before deployment.
 
 ## Outcome vocabulary
 

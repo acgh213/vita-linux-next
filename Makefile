@@ -225,6 +225,9 @@ cart-verify-production: ## verify the exact known-good cart artifact locally
 test: ## run build-contract regression tests
 	@MAKE_CMD="$(MAKE)" ./tests/test-dtb-build.sh
 	@MAKE_CMD="$(MAKE)" ./tests/test-worktree.sh
+	@python3 tests/test-drm-sustained.py
+	@# GNU ld --wrap fixtures are Linux-only; evidence parser tests run everywhere.
+	@if [ "$$(uname -s)" = Linux ]; then python3 tests/test-drm-probe.py; fi
 	@$(MAKE) cart-test
 
 # ------- LSP / clangd -------

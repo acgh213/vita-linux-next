@@ -1,0 +1,41 @@
+{
+  "gate": "2026-10-21T232521Z",
+  "host": "192.168.18.43",
+  "repo": {
+    "head": "e3a6648505ab6457aca53a300241f746617d847e",
+    "branch": "docs/m3-b1-b2-split",
+    "describe": "e3a6648-dirty"
+  },
+  "submodule_checkout": {
+    "head": "435791fd6aa70d2458f48be893358f106be0234d",
+    "branch": "HEAD",
+    "describe": "435791f"
+  },
+  "payload_source_ref": "435791f",
+  "inputs": {
+    "payload": {
+      "path": "/home/cassie/.hermes/cache/scratch/loader-vita-port/vita-baremetal-linux-loader.bin",
+      "bytes": 105928,
+      "sha256": "f5712184208467d56cc6626a9d3a17118057e126b34e63113a4f50ff8b0204ab"
+    }
+  },
+  "started_utc": "2026-10-21T23:25:21.423759+00:00",
+  "deploy": {
+    "previous_sha256": "f5712184208467d56cc6626a9d3a17118057e126b34e63113a4f50ff8b0204ab",
+    "previous_bytes": 105928,
+    "parked_as": "payload.bin.prev-f57121842084-7",
+    "deployed_sha256": "f5712184208467d56cc6626a9d3a17118057e126b34e63113a4f50ff8b0204ab",
+    "deployed_bytes": 105928
+  },
+  "destroy_response": "Apps destroyed.",
+  "launch_response": "Launched.",
+  "launch_utc": "2026-10-21T23:25:52.088951+00:00",
+  "loader_takeover_seconds": 8.1,
+  "loader_took_over": true,
+  "seconds_to_ssh": 258.7,
+  "ssh_up": true,
+  "wait_outcome": "ssh",
+  "boot_report": "Linux 6.12.0-g711b46d1f5a8 armv7l\n4\n               total        used        free      shared  buff/cache   available\nMem:             480          36         341           1         114         444\n/dev/loop7      7.8G  1.5G  5.9G  20% /\nlo               UNKNOWN        127.0.0.1/8 ::1/128 \nsit0@NONE        DOWN           \nenx00d9d1531abf  DOWN           fe80::2d9:d1ff:fe53:1abf/64 \nmlan0            UP             192.168.18.43/24 fd24:d93:ab13:6c45:4639:c4ff:fed6:eef6/64 fe80::4639:c4ff:fed6:eef6/64 \n 23:30:38 up 4 min,  0 user,  load average: 1.39, 1.34, 0.61",
+  "result": "PASS",
+  "finished_utc": "2026-10-21T23:30:39.173539+00:00"
+}

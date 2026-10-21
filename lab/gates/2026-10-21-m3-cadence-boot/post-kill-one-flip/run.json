@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "post_ssh_exit": 0,
+  "probe_sha256": "a333884469f6475ee3dcde40b04ac62110bc7bcb74a8f6d379b0317c8ab7b104",
+  "args": "--frames 1",
+  "utc": "2026-10-21T23:23:17.143840+00:00",
+  "new_dmesg": []
+}
