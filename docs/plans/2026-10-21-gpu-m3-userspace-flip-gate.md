@@ -99,8 +99,29 @@ A self-contained C probe, **raw DRM ioctls, no libdrm dependency**, cross-compil
 linked so nothing has to be installed on the device: create a dumb buffer, fill it with a solid
 colour different from the console, `ADDFB`, one page flip with an event, wait for completion.
 
-- **PASS:** commit returns success **and** the selector register changed **and** the flip event
-  arrived within a bounded number of vblanks (say 5) **and** the scanout position is advancing.
+**Split in two, because reading the rebased driver changed what this phase is.**
+
+The driver as inherited from M2 does **not** have a userspace page-flip path. The selector toggle
+lives only in `vita_iftu_do_page_flip()`, reachable from the debugfs `flip` file, while
+`atomic_update()` blits the shadow framebuffer into `idev->screen_base` — the buffer currently
+being scanned out. A `drmModePageFlip` against that code would therefore change what is on screen
+*without ever touching the selector*, and with the write landing mid-frame. Under the rule below,
+a legitimate flip would be recorded as a no-op. The rule was right; the driver was not there yet.
+
+So:
+
+- **M3-B1 — wire the flip (code).** `atomic_update()` blits into the **inactive** buffer and marks
+  a flip pending; the **vblank ISR** writes `PLANE_A_SEL`, because the commit path runs in atomic
+  context and cannot sleep while the frame boundary is exactly where the switch must land; the
+  completion event is armed in `atomic_flush` so userspace is not told the flip finished before
+  the frame carrying it has been scanned out. A commit with no damage must not arm a flip, or it
+  would present a stale buffer as new.
+- **M3-B2 — verify it (hardware).** The userspace probe above, judged by the three signals. This is
+  where PASS/FAIL is decided; B1 compiling is not evidence of anything.
+
+M3-B2 passes when: the commit succeeds **and** the selector register changed **and** the flip event
+arrived within ~5 vblanks **and** the scanout position is advancing.
+
 - **FAIL:** success with an unchanged selector (no-op flip); event never arrives; scanout frozen.
 - **Human cross-check (optional, not required):** the screen changes colour. Recorded if offered,
   never load-bearing.
@@ -125,6 +146,24 @@ The part that is always skipped and always the thing that ruins the demo:
 - **PASS:** all three, with the final boot verified by `tools/hardware-gate.py` writing a normal
   gate record.
 - **FAIL:** any wedged display, any boot that requires a power cycle after a *clean* reboot.
+
+### M3-E — the console (last, and only after B2 passes)
+
+`drm_fbdev_shmem_setup()` is deliberately disabled in the driver, and the comment there is explicit
+about the condition for re-enabling it: *"Do not re-enable this call until the debugfs flip path is
+wired into DRM's atomic page_flip API (userspace drmModePageFlip) and an explicit fbdev-console gate
+passes on hardware."* M3-B2 is that wiring proven; M3-E is that gate.
+
+This is the phase that makes the display *usable* rather than merely correct: a console and ordinary
+fbdev clients on the DRM device, instead of a fixed buffer nobody pages. It is also the phase that
+can lose the screen — today `simplefb` owns `/dev/fb0` and the DRM driver draws nothing, so a
+failure here takes the console away and replaces it with nothing.
+
+- **PASS:** fbcon comes up on the DRM device; text is legible; SSH unaffected; a clean shutdown from
+  the DRM console returns to a working boot; no wedge.
+- **FAIL:** console lost with no replacement, corrupt output, or a boot that needs a power cycle.
+- **Rollback:** the phase is a single call to remove; record it before running so the revert is a
+  one-line change and not an archaeology exercise.
 
 ## Outcome vocabulary
 
@@ -152,7 +191,8 @@ The part that is always skipped and always the thing that ruins the demo:
 
 Not in this gate, and not to be quietly folded in: SGX/PowerVR, firmware or secure-world calls of
 any kind, PLL retuning, EDID or modes beyond the existing fixed timing, scaling/CSC, a second
-plane, DSI/ADV7533 modeset, or acceleration of any kind. This gate is about *presentation through a
+plane, DSI/ADV7533 modeset, or acceleration of any kind. (fbdev console takeover is M3-E, gated
+behind B2 — it must not creep into the B or C phases.) This gate is about *presentation through a
 standard interface*. `docs/GPU-DISPLAY.md` keeps acceleration parked until there is new
 secure-world provenance, and nothing here changes that.
 
