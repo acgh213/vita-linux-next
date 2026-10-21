@@ -26,3 +26,7 @@ logs
 
 # Payloads preserved by tools/deploy-payload.py before a deploy.
 /rollback-artifacts/
+
+# Python bytecode from tools/ (py_compile in CI, local runs)
+__pycache__/
+*.pyc
