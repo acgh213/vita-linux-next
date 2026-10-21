@@ -106,7 +106,18 @@ def main() -> int:
         assert read(ftp, tmp) == cand, "readback mismatch on uploaded temp file"
         print("upload verified")
 
-        ftp.rename(TARGET_NAME, f"payload.bin.prev-{sha(current)[:12]}")
+        # Park the replaced payload under a hash-named sibling. If that name is
+        # already taken (a second deploy over the same payload), add a counter --
+        # a bare rename fails with 550 and leaves the deploy half-applied: the new
+        # bytes are uploaded but the swap never happens, and the device keeps booting
+        # the old payload.
+        names = set(ftp.nlst())
+        parked = f"payload.bin.prev-{sha(current)[:12]}"
+        n = 2
+        while parked in names:
+            parked = f"payload.bin.prev-{sha(current)[:12]}-{n}"
+            n += 1
+        ftp.rename(TARGET_NAME, parked)
         ftp.rename(tmp, TARGET_NAME)
 
         final = read(ftp, TARGET_NAME)
