@@ -90,7 +90,17 @@ unmount_loop_mounts() {
 
 do_stop() {
     root_loop=$(root_loop_device)
-    log "leaving root loop ${root_loop:-unknown} for umountroot"
+    # Fail closed when the root loop cannot be identified. `card_loops` excludes the
+    # root loop by comparing device names; with an empty $root_loop it excludes
+    # nothing, so the loop backing / -- which lives on the card -- is enumerated as
+    # a "non-root card-backed loop". unmount_loop_mounts skips /, but the detach loop
+    # below would still run `losetup -d` on the device carrying a live root, which is
+    # a hang or a corrupted shutdown. Refuse rather than guess.
+    if [ -z "$root_loop" ]; then
+        fail "cannot identify the root loop; refusing to detach card-backed loops"
+        return 1
+    fi
+    log "leaving root loop ${root_loop} for umountroot"
 
     "$SYNC_CMD" || { fail "initial sync failed"; return 1; }
 

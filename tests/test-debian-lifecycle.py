@@ -235,6 +235,25 @@ class LifecycleTests(unittest.TestCase):
         self.assertIn("FAILED", result.stdout)
         self.assertNotIn("fuser", self.log.read_text() if self.log.exists() else "")
 
+    def test_loop_detach_refuses_when_the_root_loop_cannot_be_identified(self):
+        # With no "/" entry, root_loop_device() yields nothing and card_loops()
+        # excludes nothing -- so the loop carrying a live root looks like an
+        # ordinary card-backed loop. Detaching it mid-shutdown is a hang or a
+        # corrupted filesystem. The stop must refuse before enumerating.
+        state = self.t / "loops"
+        state.write_text(f"/dev/loop8: []: ({self.card}/toolkit.sqsh)\n")
+        self.mounts.write_text(f"{self.t}/sda1 {self.card} exfat rw 0 0\n")
+        self._command("losetup", """\
+            if [ "$1" = -a ]; then cat "$LOOP_STATE"; exit 0; fi
+            if [ "$1" = -d ]; then printf 'detach %s\\n' "$2" >> "$COMMAND_LOG"; exit 0; fi
+            exit 2
+        """)
+        result = self._run(LOOP, "stop", LOOP_STATE=state)
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("cannot identify the root loop", result.stdout)
+        log = self.log.read_text() if self.log.exists() else ""
+        self.assertNotIn("detach /dev/loop8", log)
+
     def test_root_sync_requires_ro_root_then_records_synced(self):
         self.mounts.write_text(f"/dev/loop7 / ext4 ro,relatime 0 0\n{self.t}/sda1 {self.card} exfat rw,relatime 0 0\n")
         result = self._run(ROOT_SYNC, "stop")

@@ -44,6 +44,8 @@ SELECT_ROOT=${VITA_SELECT_ROOT:-/usr/share/vita-boot/select-root}
 E2FSCK_CMD=${VITA_E2FSCK_CMD:-e2fsck}
 SWITCH_ROOT_CMD=${VITA_SWITCH_ROOT_CMD:-switch_root}
 RESCUE_INIT=${VITA_RESCUE_INIT:-/sbin/init}
+REBOOT_CMD=${VITA_REBOOT_CMD:-reboot}
+HALT_CMD=${VITA_HALT_CMD:-halt}
 CONSOLE=${VITA_CONSOLE:-/dev/console}
 export CARD_MNT NEWROOT
 
@@ -251,9 +253,20 @@ log "if this is the last line you see, the new root did not come up"
 "$UMOUNT_CMD" /proc 2>/dev/null
 "$UMOUNT_CMD" /sys  2>/dev/null
 
+# shellcheck disable=SC2093  # the lines below this exec are intentionally
+# unreachable; they exist for the case where exec itself fails.
 exec "$SWITCH_ROOT_CMD" "$NEWROOT" /sbin/init
 
-# Unreachable if switch_root succeeded. If we are here, the exec itself failed,
-# which means the record stays open and the NEXT boot will count it.
-log "switch_root FAILED -- falling back"
-exec /sbin/init
+# Unreachable if switch_root succeeded. If we are here, the exec itself failed, and
+# at this point there is no usable fallback: /proc and /sys are unmounted and the card
+# mount has been moved into $NEWROOT, so starting this initramfs' /sbin/init would run
+# with no /proc, no /sys, and no boot log on the card. The previous version did exactly
+# that and called it "falling back".
+#
+# Reboot instead. The attempt record was written and synced before the exec, so the
+# next boot sees an unconfirmed attempt and select-root's counter gets to decide.
+log "switch_root FAILED -- rebooting; this attempt stays unconfirmed"
+"$REBOOT_CMD" -f 2>/dev/null || "$REBOOT_CMD" 2>/dev/null || {
+    log "reboot unavailable -- halting with this attempt unconfirmed"
+    exec "$HALT_CMD" -f
+}
