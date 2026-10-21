@@ -298,6 +298,12 @@ rootfs-clean: ## clean buildroot output
 
 # ------- Transfer -------
 
+stage: build ## stage zImage + DTBs into dist/ci for CI artifacts
+	@mkdir -p dist/ci
+	@cp $(ZIMAGE) dist/ci/
+	@for model in $(VITA_MODELS); do cp $(DTS_DIR)/$$model.dtb dist/ci/; done
+	@ls -l dist/ci
+
 push: ## upload zImage + all DTBs to Vita via FTP
 	$(check-kernel-dir)
 	$(check-dts-dir)

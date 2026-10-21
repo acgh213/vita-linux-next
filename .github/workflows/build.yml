@@ -68,6 +68,21 @@ jobs:
           make verify-dtb
           echo "Build successful"
 
+      - name: Build zImage
+        run: |
+          export PATH="${{ github.workspace }}/.toolchains/${{ env.BOOTLIN_DIR }}/bin:$PATH"
+          make build CROSS_COMPILE=arm-linux-
+          make stage CROSS_COMPILE=arm-linux-
+
+      - name: Upload kernel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zimage-bootlin
+          # staged by `make stage` - CI must not know the kernel's internal layout
+          path: dist/ci/
+          if-no-files-found: error
+          retention-days: 14
+
   build-macos:
     name: macOS (LLVM/Clang)
     runs-on: macos-14
@@ -104,3 +119,76 @@ jobs:
         run: |
           gmake verify-dtb
           echo "Build successful"
+
+  build-loader:
+    name: Loader (VitaSDK)
+    runs-on: ubuntu-24.04
+    container:
+      image: vitasdk/vitasdk:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 1
+
+      - name: Build loader payload
+        working-directory: vita-baremetal-linux-loader
+        run: |
+          make
+          ls -l vita-baremetal-linux-loader.bin
+          sha256sum vita-baremetal-linux-loader.bin
+
+      - name: Upload loader payload
+        uses: actions/upload-artifact@v4
+        with:
+          name: loader-payload
+          path: vita-baremetal-linux-loader/vita-baremetal-linux-loader.bin
+          if-no-files-found: error
+          retention-days: 14
+
+  guard-deploy-paths:
+    name: Guard deploy paths
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 1
+
+      - name: Refuse deploys to the inert baremetal path
+        run: |
+          # ux0:/baremetal/payload.bin is inert on DvaMishkiLapa-family kplugins.
+          # A deploy there silently does nothing: every launch runs whatever payload
+          # was already on the card, which reads as "the device hangs". Catch any
+          # new code that reintroduces it as a *destination*.
+          echo "scanning for deploys to the inert path..."
+          hits=$(grep -rn --include='*.py' --include='*.sh' --include='Makefile' \
+                   -E '(STOR|curl[^|]*-T|ftp|/ux0:/baremetal)' . \
+                 | grep -E '(STOR|curl)' \
+                 | grep 'baremetal' || true)
+          if [ -n "$hits" ]; then
+            echo "::error::code deploys to ux0:/baremetal, which is inert on this device family"
+            echo "$hits"
+            exit 1
+          fi
+          echo "ok: no deploys to the inert path"
+
+      - name: Gate tooling must at least import
+        run: |
+          python3 -m py_compile tools/hardware-gate.py tools/deploy-payload.py
+          echo "ok: tools compile"
+
+      - name: Hardware gate precondition path works without a device
+        run: |
+          # A guard nobody exercises is a guard that quietly rots. With no device on
+          # 127.0.0.1 the gate must exit 2 (precondition), not 0 or 1, and it must say
+          # why. This runs no risk of touching real hardware in CI.
+          set +e
+          out=$(python3 tools/hardware-gate.py --payload README.md --host 127.0.0.1 2>&1)
+          rc=$?
+          set -e
+          echo "$out"
+          [ "$rc" -eq 2 ] || { echo "::error::expected exit 2 (precondition), got $rc"; exit 1; }
+          echo "ok: gate refused to run without a device in VitaOS"
