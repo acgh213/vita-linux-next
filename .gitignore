@@ -23,3 +23,6 @@ logs
 
 # Generated payload images (large, reproducible from source)
 /dist/
+
+# Payloads preserved by tools/deploy-payload.py before a deploy.
+/rollback-artifacts/
