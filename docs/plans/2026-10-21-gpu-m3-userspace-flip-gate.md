@@ -87,8 +87,9 @@ Boot the new kernel. The driver registers, enumerates connector/CRTC, and claims
 but **does not** commit a frame.
 
 - **PASS:** `/sys/class/drm/*/status` shows the connector; the vblank IRQ is claimed exactly once
-  in `/proc/interrupts` and increments at ~52 Hz; the box boots to SSH normally and scanout is
-  untouched (the loader's frame stays on screen).
+  in `/proc/interrupts` and increments at ~52 Hz; the box boots to SSH normally. Verify inherited
+  selector/config0 addresses via `iftu_state` before the first userspace commit. Raw IRQ activity
+  does not establish DRM-core vblank operation or visually unchanged scanout.
 - **FAIL:** IRQ storm; oops on probe; a hang at any point; SSH never arrives.
 - **Why it can fail:** the driver inherits a framebuffer the loader set up. Taking it over at probe
   time is easy to do by accident and hard to see.
@@ -96,18 +97,22 @@ but **does not** commit a frame.
   HDMI console to survive. It cannot: the M2 DTS series replaced the `simple-framebuffer` node with
   plain reserved memory, so `fbcon` has no framebuffer to attach to on *any* kernel from this
   branch. Console survival was moved to **M3-E**, where the DRM driver is supposed to *become* the
-  console. See `lab/gpu-m3-ab-run-2026-10-21.md`.
+  console. This is a changed prerequisite, not a retroactive PASS for console preservation; the
+  original run failed that requirement. See `lab/gpu-m3-ab-run-2026-10-21.md`.
 
 ### M3-B — one flip, from an ordinary program
 
 A self-contained C probe, **raw DRM ioctls, no libdrm dependency**, cross-compiled and statically
-linked so nothing has to be installed on the device: read a mode off the connector, `SETCRTC` with a
-dumb buffer filled to a solid colour, `ADDFB`, then one page flip with an event, and wait for
-completion.
+linked so nothing has to be installed on the device: read the connector's fixed mode, create two
+distinct dumb buffers and `ADDFB` each, `SETCRTC` with the first (grey), then `PAGE_FLIP` to the
+second (magenta) with an event. Record `iftu_state` immediately before and after the flip, and
+additional scanout samples before cleanup. Refuse an already-active CRTC rather than stealing it.
+`tools/check-drm-flip.py` judges the saved transcript; the caller also verifies remote exit status,
+kernel identity and the uploaded probe hash.
 
 *(Corrected 2026-10-21: the original sequence went straight to `PAGE_FLIP`, which was written
 assuming a lit CRTC. On this driver the CRTC reports `enable=0 active=0` — nothing has ever enabled
-it — so a flip is rejected before it is attempted. The modeset is not scaffolding around the flip;
+it — so the original probe stopped before issuing a flip ioctl. The modeset is not scaffolding around the flip;
 on this hardware it is the first userspace commit, and therefore the first thing that exercises
 `atomic_update()` at all.)*
 
@@ -122,12 +127,16 @@ a legitimate flip would be recorded as a no-op. The rule was right; the driver w
 
 So:
 
-- **M3-B1 — wire the flip (code).** `atomic_update()` blits into the **inactive** buffer and marks
-  a flip pending; the **vblank ISR** writes `PLANE_A_SEL`, because the commit path runs in atomic
-  context and cannot sleep while the frame boundary is exactly where the switch must land; the
-  completion event is armed in `atomic_flush` so userspace is not told the flip finished before
-  the frame carrying it has been scanned out. A commit with no damage must not arm a flip, or it
-  would present a stale buffer as new.
+- **M3-B1 — wire the flip (code).** Full-copy the visible frame into the inactive buffer outside
+  spinlocks, order producer WC stores with `wmb()`, then publish an explicit target/event/ref
+  record under the flip lock in `atomic_flush`. The vblank ISR writes/readbacks that selector,
+  accounts the DRM vblank, then sends the associated event under DRM `event_lock` and drops its
+  reference exactly once. First-enable publication is staged until `drm_crtc_vblank_on()`; disable
+  drains pending work and calls `drm_crtc_vblank_off()`. Internal/no-plane events also complete.
+  Normal KMS helper tails run in process/workqueue context, not inherently atomic CPU context.
+  The original B1 implementation was rejected by source review for missing event lock/reference,
+  racing publication, fake completion, stale ping-pong damage, and absent producer ordering.
+  No hardware flip was attempted with that implementation.
 - **M3-B2 — verify it (hardware).** The userspace probe above, judged by the three signals. This is
   where PASS/FAIL is decided; B1 compiling is not evidence of anything.
 
@@ -152,7 +161,8 @@ Alternate two buffers for a fixed window (target: 30 s ≈ 1,560 flips).
 The part that is always skipped and always the thing that ruins the demo:
 
 1. `kill -9` the flip probe mid-run — the display must not stay wedged.
-2. Return to fbcon/VT and confirm the console is usable again.
+2. Verify probe-owned CRTC is disabled, no pending flip remains, and SSH/kernel remain healthy.
+   fbcon/VT restoration is tested only after M3-E supplies a console.
 3. Clean `reboot` from the post-flip state — must come back up.
 
 - **PASS:** all three, with the final boot verified by `tools/hardware-gate.py` writing a normal
@@ -168,8 +178,9 @@ passes on hardware."* M3-B2 is that wiring proven; M3-E is that gate.
 
 This is the phase that makes the display *usable* rather than merely correct: a console and ordinary
 fbdev clients on the DRM device, instead of a fixed buffer nobody pages. It is also the phase that
-can lose the screen — today `simplefb` owns `/dev/fb0` and the DRM driver draws nothing, so a
-failure here takes the console away and replaces it with nothing.
+can fail to restore usable display output. Production has `simplefb` on `/dev/fb0`; this
+experimental DTS removes it, and the DRM branch currently has no framebuffer console. M3-E must
+restore that production capability, not merely claim that it was optional.
 
 - **PASS:** fbcon comes up on the DRM device; text is legible; SSH unaffected; a clean shutdown from
   the DRM console returns to a working boot; no wedge.
@@ -181,7 +192,7 @@ failure here takes the console away and replaces it with nothing.
 
 | outcome | meaning |
 |---|---|
-| **PASS** | all four phases passed on hardware, evidence recorded |
+| **PASS** | all defined hardware phases (A through E) passed, evidence recorded |
 | **PARTIAL** | some phases passed; each recorded separately with the same vocabulary — never merged into a vague "mostly works" |
 | **FAIL** | a phase failed and the failure is understood |
 | **INCONCLUSIVE** | the run could not distinguish pass from fail (e.g. box wedged before evidence was read) — recorded as such, never as a pass |
