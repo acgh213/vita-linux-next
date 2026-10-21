@@ -84,20 +84,32 @@ Rebase the 11 commits onto `37b93487`, add `CONFIG_DRM_VITA`, build.
 ### M3-A — load without taking over scanout
 
 Boot the new kernel. The driver registers, enumerates connector/CRTC, and claims the vblank IRQ —
-but **does not** commit a frame. The console must survive.
+but **does not** commit a frame.
 
 - **PASS:** `/sys/class/drm/*/status` shows the connector; the vblank IRQ is claimed exactly once
-  in `/proc/interrupts` and increments at ~52 Hz; HDMI console and SSH both still work.
-- **FAIL:** the console dies before any flip was requested (driver is grabbing scanout at probe);
-  IRQ storms; oops on probe.
+  in `/proc/interrupts` and increments at ~52 Hz; the box boots to SSH normally and scanout is
+  untouched (the loader's frame stays on screen).
+- **FAIL:** IRQ storm; oops on probe; a hang at any point; SSH never arrives.
 - **Why it can fail:** the driver inherits a framebuffer the loader set up. Taking it over at probe
   time is easy to do by accident and hard to see.
+- **Corrected 2026-10-21, after the first hardware run:** this criterion originally required the
+  HDMI console to survive. It cannot: the M2 DTS series replaced the `simple-framebuffer` node with
+  plain reserved memory, so `fbcon` has no framebuffer to attach to on *any* kernel from this
+  branch. Console survival was moved to **M3-E**, where the DRM driver is supposed to *become* the
+  console. See `lab/gpu-m3-ab-run-2026-10-21.md`.
 
 ### M3-B — one flip, from an ordinary program
 
 A self-contained C probe, **raw DRM ioctls, no libdrm dependency**, cross-compiled and statically
-linked so nothing has to be installed on the device: create a dumb buffer, fill it with a solid
-colour different from the console, `ADDFB`, one page flip with an event, wait for completion.
+linked so nothing has to be installed on the device: read a mode off the connector, `SETCRTC` with a
+dumb buffer filled to a solid colour, `ADDFB`, then one page flip with an event, and wait for
+completion.
+
+*(Corrected 2026-10-21: the original sequence went straight to `PAGE_FLIP`, which was written
+assuming a lit CRTC. On this driver the CRTC reports `enable=0 active=0` — nothing has ever enabled
+it — so a flip is rejected before it is attempted. The modeset is not scaffolding around the flip;
+on this hardware it is the first userspace commit, and therefore the first thing that exercises
+`atomic_update()` at all.)*
 
 **Split in two, because reading the rebased driver changed what this phase is.**
 
