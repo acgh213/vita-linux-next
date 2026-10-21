@@ -1,0 +1,4 @@
+# initramfs checks ext4 before mounting; do not check a mounted root again.
+LABEL=VITAROOT / ext4 errors=remount-ro,noatime 0 0
+proc /proc proc defaults 0 0
+# Backing medium is carried into /mnt/vita-card by /init.

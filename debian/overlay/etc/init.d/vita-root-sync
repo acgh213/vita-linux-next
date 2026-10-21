@@ -1,0 +1,97 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          vita-root-sync
+# Required-Start:
+# Required-Stop:     umountfs halt reboot
+# Should-Stop:
+# Default-Start:
+# Default-Stop:      0 6
+# Short-Description: Flush the card after root is read-only
+# Description:       umountroot must make / read-only first.  This service then
+#                    flushes the exFAT backing filesystem while it is still
+#                    mounted, and records only a truthful shutdown result.
+#                    "Required-Stop: umountfs halt reboot" is how insserv is
+#                    told that umountfs and the terminal scripts must stop
+#                    AFTER this one, which is the order this platform needs.
+### END INIT INFO
+
+PATH=${PATH:-/sbin:/usr/sbin:/bin:/usr/bin}
+NAME=vita-root-sync
+CARD_MNT=${CARD_MNT:-/mnt/vita-card}
+PROC_MOUNTS=${PROC_MOUNTS:-/proc/mounts}
+SYNC_CMD=${SYNC_CMD:-sync}
+RECORD=${RECORD:-$CARD_MNT/boot-attempt.log}
+
+log() {
+    echo "[$NAME] $*"
+    [ -w /dev/tty0 ] && echo "[$NAME] $*" > /dev/tty0 2>/dev/null
+}
+
+card_mounted_rw() {
+    mountpoint -q "$CARD_MNT" 2>/dev/null || return 1
+    awk -v card="$CARD_MNT" '$2 == card && $4 ~ /(^|,)rw(,|$)/ { ok = 1 } END { exit !ok }' \
+        "$PROC_MOUNTS" 2>/dev/null
+}
+
+root_is_ro() {
+    awk '$2 == "/" && $4 ~ /(^|,)ro(,|$)/ { ok = 1 } END { exit !ok }' \
+        "$PROC_MOUNTS" 2>/dev/null
+}
+
+record_unclean() {
+    card_mounted_rw || return 0
+    printf 'unclean-shutdown %s %s\n' \
+        "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" >> "$RECORD" 2>/dev/null || \
+        log "could not record unclean shutdown"
+}
+
+fail() {
+    log "FAILED: $*"
+    record_unclean "$*"
+    return 1
+}
+
+do_stop() {
+    root_is_ro || { fail "root is not read-only; refusing to sync backing card"; return 1; }
+    card_mounted_rw || { fail "backing card is not mounted read-write"; return 1; }
+
+    # This is deliberately after the root-ro check and before the success line.
+    "$SYNC_CMD" -f "$CARD_MNT" 2>&1 || {
+        fail "sync -f $CARD_MNT failed"
+        return 1
+    }
+
+    printf 'shutdown-synced %s root=ro card=rw\n' \
+        "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$RECORD" 2>/dev/null || {
+        fail "could not append shutdown-synced record"
+        return 1
+    }
+    # The record itself is only considered successful once this flush succeeds.
+    "$SYNC_CMD" -f "$CARD_MNT" 2>&1 || {
+        fail "sync of shutdown-synced record failed"
+        return 1
+    }
+    log "shutdown synced: root is read-only and backing exFAT was flushed"
+    return 0
+}
+
+case "$1" in
+    start) : ;;
+    stop) do_stop || exit 1 ;;
+    status)
+        if root_is_ro && card_mounted_rw; then
+            echo "$NAME: root ro, backing card rw"
+        else
+            echo "$NAME: shutdown prerequisites not met" >&2
+            exit 1
+        fi
+        ;;
+    restart|reload|force-reload)
+        echo "$NAME: shutdown-only, nothing to restart" >&2
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status}" >&2
+        exit 3
+        ;;
+esac
+exit 0

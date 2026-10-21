@@ -222,10 +222,15 @@ cart-test: ## run complete demo-cart regression and provenance fixture gates
 cart-verify-production: ## verify the exact known-good cart artifact locally
 	$(MAKE) -C cart verify-production CROSS_CC="$(CART_CROSS_CC)"
 
-test: ## run build-contract regression tests
+test: ## run build-contract and boot-path regression tests
 	@MAKE_CMD="$(MAKE)" ./tests/test-dtb-build.sh
 	@MAKE_CMD="$(MAKE)" ./tests/test-worktree.sh
 	@$(MAKE) cart-test
+	@echo
+	@echo "--- boot path gates (host only; no device access) ---"
+	@bash ./tests/test-init-usb-root.sh
+	@python3 ./tests/test-select-root-durability.py
+	@python3 ./tests/test-debian-lifecycle.py
 
 # ------- LSP / clangd -------
 

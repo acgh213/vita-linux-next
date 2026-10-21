@@ -1,0 +1,15 @@
+### BEGIN INIT INFO
+# Provides:          umountroot
+# Required-Start:
+# Required-Stop:     umountfs vita-root-sync
+# Should-Stop:       halt reboot kexec
+# Default-Start:
+# Default-Stop:      0 6
+# Short-Description: Mount the root and /usr filesystems read-only (Vita override)
+# Description:       Vita override. "Required-Stop: X" makes X stop after this
+#                    service, so this makes umountroot the first filesystem step.
+#                    / must become read-only while its backing exFAT volume is
+#                    still writable, or the ext4 flush cannot reach the media.
+#                    Should-Stop: halt reboot is the stock statement that the
+#                    terminal scripts come after this one.
+### END INIT INFO

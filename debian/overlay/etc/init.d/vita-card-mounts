@@ -1,0 +1,106 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          vita-card-mounts
+# Required-Start:    $local_fs
+# Required-Stop:     umountfs
+# Should-Stop:       networking
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 6
+# Short-Description: Expose the card workbench and toolkit in the running system
+# Description:       The initramfs mounts the USB card at /mnt/vita-card before
+#                    switching root and moves that mount in, so by the time this
+#                    runs the card is already present. This service makes the
+#                    dev surfaces on it visible at stable paths: the working
+#                    tree at /mnt/workspace and the read-only toolkit image at
+#                    /opt/vita-toolkit.
+#
+#                    Nothing here is required for the system to boot. A missing
+#                    workbench or toolkit is logged and skipped, because a card
+#                    without them is a perfectly usable system and must not be
+#                    turned into a failed boot by an optional convenience.
+#
+#                    Required-Stop: umountfs places the teardown before the
+#                    filesystem step that unmounts local filesystems, which in
+#                    insserv means this stops BEFORE umountfs.
+### END INIT INFO
+
+PATH=${PATH:-/sbin:/usr/sbin:/bin:/usr/bin}
+NAME=vita-card-mounts
+CARD_MNT=${CARD_MNT:-/mnt/vita-card}
+WORKBENCH_SRC=${WORKBENCH_SRC:-$CARD_MNT/vita-workbench}
+WORKBENCH_MNT=${WORKBENCH_MNT:-/mnt/workspace}
+TOOLKIT_IMAGE=${TOOLKIT_IMAGE:-$CARD_MNT/vita-toolkit-native.squashfs}
+TOOLKIT_MNT=${TOOLKIT_MNT:-/opt/vita-toolkit}
+MOUNT_CMD=${MOUNT_CMD:-mount}
+UMOUNT_CMD=${UMOUNT_CMD:-umount}
+MOUNTPOINT_CMD=${MOUNTPOINT_CMD:-mountpoint}
+
+log() {
+    echo "[$NAME] $*"
+    [ -w /dev/tty0 ] && echo "[$NAME] $*" > /dev/tty0 2>/dev/null
+    return 0
+}
+
+is_mounted() { "$MOUNTPOINT_CMD" -q "$1" 2>/dev/null; }
+
+do_start() {
+    [ -d "$WORKBENCH_SRC" ] || { log "no workbench at $WORKBENCH_SRC; skipping"; return 0; }
+    if is_mounted "$WORKBENCH_MNT"; then
+        log "$WORKBENCH_MNT already mounted"
+    else
+        mkdir -p "$WORKBENCH_MNT" || { log "cannot create $WORKBENCH_MNT"; return 1; }
+        # Bind rather than symlink: tools that resolve '..' would otherwise
+        # escape the workspace and see the card root.
+        "$MOUNT_CMD" --bind "$WORKBENCH_SRC" "$WORKBENCH_MNT" \
+            || { log "bind of $WORKBENCH_SRC failed"; return 1; }
+        log "workbench available at $WORKBENCH_MNT"
+    fi
+
+    if [ -f "$TOOLKIT_IMAGE" ]; then
+        if is_mounted "$TOOLKIT_MNT"; then
+            log "$TOOLKIT_MNT already mounted"
+        else
+            mkdir -p "$TOOLKIT_MNT" || { log "cannot create $TOOLKIT_MNT"; return 1; }
+            # Read-only: the toolkit is a signed-off build artifact, not a
+            # working tree, and a writable squashfs is a lie that fails later.
+            "$MOUNT_CMD" -t squashfs -o loop,ro "$TOOLKIT_IMAGE" "$TOOLKIT_MNT" \
+                || { log "toolkit image did not mount; continuing without it"; return 0; }
+            log "toolkit available read-only at $TOOLKIT_MNT"
+        fi
+    else
+        log "no toolkit image at $TOOLKIT_IMAGE; skipping"
+    fi
+    return 0
+}
+
+do_stop() {
+    if is_mounted "$TOOLKIT_MNT"; then
+        "$UMOUNT_CMD" "$TOOLKIT_MNT" || log "could not unmount $TOOLKIT_MNT"
+    fi
+    if is_mounted "$WORKBENCH_MNT"; then
+        "$UMOUNT_CMD" "$WORKBENCH_MNT" || log "could not unmount $WORKBENCH_MNT"
+    fi
+    # Loop devices behind the toolkit image are left to vita-loopdetach, which
+    # owns every non-root card-backed loop. Detaching here as well would mean
+    # two services racing to free the same device.
+    return 0
+}
+
+case "${1:-}" in
+    start) do_start || exit 1 ;;
+    stop) do_stop ;;
+    status)
+        for p in "$WORKBENCH_MNT" "$TOOLKIT_MNT"; do
+            if is_mounted "$p"; then echo "$p: mounted"; else echo "$p: not mounted"; fi
+        done
+        ;;
+    restart|reload|force-reload)
+        do_stop
+        do_start || exit 1
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart}" >&2
+        exit 3
+        ;;
+esac
+exit 0

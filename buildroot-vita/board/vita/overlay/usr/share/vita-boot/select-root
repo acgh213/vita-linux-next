@@ -1,0 +1,169 @@
+#!/bin/sh
+# select-root -- P0-1: decide which root to boot, BEFORE switch_root hands over.
+#
+# THE PROBLEM THIS SOLVES
+# ----------------------
+# switch_root EXECS the new PID 1. If that PID 1 panics, nothing in the old
+# initramfs resumes -- there is no "catch" to return to. So recovery cannot be
+# a reaction to failure; it must be a DECISION MADE IN ADVANCE, from state the
+# PREVIOUS boot attempt left behind. A backup filename is not rollback.
+#
+# THE PROTOCOL (commit / confirm)
+# -------------------------------
+# Each attempt to boot the normal root writes an "opened" record to the card
+# and syncs it BEFORE switch_root. If that root boots far enough to be usable,
+# a service inside it (vita-boot-confirm) closes the record. A record that is
+# open on the next boot therefore means: the last attempt started and never
+# reached usable userspace. That is the only evidence a dead boot leaves.
+#
+# After MAX_FAILURES consecutive unconfirmed attempts we stop trying and boot
+# rescue. Fail-closed: any unreadable / corrupt / ambiguous state selects
+# rescue, because rescue is always safe and a bad normal root may not be.
+#
+# THE OPERATOR OVERRIDE
+# ---------------------
+# The requirement is an override reachable WITHOUT the normal root working.
+# The card is exFAT and the console exposes VitaOS FTP on port 1337, so an
+# override file can be dropped on the card from a host with no Linux running
+# at all -- and read from VitaOS or any card reader if the console will not
+# boot either. That is why the override is a FILE ON THE CARD and not a kernel
+# cmdline flag (which needs a working loader) or a Linux-side config (which
+# needs the thing that is broken).
+#
+#   vita-boot-override         contents: "rescue" | "normal" | "reset"
+#
+#   rescue -> always boot rescue, ignore counters (safe default to reach for)
+#   normal -> force one normal attempt even if the counter says give up
+#   reset  -> clear the failure counter, then proceed normally
+#
+# Exit: prints the selected root ("normal" or "rescue") on stdout.
+
+set -u
+
+CARD_MNT="${CARD_MNT:-/mnt/vita-card}"
+RECORD="$CARD_MNT/boot-attempt.log"
+OVERRIDE="$CARD_MNT/vita-boot-override"
+MAX_FAILURES="${MAX_FAILURES:-3}"
+
+log() { echo "[select-root] $*" >&2; }
+
+# Count consecutive trailing "opened" records with no matching "confirmed".
+# Prints the count, or "corrupt" if the file is not the plain-text record we
+# wrote (binary, NUL bytes, or no recognisable verb anywhere).
+count_unconfirmed() {
+    [ -e "$RECORD" ] || { echo 0; return; }
+    [ -f "$RECORD" ] && [ -r "$RECORD" ] || { echo corrupt; return; }
+
+    # BusyBox grep has no -P, and grep's binary handling is not a NUL test.
+    # Compare byte counts after deleting NULs, then validate EVERY record.
+    bytes=$(wc -c < "$RECORD") || { echo corrupt; return; }
+    textbytes=$(LC_ALL=C tr -d '\000' < "$RECORD" | wc -c)
+    [ "$bytes" -eq "$textbytes" ] || { echo corrupt; return; }
+    awk '
+        $1 == "opened" { open++; next }
+        $1 == "confirmed" { open = 0; unclean = 0; next }
+        $1 == "unclean-shutdown" { unclean = 1; next }
+        $1 == "rescue" || $1 == "override" || $1 == "shutdown-synced" { next }
+        { bad = 1 }
+        END {
+            if (bad) print "corrupt"
+            else if (unclean) print "unclean"
+            else print open + 0
+        }
+    ' "$RECORD" 2>/dev/null || echo corrupt
+}
+
+read_override() {
+    [ -r "$OVERRIDE" ] || return 1
+    # First word of the first line; tolerate CRLF from a Windows host, since
+    # this file is expected to be written from VitaOS/FTP or a card reader.
+    tr -d '\r' < "$OVERRIDE" 2>/dev/null | awk 'NR==1 {print $1; exit}'
+}
+
+open_record() {
+    # Must be durable BEFORE switch_root, or a hard hang leaves no evidence.
+    printf 'opened %s attempt=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$1" \
+        >> "$RECORD" 2>/dev/null || return 1
+    sync
+}
+
+note() {
+    printf '%s %s %s\n' "$1" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${2:-}" \
+        >> "$RECORD" 2>/dev/null || return 1
+    sync
+}
+
+# ---------------------------------------------------------------- decide
+
+# The card must be readable to make an informed decision. If it is not, we know
+# nothing about the last attempt -- so we must not gamble on the normal root.
+if ! mountpoint -q "$CARD_MNT" 2>/dev/null; then
+    log "card not mounted at $CARD_MNT -- cannot read boot history"
+    log "SELECT: rescue (fail-closed)"
+    echo rescue
+    exit 0
+fi
+
+ov=$(read_override || true)
+case "${ov:-}" in
+    rescue)
+        log "operator override: rescue"
+        note override rescue
+        echo rescue
+        exit 0
+        ;;
+    normal)
+        log "operator override: force one normal attempt"
+        note override normal-forced && open_record forced &&
+            rm -f "$OVERRIDE" && sync || { echo rescue; exit 0; }
+        echo normal
+        exit 0
+        ;;
+    reset)
+        log "operator override: reset failure counter"
+        # Truncate rather than append: the record may itself be the problem
+        # (corrupt/binary), and appending a 'confirmed' line to a file we
+        # cannot parse would leave the operator stuck in rescue forever.
+        printf 'confirmed %s operator-reset\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            > "$RECORD" 2>/dev/null || { echo rescue; exit 0; }
+        sync && rm -f "$OVERRIDE" && sync || { echo rescue; exit 0; }
+        ;;
+    "")
+        : # no override, normal path
+        ;;
+    *)
+        log "override file present but unrecognised: '$ov' -- treating as rescue"
+        note override "unrecognised:$ov"
+        echo rescue
+        exit 0
+        ;;
+esac
+
+fails=$(count_unconfirmed)
+
+if [ "$fails" = corrupt ] || [ "$fails" = unclean ]; then
+    log "boot-attempt record is unreadable/corrupt -- history unknown"
+    log "SELECT: rescue (fail-closed)"
+    log "to retry: write 'reset' to $OVERRIDE (FTP port 1337 works)"
+    echo rescue
+    exit 0
+fi
+
+log "consecutive unconfirmed attempts: $fails (limit $MAX_FAILURES)"
+
+if [ "$fails" -ge "$MAX_FAILURES" ]; then
+    log "SELECT: rescue -- normal root failed $fails times without confirming"
+    log "to retry: write 'normal' or 'reset' to $OVERRIDE (FTP port 1337 works)"
+    note rescue "after=$fails"
+    echo rescue
+    exit 0
+fi
+
+open_record "$((fails + 1))" || {
+    log "could not durably record attempt -- staying in rescue"
+    echo rescue
+    exit 0
+}
+log "SELECT: normal (attempt $((fails + 1)))"
+echo normal
+exit 0
