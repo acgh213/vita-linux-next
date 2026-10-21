@@ -42,6 +42,11 @@ The first two are reachable from current work. The third is not.
 5. Add simple software-rendered demos or SDL/KMS tooling through the Workbench workspace.
 6. Keep SGX research separate so display progress cannot be blocked by the secure acceleration lane.
 
+Steps 1–4 are scoped as a concrete gate — phases, falsifiers, stop rules and cost — in
+[`plans/2026-10-21-gpu-m3-userspace-flip-gate.md`](plans/2026-10-21-gpu-m3-userspace-flip-gate.md).
+That gate works from `topic/iftu-m2` (`c21ecbaa`, 11 commits, same 6.12.0 base) and judges every
+phase on signals readable over SSH, so a dark screen is never mistaken for evidence either way.
+
 ## What could reopen SGX work
 
 A new lead must be materially different from the exhausted probes, such as:
