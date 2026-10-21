@@ -307,20 +307,43 @@ push: ## upload zImage + all DTBs to Vita via FTP
 		curl -s --ftp-create-dirs -T $(DTS_DIR)/$$model.dtb "ftp://$(VITA_IP):$(FTP_PORT)/ux0:/linux/$$model.dtb" || exit 1; \
 	done
 
-LOADER_PLUGIN := kplugin.skprx
-LOADER_PAYLOAD := payload.bin
-LOADER_VPK := plugin_loader.vpk
+# Loader bootstrap.
+#
+# The payload path is NOT cosmetic. `ux0:/baremetal/payload.bin` is the
+# xerpi-family path and is INERT on DvaMishkiLapa-family kplugins: deploys there
+# change nothing, every launch runs the pre-existing file, and the device looks
+# hung while it is actually running something else. The live path on that family
+# is `ux0:/linux/payload.bin`. See docs/LOADER-OBSERVABILITY.md.
+LOADER_PLUGIN      ?= kplugin_360.skprx
+LOADER_PAYLOAD     ?= vita-baremetal-linux-loader/vita-baremetal-linux-loader.bin
+LOADER_PAYLOAD_DIR ?= /ux0:/linux
+LOADER_VPK         ?= plugin_loader.vpk
 
-push-setup: ## one-time setup: push loader files + VPK to a new device
+push-setup: ## one-time setup: push loader files to a new device
+	@case "$(LOADER_PAYLOAD_DIR)" in \
+		*baremetal*) echo "ERROR: LOADER_PAYLOAD_DIR=$(LOADER_PAYLOAD_DIR) is the inert path."; \
+		             echo "       The payload must go to /ux0:/linux on DvaMishkiLapa-family"; \
+		             echo "       kplugins, or it will never run. Override with"; \
+		             echo "       LOADER_PAYLOAD_DIR=... only if you know your kplugin family."; \
+		             exit 1;; \
+	esac
+	@test -f "$(LOADER_PLUGIN)" || { echo "ERROR: $(LOADER_PLUGIN) not found."; exit 1; }
+	@test -f "$(LOADER_PAYLOAD)" || { echo "ERROR: $(LOADER_PAYLOAD) not found - build the loader first."; exit 1; }
 	@echo "Pushing bootstrap files to $(VITA_IP)..."
 	curl -s --ftp-create-dirs -T $(LOADER_PLUGIN) "ftp://$(VITA_IP):$(FTP_PORT)/ux0:/data/tai/kplugin.skprx"
-	curl -s --ftp-create-dirs -T $(LOADER_PAYLOAD) "ftp://$(VITA_IP):$(FTP_PORT)/ux0:/baremetal/payload.bin"
-	curl -s --ftp-create-dirs -T $(LOADER_VPK) "ftp://$(VITA_IP):$(FTP_PORT)/ux0:/plugin_loader.vpk"
+	curl -s --ftp-create-dirs -T $(LOADER_PAYLOAD) "ftp://$(VITA_IP):$(FTP_PORT)$(LOADER_PAYLOAD_DIR)/payload.bin"
+	@if [ -f "$(LOADER_VPK)" ]; then \
+		curl -s --ftp-create-dirs -T $(LOADER_VPK) "ftp://$(VITA_IP):$(FTP_PORT)/ux0:/plugin_loader.vpk"; \
+		echo "  pushed $(LOADER_VPK)"; \
+	else \
+		echo "  skipping $(LOADER_VPK) (not present; install Plugin Loader via VitaShell if needed)"; \
+	fi
 	@echo ""
-	@echo "Done. Loader + payload are in place."
-	@echo "  1. Install ux0:/plugin_loader.vpk via VitaShell (one-time)"
-	@echo "  2. Run 'make push' to upload the kernel + DTBs"
-	@echo "  3. Launch Plugin Loader from LiveArea (or 'make boot') to boot Linux"
+	@echo "Done. Loader + payload are in place at $(LOADER_PAYLOAD_DIR)/payload.bin."
+	@echo "  For payload deploys that preserve and hash-verify the previous payload,"
+	@echo "  prefer: python3 tools/deploy-payload.py <payload.bin> --host $(VITA_IP)"
+	@echo "  1. Run 'make push' to upload the kernel + DTBs"
+	@echo "  2. Launch Plugin Loader from LiveArea (or 'make boot') to boot Linux"
 
 # ------- Boot (with device locking) -------
 
