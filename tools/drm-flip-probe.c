@@ -21,11 +21,12 @@
 #include <unistd.h>
 #include <drm/drm.h>
 #include <drm/drm_mode.h>
+#include <drm/drm_fourcc.h>
 
 struct buffer { uint32_t handle, fb; uint64_t size; void *map; };
 static int fd = -1;
 static uint32_t crtc_id;
-static int modeset, cleanup_errors;
+static int modeset, cleanup_errors, native_abgr;
 static struct buffer buffers[2];
 
 static void cleanup(void)
@@ -82,6 +83,8 @@ static void make_buffer(struct buffer *b, const struct drm_mode_modeinfo *mode,
 	};
 	struct drm_mode_map_dumb m = {0};
 	struct drm_mode_fb_cmd fb = {0};
+	struct drm_mode_fb_cmd2 fb2 = {0};
+	if (native_abgr) colour |= 0xff000000; /* Opaque native alpha, not transparent. */
 	puts("CREATE_DUMB");
 	check(!ioctl(fd, DRM_IOCTL_MODE_CREATE_DUMB, &d), "CREATE_DUMB");
 	b->handle = d.handle; b->size = d.size;
@@ -98,9 +101,18 @@ static void make_buffer(struct buffer *b, const struct drm_mode_modeinfo *mode,
 	}
 	fb.width = d.width; fb.height = d.height; fb.pitch = d.pitch;
 	fb.bpp = 32; fb.depth = 24; fb.handle = d.handle;
-	puts("ADDFB");
-	check(!ioctl(fd, DRM_IOCTL_MODE_ADDFB, &fb), "ADDFB");
-	b->fb = fb.fb_id;
+	if (native_abgr) {
+		fb2.width = d.width; fb2.height = d.height;
+		fb2.pixel_format = DRM_FORMAT_ABGR8888;
+		fb2.handles[0] = d.handle; fb2.pitches[0] = d.pitch;
+		puts("ADDFB2 native ABGR8888 (opaque alpha)");
+		check(!ioctl(fd, DRM_IOCTL_MODE_ADDFB2, &fb2), "ADDFB2");
+		b->fb = fb2.fb_id;
+	} else {
+		puts("ADDFB legacy XRGB8888");
+		check(!ioctl(fd, DRM_IOCTL_MODE_ADDFB, &fb), "ADDFB");
+		b->fb = fb.fb_id;
+	}
 	printf("buffer: fb=%u pitch=%u bytes=%" PRIu64 " colour=%08x\n",
 	       b->fb, d.pitch, b->size, colour);
 }
@@ -141,6 +153,7 @@ int main(int argc, char **argv)
 	setvbuf(stdout, NULL, _IONBF, 0);
 	for (int i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "--hold")) hold = 1;
+		else if (!strcmp(argv[i], "--native-abgr")) native_abgr = 1;
 		else if ((!strcmp(argv[i], "--frames") || !strcmp(argv[i], "--seconds") ||
 			  !strcmp(argv[i], "--refresh-hz")) && i + 1 < argc) {
 			const char *option = argv[i++];
@@ -154,7 +167,7 @@ int main(int argc, char **argv)
 			if (positional++) state = argv[i]; else card = argv[i];
 		} else {
 			fprintf(stderr, "usage: %s [card [iftu_state]] [--frames 1..3000 | "
-				"--seconds 1..30] [--refresh-hz 1..240] [--hold]\n", argv[0]); return 2;
+				"--seconds 1..30] [--refresh-hz 1..240] [--hold] [--native-abgr]\n", argv[0]); return 2;
 		}
 	}
 	printf("M3-B2 modeset-first probe: %s\n", card);

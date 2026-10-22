@@ -46,6 +46,17 @@ class ProbeTests(unittest.TestCase):
         self.assertIn("colour=00ff00ff", out)
         self.assertIn("cleanup: disable probe CRTC", out)
 
+    def test_native_abgr_is_explicit_and_opaque(self):
+        out = self.run_case(0, 0, "ADDFB2 native ABGR8888", "--native-abgr", "--frames", "8")
+        self.assertIn("colour=ff202020", out)
+        self.assertIn("colour=ff212121", out)
+        self.assertNotIn("ADDFB legacy", out)
+        self.assertEqual(out.count("DRM_EVENT received"), 8)
+
+    def test_native_format_failure_stops_before_modeset(self):
+        out = self.run_case(15, 1, "FAIL ADDFB2", "--native-abgr")
+        self.assertNotIn("SETCRTC (", out)
+
     def test_refuses_existing_active_crtc(self):
         self.run_case(1, 1, "refusing to replace active userspace state")
 

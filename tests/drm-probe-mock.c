@@ -14,8 +14,11 @@
 #include <stdio.h>
 #include <drm/drm.h>
 #include <drm/drm_mode.h>
+#include <drm/drm_fourcc.h>
 static int creates, enabled, flipped, discovered, pending, removed, destroyed;
 static uint64_t cookie, ticks = 1000000000ULL;
+static void *maps[2];
+static unsigned map_count;
 static unsigned long scenario(void)
 {
 	const char *s = getenv("MOCK_SCENARIO");
@@ -65,6 +68,15 @@ int __wrap_ioctl(int fd, unsigned long req, ...)
 		struct drm_mode_fb_cmd *f = p;
 		f->fb_id = 100 + f->handle; return 0;
 	}
+	case DRM_IOCTL_MODE_ADDFB2: {
+		struct drm_mode_fb_cmd2 *f = p;
+		assert(f->pixel_format == DRM_FORMAT_ABGR8888);
+		assert(f->handles[0] == (unsigned)creates && f->pitches[0] == 5120);
+		assert(f->offsets[0] == 0 && f->flags == 0);
+		assert((*(uint32_t *)maps[creates - 1] >> 24) == 255);
+		if (scenario() == 15) { errno = EOPNOTSUPP; return -1; }
+		f->fb_id = 100 + f->handles[0]; return 0;
+	}
 	case DRM_IOCTL_MODE_SETCRTC: {
 		struct drm_mode_crtc *c = p;
 		if (c->fb_id && scenario() == 2) { errno = EINVAL; return -1; }
@@ -96,7 +108,9 @@ int __wrap_ioctl(int fd, unsigned long req, ...)
 void *__wrap_mmap(void *a, size_t n, int prot, int flags, int fd, off_t off)
 {
 	(void)a; (void)prot; (void)flags; (void)fd; (void)off;
-	return calloc(1, n);
+	assert(map_count < 2);
+	maps[map_count] = calloc(1, n);
+	return maps[map_count++];
 }
 int __wrap_munmap(void *p, size_t n) { (void)n; free(p); return 0; }
 int __wrap_poll(struct pollfd *p, nfds_t n, int timeout)
