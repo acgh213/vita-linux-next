@@ -1,6 +1,6 @@
 # GPU lane — M3 gate: userspace page flips through the standard DRM ABI
 
-**Status:** PARTIAL — B2 PASS; C native opaque ABGR8888 PASS (~59.94 FPS, twice), legacy XRGB conversion still ~20 FPS; scoped D recovery checks passed; E Linux fbcon/readback/reboot passed, physical HDMI confirmation open. **Date:** 2026-10-21.
+**Status:** PARTIAL — B2 PASS; C native opaque ABGR8888 PASS (~59.94 FPS, twice), legacy XRGB conversion still ~20 FPS; scoped D recovery checks passed; E Linux fbcon/readback/reboot passed but physical HDMI gate FAIL (Cassie reports connected TV is black). **Date:** 2026-10-21.
 
 Latest evidence: [`lab/gpu-m3-native-format-comparison-2026-10-21.md`](../../lab/gpu-m3-native-format-comparison-2026-10-21.md).
 Earlier XRGB throughput failures remain recorded in `lab/gpu-m3-cde-results-2026-10-21.md`; native success does not erase them.

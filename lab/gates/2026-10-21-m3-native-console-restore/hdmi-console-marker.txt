@@ -1,0 +1,12 @@
+tty1
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 24
+scanout_byte 150272
+vblank_count 30454
+copy_count 2548
+copy_total_ns 86661192943
+copy_last_ns 33487733
+present_count 2548
+wait_total_ns 21522880255
