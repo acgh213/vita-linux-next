@@ -1,0 +1,47 @@
+{
+  "result": "PASS",
+  "errors": [],
+  "snapshots": {
+    "before modeset": {
+      "selector": 0,
+      "live_cfg": 0,
+      "flip_pending": 0,
+      "scanline": 720,
+      "scanout_byte": 3686400,
+      "vblank_count": 22650
+    },
+    "after modeset / before flip": {
+      "selector": 1,
+      "live_cfg": 1,
+      "flip_pending": 0,
+      "scanline": 8,
+      "scanout_byte": 1280,
+      "vblank_count": 22653
+    },
+    "after flip": {
+      "selector": 0,
+      "live_cfg": 0,
+      "flip_pending": 0,
+      "scanline": 16,
+      "scanout_byte": 1280,
+      "vblank_count": 22656
+    },
+    "after flip sample 2": {
+      "selector": 0,
+      "live_cfg": 0,
+      "flip_pending": 0,
+      "scanline": 512,
+      "scanout_byte": 2632960,
+      "vblank_count": 22656
+    },
+    "after flip sample 3": {
+      "selector": 0,
+      "live_cfg": 0,
+      "flip_pending": 0,
+      "scanline": 208,
+      "scanout_byte": 1092608,
+      "vblank_count": 22657
+    }
+  },
+  "scope": "one modeset and one flip; not SGX, not sustained presentation"
+}

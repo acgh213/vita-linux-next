@@ -1,0 +1,98 @@
+M3-B2 modeset-first probe: /dev/dri/card0
+SET_MASTER
+GETRESOURCES
+GETCRTC
+before: crtc=34 mode=0x0 fb=0 valid=0
+GETCONNECTOR (discover modes/counts)
+connector: id=36 connection=1 modes=1 encoders=1
+GETCONNECTOR (fetch mode)
+mode: 1280x720 clock=74176 htotal=1650 vtotal=750
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB
+buffer: fb=38 pitch=5120 bytes=3686400 colour=00202020
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB
+buffer: fb=39 pitch=5120 bytes=3686400 colour=00ff00ff
+=== before modeset (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 168
+scanout_byte 859648
+vblank_count 25142
+copy_count 660
+copy_total_ns 22528680826
+copy_last_ns 33849433
+present_count 660
+wait_total_ns 9868286783
+SETCRTC (first commit, grey)
+SETCRTC returned success
+=== after modeset / before flip (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 8
+scanout_byte 1280
+vblank_count 25145
+copy_count 661
+copy_total_ns 22565262769
+copy_last_ns 36581943
+present_count 661
+wait_total_ns 9876406203
+refresh reference=60 Hz (default measured approximately 60); event budget=83333334 ns
+PAGE_FLIP index=1 fb=39 cookie=1295204914, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1984 elapsed_ns=49570446 ioctl_ns=441921 event_wait_ns=49128525 cookie=1295204914
+total: flips=1 elapsed_ns=49672319 cadence_hz=20.132 reference_hz=60
+ioctl_ns includes all ioctl work (not exclusively CPU copy); event_wait_ns follows return.
+=== after flip (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 25148
+copy_count 662
+copy_total_ns 22599786354
+copy_last_ns 34523585
+present_count 662
+wait_total_ns 9890832659
+=== after flip sample 2 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 496
+scanout_byte 2532864
+vblank_count 25148
+copy_count 662
+copy_total_ns 22599786354
+copy_last_ns 34523585
+present_count 662
+wait_total_ns 9890832659
+=== after flip sample 3 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 192
+scanout_byte 988160
+vblank_count 25149
+copy_count 662
+copy_total_ns 22599786354
+copy_last_ns 34523585
+present_count 662
+wait_total_ns 9890832659
+DRM-side completion only; compare selector and scanout evidence separately.
+cleanup: disable probe CRTC
+=== after cleanup (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 112
+scanout_byte 563712
+vblank_count 25150
+copy_count 662
+copy_total_ns 22599786354
+copy_last_ns 34523585
+present_count 662
+wait_total_ns 9890832659

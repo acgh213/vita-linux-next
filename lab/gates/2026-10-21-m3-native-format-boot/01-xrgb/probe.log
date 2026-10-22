@@ -1,0 +1,1417 @@
+M3-B2 modeset-first probe: /dev/dri/card0
+SET_MASTER
+GETRESOURCES
+GETCRTC
+before: crtc=34 mode=0x0 fb=0 valid=0
+GETCONNECTOR (discover modes/counts)
+connector: id=36 connection=1 modes=1 encoders=1
+GETCONNECTOR (fetch mode)
+mode: 1280x720 clock=74176 htotal=1650 vtotal=750
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB legacy XRGB8888
+buffer: fb=38 pitch=5120 bytes=3686400 colour=00202020
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB legacy XRGB8888
+buffer: fb=39 pitch=5120 bytes=3686400 colour=00212121
+=== before modeset (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 672
+scanout_byte 3436800
+vblank_count 17636
+copy_count 0
+copy_total_ns 0
+copy_last_ns 0
+present_count 0
+wait_total_ns 0
+SETCRTC (first commit, grey)
+SETCRTC returned success
+=== after modeset / before flip (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 8
+scanout_byte 1280
+vblank_count 17640
+copy_count 1
+copy_total_ns 36613729
+copy_last_ns 36613729
+present_count 1
+wait_total_ns 13579543
+refresh reference=60 Hz (default measured approximately 60); event budget=83333334 ns
+PAGE_FLIP index=1 fb=39 cookie=1295204914, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=5 elapsed_ns=49551282 ioctl_ns=1316360 event_wait_ns=48234922 cookie=1295204914
+=== flip sample 1 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 720
+scanout_byte 3686400
+vblank_count 17643
+copy_count 2
+copy_total_ns 70927508
+copy_last_ns 34313779
+present_count 2
+wait_total_ns 28239425
+PAGE_FLIP index=2 fb=38 cookie=1295204915, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=8 elapsed_ns=49647987 ioctl_ns=437762 event_wait_ns=49210225 cookie=1295204915
+PAGE_FLIP index=3 fb=39 cookie=1295204916, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=11 elapsed_ns=49916912 ioctl_ns=7625871 event_wait_ns=42291041 cookie=1295204916
+PAGE_FLIP index=4 fb=38 cookie=1295204917, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=14 elapsed_ns=49962751 ioctl_ns=441396 event_wait_ns=49521355 cookie=1295204917
+PAGE_FLIP index=5 fb=39 cookie=1295204918, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=17 elapsed_ns=49945801 ioctl_ns=427513 event_wait_ns=49518288 cookie=1295204918
+PAGE_FLIP index=6 fb=38 cookie=1295204919, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=20 elapsed_ns=49252901 ioctl_ns=427604 event_wait_ns=48825297 cookie=1295204919
+PAGE_FLIP index=7 fb=39 cookie=1295204920, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=23 elapsed_ns=49926292 ioctl_ns=425491 event_wait_ns=49500801 cookie=1295204920
+PAGE_FLIP index=8 fb=38 cookie=1295204921, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=26 elapsed_ns=49248169 ioctl_ns=422485 event_wait_ns=48825684 cookie=1295204921
+PAGE_FLIP index=9 fb=39 cookie=1295204922, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=29 elapsed_ns=49912560 ioctl_ns=2120519 event_wait_ns=47792041 cookie=1295204922
+PAGE_FLIP index=10 fb=38 cookie=1295204923, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=32 elapsed_ns=49946724 ioctl_ns=429577 event_wait_ns=49517147 cookie=1295204923
+PAGE_FLIP index=11 fb=39 cookie=1295204924, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=35 elapsed_ns=49179851 ioctl_ns=419412 event_wait_ns=48760439 cookie=1295204924
+PAGE_FLIP index=12 fb=38 cookie=1295204925, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=38 elapsed_ns=49970930 ioctl_ns=433235 event_wait_ns=49537695 cookie=1295204925
+PAGE_FLIP index=13 fb=39 cookie=1295204926, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=41 elapsed_ns=49939161 ioctl_ns=446418 event_wait_ns=49492743 cookie=1295204926
+PAGE_FLIP index=14 fb=38 cookie=1295204927, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=44 elapsed_ns=49967894 ioctl_ns=441161 event_wait_ns=49526733 cookie=1295204927
+PAGE_FLIP index=15 fb=39 cookie=1295204928, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=47 elapsed_ns=49950642 ioctl_ns=445169 event_wait_ns=49505473 cookie=1295204928
+PAGE_FLIP index=16 fb=38 cookie=1295204929, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=50 elapsed_ns=49967791 ioctl_ns=442929 event_wait_ns=49524862 cookie=1295204929
+PAGE_FLIP index=17 fb=39 cookie=1295204930, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=53 elapsed_ns=49940875 ioctl_ns=437436 event_wait_ns=49503439 cookie=1295204930
+PAGE_FLIP index=18 fb=38 cookie=1295204931, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=56 elapsed_ns=49976585 ioctl_ns=439223 event_wait_ns=49537362 cookie=1295204931
+PAGE_FLIP index=19 fb=39 cookie=1295204932, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=59 elapsed_ns=49941563 ioctl_ns=442977 event_wait_ns=49498586 cookie=1295204932
+PAGE_FLIP index=20 fb=38 cookie=1295204933, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=62 elapsed_ns=49956189 ioctl_ns=445706 event_wait_ns=49510483 cookie=1295204933
+PAGE_FLIP index=21 fb=39 cookie=1295204934, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=65 elapsed_ns=49955097 ioctl_ns=435553 event_wait_ns=49519544 cookie=1295204934
+PAGE_FLIP index=22 fb=38 cookie=1295204935, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=68 elapsed_ns=49965811 ioctl_ns=421302 event_wait_ns=49544509 cookie=1295204935
+PAGE_FLIP index=23 fb=39 cookie=1295204936, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=71 elapsed_ns=49938678 ioctl_ns=445802 event_wait_ns=49492876 cookie=1295204936
+PAGE_FLIP index=24 fb=38 cookie=1295204937, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=74 elapsed_ns=49984360 ioctl_ns=433700 event_wait_ns=49550660 cookie=1295204937
+PAGE_FLIP index=25 fb=39 cookie=1295204938, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=77 elapsed_ns=49936233 ioctl_ns=420541 event_wait_ns=49515692 cookie=1295204938
+PAGE_FLIP index=26 fb=38 cookie=1295204939, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=80 elapsed_ns=49971014 ioctl_ns=438197 event_wait_ns=49532817 cookie=1295204939
+PAGE_FLIP index=27 fb=39 cookie=1295204940, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=83 elapsed_ns=49942518 ioctl_ns=428895 event_wait_ns=49513623 cookie=1295204940
+PAGE_FLIP index=28 fb=38 cookie=1295204941, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=86 elapsed_ns=49970175 ioctl_ns=437352 event_wait_ns=49532823 cookie=1295204941
+PAGE_FLIP index=29 fb=39 cookie=1295204942, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=89 elapsed_ns=49942300 ioctl_ns=434285 event_wait_ns=49508015 cookie=1295204942
+PAGE_FLIP index=30 fb=38 cookie=1295204943, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=92 elapsed_ns=49970362 ioctl_ns=441281 event_wait_ns=49529081 cookie=1295204943
+PAGE_FLIP index=31 fb=39 cookie=1295204944, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=95 elapsed_ns=49940568 ioctl_ns=445308 event_wait_ns=49495260 cookie=1295204944
+PAGE_FLIP index=32 fb=38 cookie=1295204945, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=98 elapsed_ns=49972680 ioctl_ns=431225 event_wait_ns=49541455 cookie=1295204945
+PAGE_FLIP index=33 fb=39 cookie=1295204946, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=101 elapsed_ns=49933348 ioctl_ns=396040 event_wait_ns=49537308 cookie=1295204946
+PAGE_FLIP index=34 fb=38 cookie=1295204947, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=104 elapsed_ns=49947841 ioctl_ns=430006 event_wait_ns=49517835 cookie=1295204947
+PAGE_FLIP index=35 fb=39 cookie=1295204948, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=107 elapsed_ns=49944859 ioctl_ns=425944 event_wait_ns=49518915 cookie=1295204948
+PAGE_FLIP index=36 fb=38 cookie=1295204949, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=110 elapsed_ns=49950793 ioctl_ns=422974 event_wait_ns=49527819 cookie=1295204949
+PAGE_FLIP index=37 fb=39 cookie=1295204950, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=113 elapsed_ns=49939089 ioctl_ns=427797 event_wait_ns=49511292 cookie=1295204950
+PAGE_FLIP index=38 fb=38 cookie=1295204951, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=116 elapsed_ns=49946327 ioctl_ns=427676 event_wait_ns=49518651 cookie=1295204951
+PAGE_FLIP index=39 fb=39 cookie=1295204952, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=119 elapsed_ns=49951155 ioctl_ns=426783 event_wait_ns=49524372 cookie=1295204952
+PAGE_FLIP index=40 fb=38 cookie=1295204953, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=122 elapsed_ns=49952254 ioctl_ns=424127 event_wait_ns=49528127 cookie=1295204953
+PAGE_FLIP index=41 fb=39 cookie=1295204954, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=125 elapsed_ns=49947262 ioctl_ns=400996 event_wait_ns=49546266 cookie=1295204954
+PAGE_FLIP index=42 fb=38 cookie=1295204955, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=128 elapsed_ns=49958471 ioctl_ns=425781 event_wait_ns=49532690 cookie=1295204955
+PAGE_FLIP index=43 fb=39 cookie=1295204956, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=131 elapsed_ns=49936252 ioctl_ns=454561 event_wait_ns=49481691 cookie=1295204956
+PAGE_FLIP index=44 fb=38 cookie=1295204957, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=134 elapsed_ns=49164453 ioctl_ns=423077 event_wait_ns=48741376 cookie=1295204957
+PAGE_FLIP index=45 fb=39 cookie=1295204958, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=137 elapsed_ns=49966705 ioctl_ns=435016 event_wait_ns=49531689 cookie=1295204958
+PAGE_FLIP index=46 fb=38 cookie=1295204959, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=140 elapsed_ns=49928000 ioctl_ns=419895 event_wait_ns=49508105 cookie=1295204959
+PAGE_FLIP index=47 fb=39 cookie=1295204960, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=143 elapsed_ns=49950672 ioctl_ns=446418 event_wait_ns=49504254 cookie=1295204960
+PAGE_FLIP index=48 fb=38 cookie=1295204961, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=146 elapsed_ns=49244752 ioctl_ns=410111 event_wait_ns=48834641 cookie=1295204961
+PAGE_FLIP index=49 fb=39 cookie=1295204962, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=149 elapsed_ns=49889689 ioctl_ns=2689508 event_wait_ns=47200181 cookie=1295204962
+PAGE_FLIP index=50 fb=38 cookie=1295204963, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=152 elapsed_ns=49953527 ioctl_ns=399662 event_wait_ns=49553865 cookie=1295204963
+PAGE_FLIP index=51 fb=39 cookie=1295204964, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=155 elapsed_ns=49951849 ioctl_ns=454664 event_wait_ns=49497185 cookie=1295204964
+PAGE_FLIP index=52 fb=38 cookie=1295204965, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=158 elapsed_ns=49953980 ioctl_ns=439211 event_wait_ns=49514769 cookie=1295204965
+PAGE_FLIP index=53 fb=39 cookie=1295204966, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=161 elapsed_ns=49972070 ioctl_ns=419454 event_wait_ns=49552616 cookie=1295204966
+PAGE_FLIP index=54 fb=38 cookie=1295204967, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=164 elapsed_ns=49944220 ioctl_ns=434111 event_wait_ns=49510109 cookie=1295204967
+PAGE_FLIP index=55 fb=39 cookie=1295204968, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=167 elapsed_ns=49954776 ioctl_ns=438414 event_wait_ns=49516362 cookie=1295204968
+PAGE_FLIP index=56 fb=38 cookie=1295204969, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=170 elapsed_ns=49958211 ioctl_ns=463156 event_wait_ns=49495055 cookie=1295204969
+PAGE_FLIP index=57 fb=39 cookie=1295204970, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=173 elapsed_ns=49978354 ioctl_ns=438934 event_wait_ns=49539420 cookie=1295204970
+PAGE_FLIP index=58 fb=38 cookie=1295204971, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=176 elapsed_ns=49929992 ioctl_ns=1827594 event_wait_ns=48102398 cookie=1295204971
+PAGE_FLIP index=59 fb=39 cookie=1295204972, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=179 elapsed_ns=49970230 ioctl_ns=441082 event_wait_ns=49529148 cookie=1295204972
+PAGE_FLIP index=60 fb=38 cookie=1295204973, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=182 elapsed_ns=49940840 ioctl_ns=432083 event_wait_ns=49508757 cookie=1295204973
+PAGE_FLIP index=61 fb=39 cookie=1295204974, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=185 elapsed_ns=49973857 ioctl_ns=408149 event_wait_ns=49565708 cookie=1295204974
+=== flip sample 61 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 8
+scanout_byte 1280
+vblank_count 17823
+copy_count 62
+copy_total_ns 2121103682
+copy_last_ns 34288144
+present_count 62
+wait_total_ns 926069580
+PAGE_FLIP index=62 fb=38 cookie=1295204975, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=188 elapsed_ns=49586931 ioctl_ns=433090 event_wait_ns=49153841 cookie=1295204975
+PAGE_FLIP index=63 fb=39 cookie=1295204976, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=191 elapsed_ns=49953787 ioctl_ns=427688 event_wait_ns=49526099 cookie=1295204976
+PAGE_FLIP index=64 fb=38 cookie=1295204977, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=194 elapsed_ns=49233531 ioctl_ns=425787 event_wait_ns=48807744 cookie=1295204977
+PAGE_FLIP index=65 fb=39 cookie=1295204978, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=197 elapsed_ns=49906397 ioctl_ns=1992449 event_wait_ns=47913948 cookie=1295204978
+PAGE_FLIP index=66 fb=38 cookie=1295204979, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=200 elapsed_ns=49945795 ioctl_ns=434799 event_wait_ns=49510996 cookie=1295204979
+PAGE_FLIP index=67 fb=39 cookie=1295204980, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=203 elapsed_ns=49957922 ioctl_ns=437702 event_wait_ns=49520220 cookie=1295204980
+PAGE_FLIP index=68 fb=38 cookie=1295204981, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=206 elapsed_ns=49953492 ioctl_ns=461316 event_wait_ns=49492176 cookie=1295204981
+PAGE_FLIP index=69 fb=39 cookie=1295204982, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=209 elapsed_ns=49956383 ioctl_ns=422576 event_wait_ns=49533807 cookie=1295204982
+PAGE_FLIP index=70 fb=38 cookie=1295204983, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=212 elapsed_ns=49960530 ioctl_ns=448030 event_wait_ns=49512500 cookie=1295204983
+PAGE_FLIP index=71 fb=39 cookie=1295204984, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=215 elapsed_ns=49951873 ioctl_ns=445169 event_wait_ns=49506704 cookie=1295204984
+PAGE_FLIP index=72 fb=38 cookie=1295204985, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=218 elapsed_ns=49957874 ioctl_ns=429837 event_wait_ns=49528037 cookie=1295204985
+PAGE_FLIP index=73 fb=39 cookie=1295204986, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=221 elapsed_ns=49967633 ioctl_ns=451687 event_wait_ns=49515946 cookie=1295204986
+PAGE_FLIP index=74 fb=38 cookie=1295204987, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=224 elapsed_ns=49947528 ioctl_ns=440654 event_wait_ns=49506874 cookie=1295204987
+PAGE_FLIP index=75 fb=39 cookie=1295204988, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=227 elapsed_ns=49945577 ioctl_ns=425134 event_wait_ns=49520443 cookie=1295204988
+PAGE_FLIP index=76 fb=38 cookie=1295204989, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=230 elapsed_ns=49933228 ioctl_ns=430157 event_wait_ns=49503071 cookie=1295204989
+PAGE_FLIP index=77 fb=39 cookie=1295204990, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=233 elapsed_ns=49954584 ioctl_ns=421978 event_wait_ns=49532606 cookie=1295204990
+PAGE_FLIP index=78 fb=38 cookie=1295204991, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=236 elapsed_ns=49941763 ioctl_ns=399542 event_wait_ns=49542221 cookie=1295204991
+PAGE_FLIP index=79 fb=39 cookie=1295204992, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=239 elapsed_ns=49946072 ioctl_ns=427259 event_wait_ns=49518813 cookie=1295204992
+PAGE_FLIP index=80 fb=38 cookie=1295204993, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=242 elapsed_ns=49941884 ioctl_ns=438620 event_wait_ns=49503264 cookie=1295204993
+PAGE_FLIP index=81 fb=39 cookie=1295204994, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=245 elapsed_ns=49972620 ioctl_ns=423553 event_wait_ns=49549067 cookie=1295204994
+PAGE_FLIP index=82 fb=38 cookie=1295204995, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=248 elapsed_ns=49942903 ioctl_ns=448645 event_wait_ns=49494258 cookie=1295204995
+PAGE_FLIP index=83 fb=39 cookie=1295204996, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=251 elapsed_ns=49964876 ioctl_ns=425914 event_wait_ns=49538962 cookie=1295204996
+PAGE_FLIP index=84 fb=38 cookie=1295204997, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=254 elapsed_ns=49944352 ioctl_ns=426384 event_wait_ns=49517968 cookie=1295204997
+PAGE_FLIP index=85 fb=39 cookie=1295204998, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=257 elapsed_ns=49934604 ioctl_ns=466181 event_wait_ns=49468423 cookie=1295204998
+PAGE_FLIP index=86 fb=38 cookie=1295204999, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=260 elapsed_ns=49941371 ioctl_ns=481833 event_wait_ns=49459538 cookie=1295204999
+PAGE_FLIP index=87 fb=39 cookie=1295205000, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=263 elapsed_ns=49947365 ioctl_ns=469453 event_wait_ns=49477912 cookie=1295205000
+PAGE_FLIP index=88 fb=38 cookie=1295205001, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=266 elapsed_ns=49947950 ioctl_ns=464467 event_wait_ns=49483483 cookie=1295205001
+PAGE_FLIP index=89 fb=39 cookie=1295205002, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=269 elapsed_ns=49945765 ioctl_ns=447450 event_wait_ns=49498315 cookie=1295205002
+PAGE_FLIP index=90 fb=38 cookie=1295205003, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=272 elapsed_ns=49948433 ioctl_ns=453650 event_wait_ns=49494783 cookie=1295205003
+PAGE_FLIP index=91 fb=39 cookie=1295205004, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=275 elapsed_ns=49950823 ioctl_ns=468897 event_wait_ns=49481926 cookie=1295205004
+PAGE_FLIP index=92 fb=38 cookie=1295205005, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=278 elapsed_ns=49923461 ioctl_ns=433525 event_wait_ns=49489936 cookie=1295205005
+PAGE_FLIP index=93 fb=39 cookie=1295205006, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=281 elapsed_ns=49933976 ioctl_ns=448114 event_wait_ns=49485862 cookie=1295205006
+PAGE_FLIP index=94 fb=38 cookie=1295205007, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=284 elapsed_ns=49295094 ioctl_ns=419792 event_wait_ns=48875302 cookie=1295205007
+PAGE_FLIP index=95 fb=39 cookie=1295205008, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=287 elapsed_ns=49939753 ioctl_ns=429179 event_wait_ns=49510574 cookie=1295205008
+PAGE_FLIP index=96 fb=38 cookie=1295205009, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=290 elapsed_ns=49921988 ioctl_ns=464128 event_wait_ns=49457860 cookie=1295205009
+PAGE_FLIP index=97 fb=39 cookie=1295205010, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=293 elapsed_ns=49946036 ioctl_ns=402873 event_wait_ns=49543163 cookie=1295205010
+PAGE_FLIP index=98 fb=38 cookie=1295205011, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=296 elapsed_ns=49930445 ioctl_ns=448078 event_wait_ns=49482367 cookie=1295205011
+PAGE_FLIP index=99 fb=39 cookie=1295205012, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=299 elapsed_ns=49255877 ioctl_ns=428932 event_wait_ns=48826945 cookie=1295205012
+PAGE_FLIP index=100 fb=38 cookie=1295205013, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=302 elapsed_ns=49894524 ioctl_ns=7461971 event_wait_ns=42432553 cookie=1295205013
+PAGE_FLIP index=101 fb=39 cookie=1295205014, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=305 elapsed_ns=49965884 ioctl_ns=444324 event_wait_ns=49521560 cookie=1295205014
+PAGE_FLIP index=102 fb=38 cookie=1295205015, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=308 elapsed_ns=49959285 ioctl_ns=442718 event_wait_ns=49516567 cookie=1295205015
+PAGE_FLIP index=103 fb=39 cookie=1295205016, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=311 elapsed_ns=49960511 ioctl_ns=430482 event_wait_ns=49530029 cookie=1295205016
+PAGE_FLIP index=104 fb=38 cookie=1295205017, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=314 elapsed_ns=49922447 ioctl_ns=409175 event_wait_ns=49513272 cookie=1295205017
+PAGE_FLIP index=105 fb=39 cookie=1295205018, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=317 elapsed_ns=49966276 ioctl_ns=432463 event_wait_ns=49533813 cookie=1295205018
+PAGE_FLIP index=106 fb=38 cookie=1295205019, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=320 elapsed_ns=49946018 ioctl_ns=422425 event_wait_ns=49523593 cookie=1295205019
+PAGE_FLIP index=107 fb=39 cookie=1295205020, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=323 elapsed_ns=49969674 ioctl_ns=471637 event_wait_ns=49498037 cookie=1295205020
+PAGE_FLIP index=108 fb=38 cookie=1295205021, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=326 elapsed_ns=49936034 ioctl_ns=443961 event_wait_ns=49492073 cookie=1295205021
+PAGE_FLIP index=109 fb=39 cookie=1295205022, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=329 elapsed_ns=49963868 ioctl_ns=422962 event_wait_ns=49540906 cookie=1295205022
+PAGE_FLIP index=110 fb=38 cookie=1295205023, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=332 elapsed_ns=49953600 ioctl_ns=444535 event_wait_ns=49509065 cookie=1295205023
+PAGE_FLIP index=111 fb=39 cookie=1295205024, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=335 elapsed_ns=49953098 ioctl_ns=448452 event_wait_ns=49504646 cookie=1295205024
+PAGE_FLIP index=112 fb=38 cookie=1295205025, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=338 elapsed_ns=49957675 ioctl_ns=447855 event_wait_ns=49509820 cookie=1295205025
+PAGE_FLIP index=113 fb=39 cookie=1295205026, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=341 elapsed_ns=49946441 ioctl_ns=438258 event_wait_ns=49508183 cookie=1295205026
+PAGE_FLIP index=114 fb=38 cookie=1295205027, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=344 elapsed_ns=49941352 ioctl_ns=433102 event_wait_ns=49508250 cookie=1295205027
+PAGE_FLIP index=115 fb=39 cookie=1295205028, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=347 elapsed_ns=49970894 ioctl_ns=445211 event_wait_ns=49525683 cookie=1295205028
+PAGE_FLIP index=116 fb=38 cookie=1295205029, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=350 elapsed_ns=49941431 ioctl_ns=446629 event_wait_ns=49494802 cookie=1295205029
+PAGE_FLIP index=117 fb=39 cookie=1295205030, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=353 elapsed_ns=49968841 ioctl_ns=482442 event_wait_ns=49486399 cookie=1295205030
+PAGE_FLIP index=118 fb=38 cookie=1295205031, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=356 elapsed_ns=49945137 ioctl_ns=437919 event_wait_ns=49507218 cookie=1295205031
+PAGE_FLIP index=119 fb=39 cookie=1295205032, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=359 elapsed_ns=49974968 ioctl_ns=449467 event_wait_ns=49525501 cookie=1295205032
+PAGE_FLIP index=120 fb=38 cookie=1295205033, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=362 elapsed_ns=49941213 ioctl_ns=436434 event_wait_ns=49504779 cookie=1295205033
+PAGE_FLIP index=121 fb=39 cookie=1295205034, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=365 elapsed_ns=49967724 ioctl_ns=435994 event_wait_ns=49531730 cookie=1295205034
+PAGE_FLIP index=122 fb=38 cookie=1295205035, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=368 elapsed_ns=49946821 ioctl_ns=439423 event_wait_ns=49507398 cookie=1295205035
+=== flip sample 122 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 8
+scanout_byte 1280
+vblank_count 18006
+copy_count 123
+copy_total_ns 4206090209
+copy_last_ns 33986346
+present_count 123
+wait_total_ns 1840031822
+PAGE_FLIP index=123 fb=39 cookie=1295205036, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=371 elapsed_ns=49591489 ioctl_ns=453951 event_wait_ns=49137538 cookie=1295205036
+PAGE_FLIP index=124 fb=38 cookie=1295205037, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=374 elapsed_ns=49964218 ioctl_ns=435475 event_wait_ns=49528743 cookie=1295205037
+PAGE_FLIP index=125 fb=39 cookie=1295205038, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=377 elapsed_ns=49959467 ioctl_ns=416847 event_wait_ns=49542620 cookie=1295205038
+PAGE_FLIP index=126 fb=38 cookie=1295205039, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=380 elapsed_ns=49955314 ioctl_ns=446671 event_wait_ns=49508643 cookie=1295205039
+PAGE_FLIP index=127 fb=39 cookie=1295205040, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=383 elapsed_ns=49955604 ioctl_ns=448127 event_wait_ns=49507477 cookie=1295205040
+PAGE_FLIP index=128 fb=38 cookie=1295205041, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=386 elapsed_ns=49956328 ioctl_ns=446424 event_wait_ns=49509904 cookie=1295205041
+PAGE_FLIP index=129 fb=39 cookie=1295205042, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=389 elapsed_ns=49958025 ioctl_ns=446298 event_wait_ns=49511727 cookie=1295205042
+PAGE_FLIP index=130 fb=38 cookie=1295205043, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=392 elapsed_ns=49959510 ioctl_ns=443914 event_wait_ns=49515596 cookie=1295205043
+PAGE_FLIP index=131 fb=39 cookie=1295205044, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=395 elapsed_ns=49974026 ioctl_ns=441142 event_wait_ns=49532884 cookie=1295205044
+PAGE_FLIP index=132 fb=38 cookie=1295205045, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=398 elapsed_ns=49943912 ioctl_ns=442881 event_wait_ns=49501031 cookie=1295205045
+PAGE_FLIP index=133 fb=39 cookie=1295205046, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=401 elapsed_ns=49965563 ioctl_ns=441275 event_wait_ns=49524288 cookie=1295205046
+PAGE_FLIP index=134 fb=38 cookie=1295205047, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=404 elapsed_ns=49947588 ioctl_ns=417517 event_wait_ns=49530071 cookie=1295205047
+PAGE_FLIP index=135 fb=39 cookie=1295205048, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=407 elapsed_ns=49953491 ioctl_ns=442338 event_wait_ns=49511153 cookie=1295205048
+PAGE_FLIP index=136 fb=38 cookie=1295205049, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=410 elapsed_ns=49954849 ioctl_ns=439972 event_wait_ns=49514877 cookie=1295205049
+PAGE_FLIP index=137 fb=39 cookie=1295205050, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=413 elapsed_ns=49971992 ioctl_ns=414113 event_wait_ns=49557879 cookie=1295205050
+PAGE_FLIP index=138 fb=38 cookie=1295205051, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=416 elapsed_ns=49943658 ioctl_ns=443056 event_wait_ns=49500602 cookie=1295205051
+PAGE_FLIP index=139 fb=39 cookie=1295205052, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=419 elapsed_ns=49950063 ioctl_ns=441898 event_wait_ns=49508165 cookie=1295205052
+PAGE_FLIP index=140 fb=38 cookie=1295205053, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=422 elapsed_ns=49960185 ioctl_ns=448386 event_wait_ns=49511799 cookie=1295205053
+PAGE_FLIP index=141 fb=39 cookie=1295205054, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=425 elapsed_ns=49955284 ioctl_ns=441819 event_wait_ns=49513465 cookie=1295205054
+PAGE_FLIP index=142 fb=38 cookie=1295205055, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=428 elapsed_ns=49945186 ioctl_ns=449588 event_wait_ns=49495598 cookie=1295205055
+PAGE_FLIP index=143 fb=39 cookie=1295205056, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=431 elapsed_ns=49963747 ioctl_ns=444505 event_wait_ns=49519242 cookie=1295205056
+PAGE_FLIP index=144 fb=38 cookie=1295205057, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=434 elapsed_ns=49971600 ioctl_ns=440286 event_wait_ns=49531314 cookie=1295205057
+PAGE_FLIP index=145 fb=39 cookie=1295205058, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=437 elapsed_ns=49991905 ioctl_ns=423830 event_wait_ns=49568075 cookie=1295205058
+PAGE_FLIP index=146 fb=38 cookie=1295205059, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=440 elapsed_ns=49919719 ioctl_ns=440267 event_wait_ns=49479452 cookie=1295205059
+PAGE_FLIP index=147 fb=39 cookie=1295205060, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=443 elapsed_ns=49968733 ioctl_ns=445658 event_wait_ns=49523075 cookie=1295205060
+PAGE_FLIP index=148 fb=38 cookie=1295205061, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=446 elapsed_ns=49945185 ioctl_ns=439338 event_wait_ns=49505847 cookie=1295205061
+PAGE_FLIP index=149 fb=39 cookie=1295205062, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=449 elapsed_ns=49993946 ioctl_ns=445646 event_wait_ns=49548300 cookie=1295205062
+PAGE_FLIP index=150 fb=38 cookie=1295205063, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=452 elapsed_ns=49916284 ioctl_ns=429028 event_wait_ns=49487256 cookie=1295205063
+PAGE_FLIP index=151 fb=39 cookie=1295205064, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=455 elapsed_ns=49965871 ioctl_ns=447058 event_wait_ns=49518813 cookie=1295205064
+PAGE_FLIP index=152 fb=38 cookie=1295205065, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=458 elapsed_ns=49946163 ioctl_ns=440267 event_wait_ns=49505896 cookie=1295205065
+PAGE_FLIP index=153 fb=39 cookie=1295205066, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=461 elapsed_ns=49966306 ioctl_ns=411867 event_wait_ns=49554439 cookie=1295205066
+PAGE_FLIP index=154 fb=38 cookie=1295205067, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=464 elapsed_ns=49940459 ioctl_ns=442537 event_wait_ns=49497922 cookie=1295205067
+PAGE_FLIP index=155 fb=39 cookie=1295205068, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=467 elapsed_ns=49967827 ioctl_ns=432565 event_wait_ns=49535262 cookie=1295205068
+PAGE_FLIP index=156 fb=38 cookie=1295205069, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=470 elapsed_ns=49938775 ioctl_ns=447541 event_wait_ns=49491234 cookie=1295205069
+PAGE_FLIP index=157 fb=39 cookie=1295205070, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=473 elapsed_ns=49968854 ioctl_ns=447855 event_wait_ns=49520999 cookie=1295205070
+PAGE_FLIP index=158 fb=38 cookie=1295205071, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=476 elapsed_ns=49947443 ioctl_ns=440080 event_wait_ns=49507363 cookie=1295205071
+PAGE_FLIP index=159 fb=39 cookie=1295205072, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=479 elapsed_ns=49965328 ioctl_ns=438094 event_wait_ns=49527234 cookie=1295205072
+PAGE_FLIP index=160 fb=38 cookie=1295205073, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=482 elapsed_ns=49987439 ioctl_ns=413069 event_wait_ns=49574370 cookie=1295205073
+PAGE_FLIP index=161 fb=39 cookie=1295205074, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=485 elapsed_ns=49925930 ioctl_ns=431418 event_wait_ns=49494512 cookie=1295205074
+PAGE_FLIP index=162 fb=38 cookie=1295205075, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=488 elapsed_ns=49939777 ioctl_ns=425014 event_wait_ns=49514763 cookie=1295205075
+PAGE_FLIP index=163 fb=39 cookie=1295205076, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=491 elapsed_ns=49970833 ioctl_ns=437545 event_wait_ns=49533288 cookie=1295205076
+PAGE_FLIP index=164 fb=38 cookie=1295205077, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=494 elapsed_ns=49946369 ioctl_ns=443865 event_wait_ns=49502504 cookie=1295205077
+PAGE_FLIP index=165 fb=39 cookie=1295205078, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=497 elapsed_ns=49962763 ioctl_ns=419509 event_wait_ns=49543254 cookie=1295205078
+PAGE_FLIP index=166 fb=38 cookie=1295205079, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=500 elapsed_ns=49938563 ioctl_ns=439941 event_wait_ns=49498622 cookie=1295205079
+PAGE_FLIP index=167 fb=39 cookie=1295205080, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=503 elapsed_ns=49976078 ioctl_ns=442350 event_wait_ns=49533728 cookie=1295205080
+PAGE_FLIP index=168 fb=38 cookie=1295205081, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=506 elapsed_ns=49939427 ioctl_ns=448465 event_wait_ns=49490962 cookie=1295205081
+PAGE_FLIP index=169 fb=39 cookie=1295205082, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=509 elapsed_ns=49968407 ioctl_ns=443008 event_wait_ns=49525399 cookie=1295205082
+PAGE_FLIP index=170 fb=38 cookie=1295205083, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=512 elapsed_ns=49948632 ioctl_ns=425967 event_wait_ns=49522665 cookie=1295205083
+PAGE_FLIP index=171 fb=39 cookie=1295205084, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=515 elapsed_ns=49966946 ioctl_ns=440811 event_wait_ns=49526135 cookie=1295205084
+PAGE_FLIP index=172 fb=38 cookie=1295205085, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=518 elapsed_ns=49933807 ioctl_ns=448006 event_wait_ns=49485801 cookie=1295205085
+PAGE_FLIP index=173 fb=39 cookie=1295205086, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=521 elapsed_ns=49979761 ioctl_ns=412314 event_wait_ns=49567447 cookie=1295205086
+PAGE_FLIP index=174 fb=38 cookie=1295205087, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=524 elapsed_ns=49932546 ioctl_ns=437877 event_wait_ns=49494669 cookie=1295205087
+PAGE_FLIP index=175 fb=39 cookie=1295205088, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=527 elapsed_ns=49970556 ioctl_ns=449032 event_wait_ns=49521524 cookie=1295205088
+PAGE_FLIP index=176 fb=38 cookie=1295205089, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=530 elapsed_ns=49944425 ioctl_ns=440961 event_wait_ns=49503464 cookie=1295205089
+PAGE_FLIP index=177 fb=39 cookie=1295205090, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=533 elapsed_ns=49967573 ioctl_ns=437394 event_wait_ns=49530179 cookie=1295205090
+PAGE_FLIP index=178 fb=38 cookie=1295205091, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=536 elapsed_ns=49940405 ioctl_ns=444644 event_wait_ns=49495761 cookie=1295205091
+PAGE_FLIP index=179 fb=39 cookie=1295205092, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=539 elapsed_ns=49973682 ioctl_ns=436362 event_wait_ns=49537320 cookie=1295205092
+PAGE_FLIP index=180 fb=38 cookie=1295205093, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=542 elapsed_ns=49937423 ioctl_ns=442537 event_wait_ns=49494886 cookie=1295205093
+PAGE_FLIP index=181 fb=39 cookie=1295205094, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=545 elapsed_ns=49968859 ioctl_ns=407877 event_wait_ns=49560982 cookie=1295205094
+PAGE_FLIP index=182 fb=38 cookie=1295205095, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=548 elapsed_ns=49943791 ioctl_ns=442911 event_wait_ns=49500880 cookie=1295205095
+PAGE_FLIP index=183 fb=39 cookie=1295205096, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=551 elapsed_ns=49962454 ioctl_ns=448180 event_wait_ns=49514274 cookie=1295205096
+=== flip sample 183 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 8
+scanout_byte 1280
+vblank_count 18189
+copy_count 184
+copy_total_ns 6292578511
+copy_last_ns 34284250
+present_count 184
+wait_total_ns 2762934250
+PAGE_FLIP index=184 fb=38 cookie=1295205097, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=554 elapsed_ns=49593457 ioctl_ns=444644 event_wait_ns=49148813 cookie=1295205097
+PAGE_FLIP index=185 fb=39 cookie=1295205098, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=557 elapsed_ns=49945385 ioctl_ns=426475 event_wait_ns=49518910 cookie=1295205098
+PAGE_FLIP index=186 fb=38 cookie=1295205099, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=560 elapsed_ns=49284108 ioctl_ns=425575 event_wait_ns=48858533 cookie=1295205099
+PAGE_FLIP index=187 fb=39 cookie=1295205100, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=563 elapsed_ns=49952857 ioctl_ns=449466 event_wait_ns=49503391 cookie=1295205100
+PAGE_FLIP index=188 fb=38 cookie=1295205101, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=566 elapsed_ns=49958935 ioctl_ns=442814 event_wait_ns=49516121 cookie=1295205101
+PAGE_FLIP index=189 fb=39 cookie=1295205102, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=569 elapsed_ns=49967272 ioctl_ns=425895 event_wait_ns=49541377 cookie=1295205102
+PAGE_FLIP index=190 fb=38 cookie=1295205103, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=572 elapsed_ns=49921650 ioctl_ns=426921 event_wait_ns=49494729 cookie=1295205103
+PAGE_FLIP index=191 fb=39 cookie=1295205104, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=575 elapsed_ns=49194030 ioctl_ns=428871 event_wait_ns=48765159 cookie=1295205104
+PAGE_FLIP index=192 fb=38 cookie=1295205105, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=578 elapsed_ns=48742016 ioctl_ns=496506 event_wait_ns=48245510 cookie=1295205105
+PAGE_FLIP index=193 fb=39 cookie=1295205106, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=581 elapsed_ns=49961091 ioctl_ns=422672 event_wait_ns=49538419 cookie=1295205106
+PAGE_FLIP index=194 fb=38 cookie=1295205107, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=584 elapsed_ns=49924861 ioctl_ns=426311 event_wait_ns=49498550 cookie=1295205107
+PAGE_FLIP index=195 fb=39 cookie=1295205108, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=587 elapsed_ns=48493803 ioctl_ns=429391 event_wait_ns=48064412 cookie=1295205108
+PAGE_FLIP index=196 fb=38 cookie=1295205109, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=590 elapsed_ns=49943296 ioctl_ns=444227 event_wait_ns=49499069 cookie=1295205109
+PAGE_FLIP index=197 fb=39 cookie=1295205110, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=593 elapsed_ns=49954228 ioctl_ns=424048 event_wait_ns=49530180 cookie=1295205110
+PAGE_FLIP index=198 fb=38 cookie=1295205111, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=596 elapsed_ns=49924970 ioctl_ns=418139 event_wait_ns=49506831 cookie=1295205111
+PAGE_FLIP index=199 fb=39 cookie=1295205112, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=599 elapsed_ns=49241215 ioctl_ns=429547 event_wait_ns=48811668 cookie=1295205112
+PAGE_FLIP index=200 fb=38 cookie=1295205113, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=602 elapsed_ns=49907127 ioctl_ns=2318789 event_wait_ns=47588338 cookie=1295205113
+PAGE_FLIP index=201 fb=39 cookie=1295205114, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=605 elapsed_ns=49946073 ioctl_ns=402819 event_wait_ns=49543254 cookie=1295205114
+PAGE_FLIP index=202 fb=38 cookie=1295205115, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=608 elapsed_ns=49171690 ioctl_ns=429764 event_wait_ns=48741926 cookie=1295205115
+PAGE_FLIP index=203 fb=39 cookie=1295205116, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=611 elapsed_ns=49929190 ioctl_ns=426529 event_wait_ns=49502661 cookie=1295205116
+PAGE_FLIP index=204 fb=38 cookie=1295205117, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=614 elapsed_ns=49954788 ioctl_ns=422575 event_wait_ns=49532213 cookie=1295205117
+PAGE_FLIP index=205 fb=39 cookie=1295205118, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=617 elapsed_ns=49933319 ioctl_ns=424532 event_wait_ns=49508787 cookie=1295205118
+PAGE_FLIP index=206 fb=38 cookie=1295205119, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=620 elapsed_ns=49172137 ioctl_ns=431763 event_wait_ns=48740374 cookie=1295205119
+PAGE_FLIP index=207 fb=39 cookie=1295205120, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=623 elapsed_ns=49978004 ioctl_ns=439332 event_wait_ns=49538672 cookie=1295205120
+PAGE_FLIP index=208 fb=38 cookie=1295205121, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=626 elapsed_ns=49933560 ioctl_ns=445230 event_wait_ns=49488330 cookie=1295205121
+PAGE_FLIP index=209 fb=39 cookie=1295205122, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=629 elapsed_ns=49971032 ioctl_ns=408644 event_wait_ns=49562388 cookie=1295205122
+PAGE_FLIP index=210 fb=38 cookie=1295205123, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=632 elapsed_ns=49946984 ioctl_ns=441124 event_wait_ns=49505860 cookie=1295205123
+PAGE_FLIP index=211 fb=39 cookie=1295205124, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=635 elapsed_ns=49964790 ioctl_ns=446388 event_wait_ns=49518402 cookie=1295205124
+PAGE_FLIP index=212 fb=38 cookie=1295205125, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=638 elapsed_ns=49943930 ioctl_ns=441330 event_wait_ns=49502600 cookie=1295205125
+PAGE_FLIP index=213 fb=39 cookie=1295205126, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=641 elapsed_ns=49971298 ioctl_ns=436078 event_wait_ns=49535220 cookie=1295205126
+PAGE_FLIP index=214 fb=38 cookie=1295205127, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=644 elapsed_ns=49940405 ioctl_ns=439344 event_wait_ns=49501061 cookie=1295205127
+PAGE_FLIP index=215 fb=39 cookie=1295205128, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=647 elapsed_ns=49963360 ioctl_ns=444963 event_wait_ns=49518397 cookie=1295205128
+PAGE_FLIP index=216 fb=38 cookie=1295205129, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=650 elapsed_ns=49946991 ioctl_ns=414680 event_wait_ns=49532311 cookie=1295205129
+PAGE_FLIP index=217 fb=39 cookie=1295205130, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=653 elapsed_ns=49968237 ioctl_ns=434122 event_wait_ns=49534115 cookie=1295205130
+PAGE_FLIP index=218 fb=38 cookie=1295205131, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=656 elapsed_ns=49936426 ioctl_ns=438740 event_wait_ns=49497686 cookie=1295205131
+PAGE_FLIP index=219 fb=39 cookie=1295205132, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=659 elapsed_ns=49980588 ioctl_ns=437648 event_wait_ns=49542940 cookie=1295205132
+PAGE_FLIP index=220 fb=38 cookie=1295205133, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=662 elapsed_ns=49932021 ioctl_ns=446413 event_wait_ns=49485608 cookie=1295205133
+PAGE_FLIP index=221 fb=39 cookie=1295205134, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=665 elapsed_ns=49964918 ioctl_ns=412881 event_wait_ns=49552037 cookie=1295205134
+PAGE_FLIP index=222 fb=38 cookie=1295205135, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=668 elapsed_ns=49947605 ioctl_ns=440466 event_wait_ns=49507139 cookie=1295205135
+PAGE_FLIP index=223 fb=39 cookie=1295205136, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=671 elapsed_ns=49964984 ioctl_ns=451217 event_wait_ns=49513767 cookie=1295205136
+PAGE_FLIP index=224 fb=38 cookie=1295205137, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=674 elapsed_ns=49946151 ioctl_ns=440865 event_wait_ns=49505286 cookie=1295205137
+PAGE_FLIP index=225 fb=39 cookie=1295205138, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=677 elapsed_ns=49974401 ioctl_ns=441149 event_wait_ns=49533252 cookie=1295205138
+PAGE_FLIP index=226 fb=38 cookie=1295205139, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=680 elapsed_ns=49938962 ioctl_ns=437575 event_wait_ns=49501387 cookie=1295205139
+PAGE_FLIP index=227 fb=39 cookie=1295205140, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=683 elapsed_ns=49958067 ioctl_ns=448592 event_wait_ns=49509475 cookie=1295205140
+PAGE_FLIP index=228 fb=38 cookie=1295205141, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=686 elapsed_ns=49947395 ioctl_ns=421284 event_wait_ns=49526111 cookie=1295205141
+PAGE_FLIP index=229 fb=39 cookie=1295205142, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=689 elapsed_ns=49936155 ioctl_ns=396269 event_wait_ns=49539886 cookie=1295205142
+PAGE_FLIP index=230 fb=38 cookie=1295205143, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=692 elapsed_ns=49947811 ioctl_ns=432879 event_wait_ns=49514932 cookie=1295205143
+PAGE_FLIP index=231 fb=39 cookie=1295205144, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=695 elapsed_ns=49949175 ioctl_ns=426541 event_wait_ns=49522634 cookie=1295205144
+PAGE_FLIP index=232 fb=38 cookie=1295205145, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=698 elapsed_ns=49947413 ioctl_ns=423741 event_wait_ns=49523672 cookie=1295205145
+PAGE_FLIP index=233 fb=39 cookie=1295205146, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=701 elapsed_ns=49944950 ioctl_ns=427441 event_wait_ns=49517509 cookie=1295205146
+PAGE_FLIP index=234 fb=38 cookie=1295205147, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=704 elapsed_ns=49953563 ioctl_ns=422074 event_wait_ns=49531489 cookie=1295205147
+PAGE_FLIP index=235 fb=39 cookie=1295205148, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=707 elapsed_ns=49945258 ioctl_ns=430929 event_wait_ns=49514329 cookie=1295205148
+PAGE_FLIP index=236 fb=38 cookie=1295205149, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=710 elapsed_ns=49945795 ioctl_ns=417487 event_wait_ns=49528308 cookie=1295205149
+PAGE_FLIP index=237 fb=39 cookie=1295205150, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=713 elapsed_ns=49952266 ioctl_ns=403109 event_wait_ns=49549157 cookie=1295205150
+PAGE_FLIP index=238 fb=38 cookie=1295205151, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=716 elapsed_ns=49939023 ioctl_ns=449781 event_wait_ns=49489242 cookie=1295205151
+PAGE_FLIP index=239 fb=39 cookie=1295205152, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=719 elapsed_ns=49264352 ioctl_ns=436326 event_wait_ns=48828026 cookie=1295205152
+PAGE_FLIP index=240 fb=38 cookie=1295205153, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=722 elapsed_ns=49266803 ioctl_ns=427411 event_wait_ns=48839392 cookie=1295205153
+PAGE_FLIP index=241 fb=39 cookie=1295205154, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=725 elapsed_ns=49178946 ioctl_ns=434214 event_wait_ns=48744732 cookie=1295205154
+PAGE_FLIP index=242 fb=38 cookie=1295205155, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=728 elapsed_ns=49935093 ioctl_ns=427229 event_wait_ns=49507864 cookie=1295205155
+PAGE_FLIP index=243 fb=39 cookie=1295205156, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=731 elapsed_ns=49950866 ioctl_ns=443056 event_wait_ns=49507810 cookie=1295205156
+PAGE_FLIP index=244 fb=38 cookie=1295205157, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=734 elapsed_ns=49956165 ioctl_ns=433326 event_wait_ns=49522839 cookie=1295205157
+=== flip sample 244 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 0
+scanout_byte 0
+vblank_count 18372
+copy_count 245
+copy_total_ns 8378530933
+copy_last_ns 34059197
+present_count 245
+wait_total_ns 3665568044
+PAGE_FLIP index=245 fb=39 cookie=1295205158, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=737 elapsed_ns=49611142 ioctl_ns=437515 event_wait_ns=49173627 cookie=1295205158
+PAGE_FLIP index=246 fb=38 cookie=1295205159, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=740 elapsed_ns=49921113 ioctl_ns=424743 event_wait_ns=49496370 cookie=1295205159
+PAGE_FLIP index=247 fb=39 cookie=1295205160, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=743 elapsed_ns=49252448 ioctl_ns=430024 event_wait_ns=48822424 cookie=1295205160
+PAGE_FLIP index=248 fb=38 cookie=1295205161, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=746 elapsed_ns=49931006 ioctl_ns=430851 event_wait_ns=49500155 cookie=1295205161
+PAGE_FLIP index=249 fb=39 cookie=1295205162, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=749 elapsed_ns=49188199 ioctl_ns=401654 event_wait_ns=48786545 cookie=1295205162
+PAGE_FLIP index=250 fb=38 cookie=1295205163, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=752 elapsed_ns=49956853 ioctl_ns=445531 event_wait_ns=49511322 cookie=1295205163
+PAGE_FLIP index=251 fb=39 cookie=1295205164, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=755 elapsed_ns=49937737 ioctl_ns=421766 event_wait_ns=49515971 cookie=1295205164
+PAGE_FLIP index=252 fb=38 cookie=1295205165, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=758 elapsed_ns=49958435 ioctl_ns=432052 event_wait_ns=49526383 cookie=1295205165
+PAGE_FLIP index=253 fb=39 cookie=1295205166, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=761 elapsed_ns=49929691 ioctl_ns=429022 event_wait_ns=49500669 cookie=1295205166
+PAGE_FLIP index=254 fb=38 cookie=1295205167, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=764 elapsed_ns=49238215 ioctl_ns=430814 event_wait_ns=48807401 cookie=1295205167
+PAGE_FLIP index=255 fb=39 cookie=1295205168, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=767 elapsed_ns=49911624 ioctl_ns=2101462 event_wait_ns=47810162 cookie=1295205168
+PAGE_FLIP index=256 fb=38 cookie=1295205169, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=770 elapsed_ns=49938304 ioctl_ns=424465 event_wait_ns=49513839 cookie=1295205169
+PAGE_FLIP index=257 fb=39 cookie=1295205170, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=773 elapsed_ns=49232541 ioctl_ns=400501 event_wait_ns=48832040 cookie=1295205170
+PAGE_FLIP index=258 fb=38 cookie=1295205171, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=776 elapsed_ns=49906427 ioctl_ns=1949218 event_wait_ns=47957209 cookie=1295205171
+PAGE_FLIP index=259 fb=39 cookie=1295205172, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=779 elapsed_ns=49951155 ioctl_ns=469959 event_wait_ns=49481196 cookie=1295205172
+PAGE_FLIP index=260 fb=38 cookie=1295205173, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=782 elapsed_ns=49975161 ioctl_ns=433857 event_wait_ns=49541304 cookie=1295205173
+PAGE_FLIP index=261 fb=39 cookie=1295205174, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=785 elapsed_ns=49938467 ioctl_ns=447439 event_wait_ns=49491028 cookie=1295205174
+PAGE_FLIP index=262 fb=38 cookie=1295205175, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=788 elapsed_ns=49971364 ioctl_ns=448778 event_wait_ns=49522586 cookie=1295205175
+PAGE_FLIP index=263 fb=39 cookie=1295205176, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=791 elapsed_ns=49941594 ioctl_ns=439097 event_wait_ns=49502497 cookie=1295205176
+PAGE_FLIP index=264 fb=38 cookie=1295205177, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=794 elapsed_ns=49959226 ioctl_ns=440672 event_wait_ns=49518554 cookie=1295205177
+PAGE_FLIP index=265 fb=39 cookie=1295205178, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=797 elapsed_ns=49958713 ioctl_ns=412550 event_wait_ns=49546163 cookie=1295205178
+PAGE_FLIP index=266 fb=38 cookie=1295205179, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=800 elapsed_ns=49968292 ioctl_ns=451513 event_wait_ns=49516779 cookie=1295205179
+PAGE_FLIP index=267 fb=39 cookie=1295205180, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=803 elapsed_ns=49943598 ioctl_ns=433748 event_wait_ns=49509850 cookie=1295205180
+PAGE_FLIP index=268 fb=38 cookie=1295205181, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=806 elapsed_ns=49954167 ioctl_ns=433362 event_wait_ns=49520805 cookie=1295205181
+PAGE_FLIP index=269 fb=39 cookie=1295205182, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=809 elapsed_ns=49961429 ioctl_ns=438433 event_wait_ns=49522996 cookie=1295205182
+PAGE_FLIP index=270 fb=38 cookie=1295205183, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=812 elapsed_ns=49954982 ioctl_ns=445990 event_wait_ns=49508992 cookie=1295205183
+PAGE_FLIP index=271 fb=39 cookie=1295205184, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=815 elapsed_ns=49963179 ioctl_ns=440436 event_wait_ns=49522743 cookie=1295205184
+PAGE_FLIP index=272 fb=38 cookie=1295205185, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=818 elapsed_ns=49944522 ioctl_ns=401570 event_wait_ns=49542952 cookie=1295205185
+PAGE_FLIP index=273 fb=39 cookie=1295205186, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=821 elapsed_ns=49971141 ioctl_ns=404002 event_wait_ns=49567139 cookie=1295205186
+PAGE_FLIP index=274 fb=38 cookie=1295205187, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=824 elapsed_ns=49949374 ioctl_ns=426583 event_wait_ns=49522791 cookie=1295205187
+PAGE_FLIP index=275 fb=39 cookie=1295205188, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=827 elapsed_ns=49938871 ioctl_ns=426867 event_wait_ns=49512004 cookie=1295205188
+PAGE_FLIP index=276 fb=38 cookie=1295205189, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=830 elapsed_ns=49955610 ioctl_ns=430966 event_wait_ns=49524644 cookie=1295205189
+PAGE_FLIP index=277 fb=39 cookie=1295205190, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=833 elapsed_ns=49953377 ioctl_ns=428244 event_wait_ns=49525133 cookie=1295205190
+PAGE_FLIP index=278 fb=38 cookie=1295205191, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=836 elapsed_ns=49957294 ioctl_ns=443261 event_wait_ns=49514033 cookie=1295205191
+PAGE_FLIP index=279 fb=39 cookie=1295205192, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=839 elapsed_ns=49974497 ioctl_ns=487688 event_wait_ns=49486809 cookie=1295205192
+PAGE_FLIP index=280 fb=38 cookie=1295205193, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=842 elapsed_ns=49942215 ioctl_ns=431490 event_wait_ns=49510725 cookie=1295205193
+PAGE_FLIP index=281 fb=39 cookie=1295205194, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=845 elapsed_ns=49940079 ioctl_ns=459728 event_wait_ns=49480351 cookie=1295205194
+PAGE_FLIP index=282 fb=38 cookie=1295205195, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=848 elapsed_ns=49944081 ioctl_ns=459589 event_wait_ns=49484492 cookie=1295205195
+PAGE_FLIP index=283 fb=39 cookie=1295205196, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=851 elapsed_ns=49942402 ioctl_ns=460549 event_wait_ns=49481853 cookie=1295205196
+PAGE_FLIP index=284 fb=38 cookie=1295205197, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=854 elapsed_ns=49944310 ioctl_ns=482037 event_wait_ns=49462273 cookie=1295205197
+PAGE_FLIP index=285 fb=39 cookie=1295205198, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=857 elapsed_ns=49950539 ioctl_ns=439778 event_wait_ns=49510761 cookie=1295205198
+PAGE_FLIP index=286 fb=38 cookie=1295205199, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=860 elapsed_ns=49948312 ioctl_ns=480167 event_wait_ns=49468145 cookie=1295205199
+PAGE_FLIP index=287 fb=39 cookie=1295205200, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=863 elapsed_ns=49854461 ioctl_ns=423577 event_wait_ns=49430884 cookie=1295205200
+PAGE_FLIP index=288 fb=38 cookie=1295205201, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=866 elapsed_ns=49930028 ioctl_ns=461514 event_wait_ns=49468514 cookie=1295205201
+PAGE_FLIP index=289 fb=39 cookie=1295205202, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=869 elapsed_ns=49275482 ioctl_ns=428738 event_wait_ns=48846744 cookie=1295205202
+PAGE_FLIP index=290 fb=38 cookie=1295205203, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=872 elapsed_ns=49951137 ioctl_ns=423915 event_wait_ns=49527222 cookie=1295205203
+PAGE_FLIP index=291 fb=39 cookie=1295205204, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=875 elapsed_ns=49922694 ioctl_ns=474517 event_wait_ns=49448177 cookie=1295205204
+PAGE_FLIP index=292 fb=38 cookie=1295205205, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=878 elapsed_ns=49942994 ioctl_ns=427966 event_wait_ns=49515028 cookie=1295205205
+PAGE_FLIP index=293 fb=39 cookie=1295205206, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=881 elapsed_ns=49947069 ioctl_ns=427199 event_wait_ns=49519870 cookie=1295205206
+PAGE_FLIP index=294 fb=38 cookie=1295205207, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=884 elapsed_ns=49242610 ioctl_ns=424803 event_wait_ns=48817807 cookie=1295205207
+PAGE_FLIP index=295 fb=39 cookie=1295205208, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=887 elapsed_ns=49905280 ioctl_ns=7281718 event_wait_ns=42623562 cookie=1295205208
+PAGE_FLIP index=296 fb=38 cookie=1295205209, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=890 elapsed_ns=49993227 ioctl_ns=432680 event_wait_ns=49560547 cookie=1295205209
+PAGE_FLIP index=297 fb=39 cookie=1295205210, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=893 elapsed_ns=49906373 ioctl_ns=425557 event_wait_ns=49480816 cookie=1295205210
+PAGE_FLIP index=298 fb=38 cookie=1295205211, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=896 elapsed_ns=49279828 ioctl_ns=431436 event_wait_ns=48848392 cookie=1295205211
+PAGE_FLIP index=299 fb=39 cookie=1295205212, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=899 elapsed_ns=49963101 ioctl_ns=424574 event_wait_ns=49538527 cookie=1295205212
+PAGE_FLIP index=300 fb=38 cookie=1295205213, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=902 elapsed_ns=49918288 ioctl_ns=426426 event_wait_ns=49491862 cookie=1295205213
+PAGE_FLIP index=301 fb=39 cookie=1295205214, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=905 elapsed_ns=49934742 ioctl_ns=421054 event_wait_ns=49513688 cookie=1295205214
+PAGE_FLIP index=302 fb=38 cookie=1295205215, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=908 elapsed_ns=49266983 ioctl_ns=426933 event_wait_ns=48840050 cookie=1295205215
+PAGE_FLIP index=303 fb=39 cookie=1295205216, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=911 elapsed_ns=49905775 ioctl_ns=3934477 event_wait_ns=45971298 cookie=1295205216
+PAGE_FLIP index=304 fb=38 cookie=1295205217, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=914 elapsed_ns=49970954 ioctl_ns=473358 event_wait_ns=49497596 cookie=1295205217
+PAGE_FLIP index=305 fb=39 cookie=1295205218, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=917 elapsed_ns=49942626 ioctl_ns=417951 event_wait_ns=49524675 cookie=1295205218
+=== flip sample 305 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 8
+scanout_byte 1280
+vblank_count 18555
+copy_count 306
+copy_total_ns 10468084730
+copy_last_ns 34167015
+present_count 306
+wait_total_ns 4566249908
+PAGE_FLIP index=306 fb=38 cookie=1295205219, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=920 elapsed_ns=49594284 ioctl_ns=436917 event_wait_ns=49157367 cookie=1295205219
+PAGE_FLIP index=307 fb=39 cookie=1295205220, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=923 elapsed_ns=49955707 ioctl_ns=440678 event_wait_ns=49515029 cookie=1295205220
+PAGE_FLIP index=308 fb=38 cookie=1295205221, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=926 elapsed_ns=49951892 ioctl_ns=426487 event_wait_ns=49525405 cookie=1295205221
+PAGE_FLIP index=309 fb=39 cookie=1295205222, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=929 elapsed_ns=49280837 ioctl_ns=426789 event_wait_ns=48854048 cookie=1295205222
+PAGE_FLIP index=310 fb=38 cookie=1295205223, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=932 elapsed_ns=49951052 ioctl_ns=447957 event_wait_ns=49503095 cookie=1295205223
+PAGE_FLIP index=311 fb=39 cookie=1295205224, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=935 elapsed_ns=49950316 ioctl_ns=433199 event_wait_ns=49517117 cookie=1295205224
+PAGE_FLIP index=312 fb=38 cookie=1295205225, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=938 elapsed_ns=49955465 ioctl_ns=440419 event_wait_ns=49515046 cookie=1295205225
+PAGE_FLIP index=313 fb=39 cookie=1295205226, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=941 elapsed_ns=49966994 ioctl_ns=421567 event_wait_ns=49545427 cookie=1295205226
+PAGE_FLIP index=314 fb=38 cookie=1295205227, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=944 elapsed_ns=49955743 ioctl_ns=429191 event_wait_ns=49526552 cookie=1295205227
+PAGE_FLIP index=315 fb=39 cookie=1295205228, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=947 elapsed_ns=49928555 ioctl_ns=416925 event_wait_ns=49511630 cookie=1295205228
+PAGE_FLIP index=316 fb=38 cookie=1295205229, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=950 elapsed_ns=49193560 ioctl_ns=424652 event_wait_ns=48768908 cookie=1295205229
+PAGE_FLIP index=317 fb=39 cookie=1295205230, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=953 elapsed_ns=49963354 ioctl_ns=425298 event_wait_ns=49538056 cookie=1295205230
+PAGE_FLIP index=318 fb=38 cookie=1295205231, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=956 elapsed_ns=49928169 ioctl_ns=419793 event_wait_ns=49508376 cookie=1295205231
+PAGE_FLIP index=319 fb=39 cookie=1295205232, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=959 elapsed_ns=49179959 ioctl_ns=425201 event_wait_ns=48754758 cookie=1295205232
+PAGE_FLIP index=320 fb=38 cookie=1295205233, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=962 elapsed_ns=49953165 ioctl_ns=426270 event_wait_ns=49526895 cookie=1295205233
+PAGE_FLIP index=321 fb=39 cookie=1295205234, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=965 elapsed_ns=49940121 ioctl_ns=421290 event_wait_ns=49518831 cookie=1295205234
+PAGE_FLIP index=322 fb=38 cookie=1295205235, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=968 elapsed_ns=49970260 ioctl_ns=437159 event_wait_ns=49533101 cookie=1295205235
+PAGE_FLIP index=323 fb=39 cookie=1295205236, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=971 elapsed_ns=49940006 ioctl_ns=439368 event_wait_ns=49500638 cookie=1295205236
+PAGE_FLIP index=324 fb=38 cookie=1295205237, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=974 elapsed_ns=49972813 ioctl_ns=438855 event_wait_ns=49533958 cookie=1295205237
+PAGE_FLIP index=325 fb=39 cookie=1295205238, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=977 elapsed_ns=49948656 ioctl_ns=435559 event_wait_ns=49513097 cookie=1295205238
+PAGE_FLIP index=326 fb=38 cookie=1295205239, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=980 elapsed_ns=49967272 ioctl_ns=440769 event_wait_ns=49526503 cookie=1295205239
+PAGE_FLIP index=327 fb=39 cookie=1295205240, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=983 elapsed_ns=49943881 ioctl_ns=442857 event_wait_ns=49501024 cookie=1295205240
+PAGE_FLIP index=328 fb=38 cookie=1295205241, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=986 elapsed_ns=49963571 ioctl_ns=406283 event_wait_ns=49557288 cookie=1295205241
+PAGE_FLIP index=329 fb=39 cookie=1295205242, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=989 elapsed_ns=49942421 ioctl_ns=422467 event_wait_ns=49519954 cookie=1295205242
+PAGE_FLIP index=330 fb=38 cookie=1295205243, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=992 elapsed_ns=49945439 ioctl_ns=427965 event_wait_ns=49517474 cookie=1295205243
+PAGE_FLIP index=331 fb=39 cookie=1295205244, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=995 elapsed_ns=49955796 ioctl_ns=423510 event_wait_ns=49532286 cookie=1295205244
+PAGE_FLIP index=332 fb=38 cookie=1295205245, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=998 elapsed_ns=49947847 ioctl_ns=426294 event_wait_ns=49521553 cookie=1295205245
+PAGE_FLIP index=333 fb=39 cookie=1295205246, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1001 elapsed_ns=49951204 ioctl_ns=403906 event_wait_ns=49547298 cookie=1295205246
+PAGE_FLIP index=334 fb=38 cookie=1295205247, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1004 elapsed_ns=49955242 ioctl_ns=420288 event_wait_ns=49534954 cookie=1295205247
+PAGE_FLIP index=335 fb=39 cookie=1295205248, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1007 elapsed_ns=49948928 ioctl_ns=420010 event_wait_ns=49528918 cookie=1295205248
+PAGE_FLIP index=336 fb=38 cookie=1295205249, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1010 elapsed_ns=49950551 ioctl_ns=423155 event_wait_ns=49527396 cookie=1295205249
+PAGE_FLIP index=337 fb=39 cookie=1295205250, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1013 elapsed_ns=49954070 ioctl_ns=419267 event_wait_ns=49534803 cookie=1295205250
+PAGE_FLIP index=338 fb=38 cookie=1295205251, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1016 elapsed_ns=49954064 ioctl_ns=423879 event_wait_ns=49530185 cookie=1295205251
+PAGE_FLIP index=339 fb=39 cookie=1295205252, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1019 elapsed_ns=49944793 ioctl_ns=446062 event_wait_ns=49498731 cookie=1295205252
+PAGE_FLIP index=340 fb=38 cookie=1295205253, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1022 elapsed_ns=49310583 ioctl_ns=427766 event_wait_ns=48882817 cookie=1295205253
+PAGE_FLIP index=341 fb=39 cookie=1295205254, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1025 elapsed_ns=49930209 ioctl_ns=5083676 event_wait_ns=44846533 cookie=1295205254
+PAGE_FLIP index=342 fb=38 cookie=1295205255, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1028 elapsed_ns=49915137 ioctl_ns=423124 event_wait_ns=49492013 cookie=1295205255
+PAGE_FLIP index=343 fb=39 cookie=1295205256, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1031 elapsed_ns=49949658 ioctl_ns=458587 event_wait_ns=49491071 cookie=1295205256
+PAGE_FLIP index=344 fb=38 cookie=1295205257, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1034 elapsed_ns=50001431 ioctl_ns=440268 event_wait_ns=49561163 cookie=1295205257
+PAGE_FLIP index=345 fb=39 cookie=1295205258, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1037 elapsed_ns=49903530 ioctl_ns=440545 event_wait_ns=49462985 cookie=1295205258
+PAGE_FLIP index=346 fb=38 cookie=1295205259, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1040 elapsed_ns=50000513 ioctl_ns=454857 event_wait_ns=49545656 cookie=1295205259
+PAGE_FLIP index=347 fb=39 cookie=1295205260, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1043 elapsed_ns=49914178 ioctl_ns=439272 event_wait_ns=49474906 cookie=1295205260
+PAGE_FLIP index=348 fb=38 cookie=1295205261, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1046 elapsed_ns=49968624 ioctl_ns=442555 event_wait_ns=49526069 cookie=1295205261
+PAGE_FLIP index=349 fb=39 cookie=1295205262, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1049 elapsed_ns=49946942 ioctl_ns=415429 event_wait_ns=49531513 cookie=1295205262
+PAGE_FLIP index=350 fb=38 cookie=1295205263, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1052 elapsed_ns=49966022 ioctl_ns=438915 event_wait_ns=49527107 cookie=1295205263
+PAGE_FLIP index=351 fb=39 cookie=1295205264, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1055 elapsed_ns=49941141 ioctl_ns=437370 event_wait_ns=49503771 cookie=1295205264
+PAGE_FLIP index=352 fb=38 cookie=1295205265, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1058 elapsed_ns=49978198 ioctl_ns=432203 event_wait_ns=49545995 cookie=1295205265
+PAGE_FLIP index=353 fb=39 cookie=1295205266, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1061 elapsed_ns=49936789 ioctl_ns=444022 event_wait_ns=49492767 cookie=1295205266
+PAGE_FLIP index=354 fb=38 cookie=1295205267, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1064 elapsed_ns=49969892 ioctl_ns=442483 event_wait_ns=49527409 cookie=1295205267
+PAGE_FLIP index=355 fb=39 cookie=1295205268, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1067 elapsed_ns=49945246 ioctl_ns=442996 event_wait_ns=49502250 cookie=1295205268
+PAGE_FLIP index=356 fb=38 cookie=1295205269, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1070 elapsed_ns=49956908 ioctl_ns=440684 event_wait_ns=49516224 cookie=1295205269
+PAGE_FLIP index=357 fb=39 cookie=1295205270, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1073 elapsed_ns=49952290 ioctl_ns=438010 event_wait_ns=49514280 cookie=1295205270
+PAGE_FLIP index=358 fb=38 cookie=1295205271, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1076 elapsed_ns=49977407 ioctl_ns=440485 event_wait_ns=49536922 cookie=1295205271
+PAGE_FLIP index=359 fb=39 cookie=1295205272, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1079 elapsed_ns=49937568 ioctl_ns=444185 event_wait_ns=49493383 cookie=1295205272
+PAGE_FLIP index=360 fb=38 cookie=1295205273, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1082 elapsed_ns=49968358 ioctl_ns=445935 event_wait_ns=49522423 cookie=1295205273
+PAGE_FLIP index=361 fb=39 cookie=1295205274, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1085 elapsed_ns=49946531 ioctl_ns=416497 event_wait_ns=49530034 cookie=1295205274
+PAGE_FLIP index=362 fb=38 cookie=1295205275, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1088 elapsed_ns=49965394 ioctl_ns=441185 event_wait_ns=49524209 cookie=1295205275
+PAGE_FLIP index=363 fb=39 cookie=1295205276, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1091 elapsed_ns=49942747 ioctl_ns=442688 event_wait_ns=49500059 cookie=1295205276
+PAGE_FLIP index=364 fb=38 cookie=1295205277, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1094 elapsed_ns=49975879 ioctl_ns=443328 event_wait_ns=49532551 cookie=1295205277
+PAGE_FLIP index=365 fb=39 cookie=1295205278, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1097 elapsed_ns=49936257 ioctl_ns=436591 event_wait_ns=49499666 cookie=1295205278
+PAGE_FLIP index=366 fb=38 cookie=1295205279, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1100 elapsed_ns=49974412 ioctl_ns=438806 event_wait_ns=49535606 cookie=1295205279
+=== flip sample 366 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 8
+scanout_byte 1280
+vblank_count 18738
+copy_count 367
+copy_total_ns 12545556948
+copy_last_ns 34125275
+present_count 367
+wait_total_ns 5486189523
+PAGE_FLIP index=367 fb=39 cookie=1295205280, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1103 elapsed_ns=49595280 ioctl_ns=446340 event_wait_ns=49148940 cookie=1295205280
+PAGE_FLIP index=368 fb=38 cookie=1295205281, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1106 elapsed_ns=49944998 ioctl_ns=423010 event_wait_ns=49521988 cookie=1295205281
+PAGE_FLIP index=369 fb=39 cookie=1295205282, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1109 elapsed_ns=49944195 ioctl_ns=398919 event_wait_ns=49545276 cookie=1295205282
+PAGE_FLIP index=370 fb=38 cookie=1295205283, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1112 elapsed_ns=49960584 ioctl_ns=428588 event_wait_ns=49531996 cookie=1295205283
+PAGE_FLIP index=371 fb=39 cookie=1295205284, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1115 elapsed_ns=49923069 ioctl_ns=424097 event_wait_ns=49498972 cookie=1295205284
+PAGE_FLIP index=372 fb=38 cookie=1295205285, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1118 elapsed_ns=49956359 ioctl_ns=421471 event_wait_ns=49534888 cookie=1295205285
+PAGE_FLIP index=373 fb=39 cookie=1295205286, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1121 elapsed_ns=49936360 ioctl_ns=423806 event_wait_ns=49512554 cookie=1295205286
+PAGE_FLIP index=374 fb=38 cookie=1295205287, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1124 elapsed_ns=49189780 ioctl_ns=427313 event_wait_ns=48762467 cookie=1295205287
+PAGE_FLIP index=375 fb=39 cookie=1295205288, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1127 elapsed_ns=49969897 ioctl_ns=437038 event_wait_ns=49532859 cookie=1295205288
+PAGE_FLIP index=376 fb=38 cookie=1295205289, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1130 elapsed_ns=49936958 ioctl_ns=420644 event_wait_ns=49516314 cookie=1295205289
+PAGE_FLIP index=377 fb=39 cookie=1295205290, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1133 elapsed_ns=49172674 ioctl_ns=398768 event_wait_ns=48773906 cookie=1295205290
+PAGE_FLIP index=378 fb=38 cookie=1295205291, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1136 elapsed_ns=49963699 ioctl_ns=449310 event_wait_ns=49514389 cookie=1295205291
+PAGE_FLIP index=379 fb=39 cookie=1295205292, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1139 elapsed_ns=49940671 ioctl_ns=422896 event_wait_ns=49517775 cookie=1295205292
+PAGE_FLIP index=380 fb=38 cookie=1295205293, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1142 elapsed_ns=49245126 ioctl_ns=426867 event_wait_ns=48818259 cookie=1295205293
+PAGE_FLIP index=381 fb=39 cookie=1295205294, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1145 elapsed_ns=49907712 ioctl_ns=3034409 event_wait_ns=46873303 cookie=1295205294
+PAGE_FLIP index=382 fb=38 cookie=1295205295, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1148 elapsed_ns=49952628 ioctl_ns=420059 event_wait_ns=49532569 cookie=1295205295
+PAGE_FLIP index=383 fb=39 cookie=1295205296, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1151 elapsed_ns=49935201 ioctl_ns=426885 event_wait_ns=49508316 cookie=1295205296
+PAGE_FLIP index=384 fb=38 cookie=1295205297, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1154 elapsed_ns=49935998 ioctl_ns=396831 event_wait_ns=49539167 cookie=1295205297
+PAGE_FLIP index=385 fb=39 cookie=1295205298, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1157 elapsed_ns=49245525 ioctl_ns=426118 event_wait_ns=48819407 cookie=1295205298
+PAGE_FLIP index=386 fb=38 cookie=1295205299, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1160 elapsed_ns=49904181 ioctl_ns=2770338 event_wait_ns=47133843 cookie=1295205299
+PAGE_FLIP index=387 fb=39 cookie=1295205300, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1163 elapsed_ns=49942614 ioctl_ns=425865 event_wait_ns=49516749 cookie=1295205300
+PAGE_FLIP index=388 fb=38 cookie=1295205301, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1166 elapsed_ns=49955876 ioctl_ns=424386 event_wait_ns=49531490 cookie=1295205301
+PAGE_FLIP index=389 fb=39 cookie=1295205302, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1169 elapsed_ns=49924227 ioctl_ns=403156 event_wait_ns=49521071 cookie=1295205302
+PAGE_FLIP index=390 fb=38 cookie=1295205303, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1172 elapsed_ns=49958350 ioctl_ns=424332 event_wait_ns=49534018 cookie=1295205303
+PAGE_FLIP index=391 fb=39 cookie=1295205304, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1175 elapsed_ns=49939058 ioctl_ns=419708 event_wait_ns=49519350 cookie=1295205304
+PAGE_FLIP index=392 fb=38 cookie=1295205305, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1178 elapsed_ns=49947431 ioctl_ns=426595 event_wait_ns=49520836 cookie=1295205305
+PAGE_FLIP index=393 fb=39 cookie=1295205306, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1181 elapsed_ns=49924922 ioctl_ns=424929 event_wait_ns=49499993 cookie=1295205306
+PAGE_FLIP index=394 fb=38 cookie=1295205307, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1184 elapsed_ns=49968853 ioctl_ns=423910 event_wait_ns=49544943 cookie=1295205307
+PAGE_FLIP index=395 fb=39 cookie=1295205308, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1187 elapsed_ns=49919574 ioctl_ns=409350 event_wait_ns=49510224 cookie=1295205308
+PAGE_FLIP index=396 fb=38 cookie=1295205309, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1190 elapsed_ns=49953455 ioctl_ns=424242 event_wait_ns=49529213 cookie=1295205309
+PAGE_FLIP index=397 fb=39 cookie=1295205310, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1193 elapsed_ns=49939373 ioctl_ns=396439 event_wait_ns=49542934 cookie=1295205310
+PAGE_FLIP index=398 fb=38 cookie=1295205311, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1196 elapsed_ns=49240400 ioctl_ns=431292 event_wait_ns=48809108 cookie=1295205311
+PAGE_FLIP index=399 fb=39 cookie=1295205312, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1199 elapsed_ns=49903910 ioctl_ns=2102718 event_wait_ns=47801192 cookie=1295205312
+PAGE_FLIP index=400 fb=38 cookie=1295205313, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1202 elapsed_ns=49948656 ioctl_ns=423457 event_wait_ns=49525199 cookie=1295205313
+PAGE_FLIP index=401 fb=39 cookie=1295205314, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1205 elapsed_ns=49183739 ioctl_ns=418984 event_wait_ns=48764755 cookie=1295205314
+PAGE_FLIP index=402 fb=38 cookie=1295205315, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1208 elapsed_ns=49964718 ioctl_ns=439989 event_wait_ns=49524729 cookie=1295205315
+PAGE_FLIP index=403 fb=39 cookie=1295205316, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1211 elapsed_ns=49938697 ioctl_ns=444306 event_wait_ns=49494391 cookie=1295205316
+PAGE_FLIP index=404 fb=38 cookie=1295205317, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1214 elapsed_ns=49955851 ioctl_ns=434744 event_wait_ns=49521107 cookie=1295205317
+PAGE_FLIP index=405 fb=39 cookie=1295205318, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1217 elapsed_ns=49960662 ioctl_ns=416980 event_wait_ns=49543682 cookie=1295205318
+PAGE_FLIP index=406 fb=38 cookie=1295205319, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1220 elapsed_ns=49965364 ioctl_ns=442465 event_wait_ns=49522899 cookie=1295205319
+PAGE_FLIP index=407 fb=39 cookie=1295205320, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1223 elapsed_ns=49941738 ioctl_ns=439011 event_wait_ns=49502727 cookie=1295205320
+PAGE_FLIP index=408 fb=38 cookie=1295205321, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1226 elapsed_ns=49966161 ioctl_ns=441818 event_wait_ns=49524343 cookie=1295205321
+PAGE_FLIP index=409 fb=39 cookie=1295205322, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1229 elapsed_ns=49948572 ioctl_ns=427773 event_wait_ns=49520799 cookie=1295205322
+PAGE_FLIP index=410 fb=38 cookie=1295205323, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1232 elapsed_ns=49959213 ioctl_ns=434913 event_wait_ns=49524300 cookie=1295205323
+PAGE_FLIP index=411 fb=39 cookie=1295205324, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1235 elapsed_ns=49944087 ioctl_ns=436966 event_wait_ns=49507121 cookie=1295205324
+PAGE_FLIP index=412 fb=38 cookie=1295205325, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1238 elapsed_ns=49959744 ioctl_ns=439760 event_wait_ns=49519984 cookie=1295205325
+PAGE_FLIP index=413 fb=39 cookie=1295205326, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1241 elapsed_ns=49957662 ioctl_ns=441070 event_wait_ns=49516592 cookie=1295205326
+PAGE_FLIP index=414 fb=38 cookie=1295205327, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1244 elapsed_ns=49969861 ioctl_ns=441221 event_wait_ns=49528640 cookie=1295205327
+PAGE_FLIP index=415 fb=39 cookie=1295205328, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1247 elapsed_ns=49946145 ioctl_ns=448103 event_wait_ns=49498042 cookie=1295205328
+PAGE_FLIP index=416 fb=38 cookie=1295205329, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1250 elapsed_ns=49970404 ioctl_ns=445265 event_wait_ns=49525139 cookie=1295205329
+PAGE_FLIP index=417 fb=39 cookie=1295205330, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1253 elapsed_ns=49931483 ioctl_ns=420462 event_wait_ns=49511021 cookie=1295205330
+PAGE_FLIP index=418 fb=38 cookie=1295205331, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1256 elapsed_ns=49972873 ioctl_ns=439966 event_wait_ns=49532907 cookie=1295205331
+PAGE_FLIP index=419 fb=39 cookie=1295205332, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1259 elapsed_ns=49944377 ioctl_ns=437364 event_wait_ns=49507013 cookie=1295205332
+PAGE_FLIP index=420 fb=38 cookie=1295205333, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1262 elapsed_ns=49968968 ioctl_ns=439139 event_wait_ns=49529829 cookie=1295205333
+PAGE_FLIP index=421 fb=39 cookie=1295205334, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1265 elapsed_ns=49946260 ioctl_ns=435650 event_wait_ns=49510610 cookie=1295205334
+PAGE_FLIP index=422 fb=38 cookie=1295205335, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1268 elapsed_ns=49959968 ioctl_ns=433948 event_wait_ns=49526020 cookie=1295205335
+PAGE_FLIP index=423 fb=39 cookie=1295205336, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1271 elapsed_ns=49939360 ioctl_ns=425304 event_wait_ns=49514056 cookie=1295205336
+PAGE_FLIP index=424 fb=38 cookie=1295205337, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1274 elapsed_ns=49950020 ioctl_ns=421519 event_wait_ns=49528501 cookie=1295205337
+PAGE_FLIP index=425 fb=39 cookie=1295205338, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1277 elapsed_ns=49947853 ioctl_ns=402088 event_wait_ns=49545765 cookie=1295205338
+PAGE_FLIP index=426 fb=38 cookie=1295205339, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1280 elapsed_ns=49947147 ioctl_ns=427664 event_wait_ns=49519483 cookie=1295205339
+PAGE_FLIP index=427 fb=39 cookie=1295205340, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1283 elapsed_ns=49955060 ioctl_ns=424941 event_wait_ns=49530119 cookie=1295205340
+=== flip sample 427 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 0
+scanout_byte 0
+vblank_count 18921
+copy_count 428
+copy_total_ns 14626977521
+copy_last_ns 33970858
+present_count 428
+wait_total_ns 6389580515
+PAGE_FLIP index=428 fb=38 cookie=1295205341, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1286 elapsed_ns=49598545 ioctl_ns=454338 event_wait_ns=49144207 cookie=1295205341
+PAGE_FLIP index=429 fb=39 cookie=1295205342, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1289 elapsed_ns=49945511 ioctl_ns=428931 event_wait_ns=49516580 cookie=1295205342
+PAGE_FLIP index=430 fb=38 cookie=1295205343, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1292 elapsed_ns=49354870 ioctl_ns=436488 event_wait_ns=48918382 cookie=1295205343
+PAGE_FLIP index=431 fb=39 cookie=1295205344, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1295 elapsed_ns=49953341 ioctl_ns=437823 event_wait_ns=49515518 cookie=1295205344
+PAGE_FLIP index=432 fb=38 cookie=1295205345, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1298 elapsed_ns=49934284 ioctl_ns=445181 event_wait_ns=49489103 cookie=1295205345
+PAGE_FLIP index=433 fb=39 cookie=1295205346, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1301 elapsed_ns=49196661 ioctl_ns=399969 event_wait_ns=48796692 cookie=1295205346
+PAGE_FLIP index=434 fb=38 cookie=1295205347, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1304 elapsed_ns=49974412 ioctl_ns=437460 event_wait_ns=49536952 cookie=1295205347
+PAGE_FLIP index=435 fb=39 cookie=1295205348, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1307 elapsed_ns=49923377 ioctl_ns=423239 event_wait_ns=49500138 cookie=1295205348
+PAGE_FLIP index=436 fb=38 cookie=1295205349, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1310 elapsed_ns=49946465 ioctl_ns=456795 event_wait_ns=49489670 cookie=1295205349
+PAGE_FLIP index=437 fb=39 cookie=1295205350, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1313 elapsed_ns=49195159 ioctl_ns=425907 event_wait_ns=48769252 cookie=1295205350
+PAGE_FLIP index=438 fb=38 cookie=1295205351, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1316 elapsed_ns=49967664 ioctl_ns=438716 event_wait_ns=49528948 cookie=1295205351
+PAGE_FLIP index=439 fb=39 cookie=1295205352, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1319 elapsed_ns=49924590 ioctl_ns=431865 event_wait_ns=49492725 cookie=1295205352
+PAGE_FLIP index=440 fb=38 cookie=1295205353, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1322 elapsed_ns=49958646 ioctl_ns=438523 event_wait_ns=49520123 cookie=1295205353
+PAGE_FLIP index=441 fb=39 cookie=1295205354, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1325 elapsed_ns=49961839 ioctl_ns=429505 event_wait_ns=49532334 cookie=1295205354
+PAGE_FLIP index=442 fb=38 cookie=1295205355, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1328 elapsed_ns=49951257 ioctl_ns=452345 event_wait_ns=49498912 cookie=1295205355
+PAGE_FLIP index=443 fb=39 cookie=1295205356, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1331 elapsed_ns=49961024 ioctl_ns=442633 event_wait_ns=49518391 cookie=1295205356
+PAGE_FLIP index=444 fb=38 cookie=1295205357, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1334 elapsed_ns=49980346 ioctl_ns=445742 event_wait_ns=49534604 cookie=1295205357
+PAGE_FLIP index=445 fb=39 cookie=1295205358, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1337 elapsed_ns=49934918 ioctl_ns=408155 event_wait_ns=49526763 cookie=1295205358
+PAGE_FLIP index=446 fb=38 cookie=1295205359, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1340 elapsed_ns=49955827 ioctl_ns=450341 event_wait_ns=49505486 cookie=1295205359
+PAGE_FLIP index=447 fb=39 cookie=1295205360, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1343 elapsed_ns=49955368 ioctl_ns=433018 event_wait_ns=49522350 cookie=1295205360
+PAGE_FLIP index=448 fb=38 cookie=1295205361, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1346 elapsed_ns=49960535 ioctl_ns=442452 event_wait_ns=49518083 cookie=1295205361
+PAGE_FLIP index=449 fb=39 cookie=1295205362, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1349 elapsed_ns=49953358 ioctl_ns=441402 event_wait_ns=49511956 cookie=1295205362
+PAGE_FLIP index=450 fb=38 cookie=1295205363, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1352 elapsed_ns=49959364 ioctl_ns=442923 event_wait_ns=49516441 cookie=1295205363
+PAGE_FLIP index=451 fb=39 cookie=1295205364, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1355 elapsed_ns=49955784 ioctl_ns=434683 event_wait_ns=49521101 cookie=1295205364
+PAGE_FLIP index=452 fb=38 cookie=1295205365, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1358 elapsed_ns=49957016 ioctl_ns=449219 event_wait_ns=49507797 cookie=1295205365
+PAGE_FLIP index=453 fb=39 cookie=1295205366, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1361 elapsed_ns=49958000 ioctl_ns=410092 event_wait_ns=49547908 cookie=1295205366
+PAGE_FLIP index=454 fb=38 cookie=1295205367, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1364 elapsed_ns=49955736 ioctl_ns=440478 event_wait_ns=49515258 cookie=1295205367
+PAGE_FLIP index=455 fb=39 cookie=1295205368, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1367 elapsed_ns=49959962 ioctl_ns=440261 event_wait_ns=49519701 cookie=1295205368
+PAGE_FLIP index=456 fb=38 cookie=1295205369, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1370 elapsed_ns=49951668 ioctl_ns=449781 event_wait_ns=49501887 cookie=1295205369
+PAGE_FLIP index=457 fb=39 cookie=1295205370, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1373 elapsed_ns=49957017 ioctl_ns=435680 event_wait_ns=49521337 cookie=1295205370
+PAGE_FLIP index=458 fb=38 cookie=1295205371, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1376 elapsed_ns=49972270 ioctl_ns=445362 event_wait_ns=49526908 cookie=1295205371
+PAGE_FLIP index=459 fb=39 cookie=1295205372, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1379 elapsed_ns=49940000 ioctl_ns=434467 event_wait_ns=49505533 cookie=1295205372
+PAGE_FLIP index=460 fb=38 cookie=1295205373, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1382 elapsed_ns=49960843 ioctl_ns=433085 event_wait_ns=49527758 cookie=1295205373
+PAGE_FLIP index=461 fb=39 cookie=1295205374, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1385 elapsed_ns=49955410 ioctl_ns=415199 event_wait_ns=49540211 cookie=1295205374
+PAGE_FLIP index=462 fb=38 cookie=1295205375, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1388 elapsed_ns=49959630 ioctl_ns=446231 event_wait_ns=49513399 cookie=1295205375
+PAGE_FLIP index=463 fb=39 cookie=1295205376, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1391 elapsed_ns=49956570 ioctl_ns=434763 event_wait_ns=49521807 cookie=1295205376
+PAGE_FLIP index=464 fb=38 cookie=1295205377, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1394 elapsed_ns=49961483 ioctl_ns=442302 event_wait_ns=49519181 cookie=1295205377
+PAGE_FLIP index=465 fb=39 cookie=1295205378, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1397 elapsed_ns=49952706 ioctl_ns=435620 event_wait_ns=49517086 cookie=1295205378
+PAGE_FLIP index=466 fb=38 cookie=1295205379, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1400 elapsed_ns=49972825 ioctl_ns=440346 event_wait_ns=49532479 cookie=1295205379
+PAGE_FLIP index=467 fb=39 cookie=1295205380, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1403 elapsed_ns=49940489 ioctl_ns=439851 event_wait_ns=49500638 cookie=1295205380
+PAGE_FLIP index=468 fb=38 cookie=1295205381, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1406 elapsed_ns=49962920 ioctl_ns=442525 event_wait_ns=49520395 cookie=1295205381
+PAGE_FLIP index=469 fb=39 cookie=1295205382, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1409 elapsed_ns=49951511 ioctl_ns=428533 event_wait_ns=49522978 cookie=1295205382
+PAGE_FLIP index=470 fb=38 cookie=1295205383, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1412 elapsed_ns=49970646 ioctl_ns=439694 event_wait_ns=49530952 cookie=1295205383
+PAGE_FLIP index=471 fb=39 cookie=1295205384, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1415 elapsed_ns=49942481 ioctl_ns=435462 event_wait_ns=49507019 cookie=1295205384
+PAGE_FLIP index=472 fb=38 cookie=1295205385, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1418 elapsed_ns=49950056 ioctl_ns=1019331 event_wait_ns=48930725 cookie=1295205385
+PAGE_FLIP index=473 fb=39 cookie=1295205386, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1421 elapsed_ns=49967731 ioctl_ns=418990 event_wait_ns=49548741 cookie=1295205386
+PAGE_FLIP index=474 fb=38 cookie=1295205387, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1424 elapsed_ns=49967042 ioctl_ns=444716 event_wait_ns=49522326 cookie=1295205387
+PAGE_FLIP index=475 fb=39 cookie=1295205388, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1427 elapsed_ns=49963843 ioctl_ns=441498 event_wait_ns=49522345 cookie=1295205388
+PAGE_FLIP index=476 fb=38 cookie=1295205389, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1430 elapsed_ns=49948052 ioctl_ns=422822 event_wait_ns=49525230 cookie=1295205389
+PAGE_FLIP index=477 fb=39 cookie=1295205390, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1433 elapsed_ns=49937683 ioctl_ns=458726 event_wait_ns=49478957 cookie=1295205390
+PAGE_FLIP index=478 fb=38 cookie=1295205391, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1436 elapsed_ns=49954891 ioctl_ns=462643 event_wait_ns=49492248 cookie=1295205391
+PAGE_FLIP index=479 fb=39 cookie=1295205392, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1439 elapsed_ns=49944715 ioctl_ns=470491 event_wait_ns=49474224 cookie=1295205392
+PAGE_FLIP index=480 fb=38 cookie=1295205393, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1442 elapsed_ns=49945771 ioctl_ns=452412 event_wait_ns=49493359 cookie=1295205393
+PAGE_FLIP index=481 fb=39 cookie=1295205394, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1445 elapsed_ns=49991658 ioctl_ns=565687 event_wait_ns=49425971 cookie=1295205394
+PAGE_FLIP index=482 fb=38 cookie=1295205395, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1448 elapsed_ns=49889194 ioctl_ns=2994963 event_wait_ns=46894231 cookie=1295205395
+PAGE_FLIP index=483 fb=39 cookie=1295205396, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1451 elapsed_ns=49948318 ioctl_ns=428835 event_wait_ns=49519483 cookie=1295205396
+PAGE_FLIP index=484 fb=38 cookie=1295205397, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1454 elapsed_ns=49941564 ioctl_ns=454580 event_wait_ns=49486984 cookie=1295205397
+PAGE_FLIP index=485 fb=39 cookie=1295205398, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1457 elapsed_ns=49309834 ioctl_ns=426064 event_wait_ns=48883770 cookie=1295205398
+PAGE_FLIP index=486 fb=38 cookie=1295205399, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1460 elapsed_ns=49945372 ioctl_ns=427217 event_wait_ns=49518155 cookie=1295205399
+PAGE_FLIP index=487 fb=39 cookie=1295205400, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1463 elapsed_ns=49926521 ioctl_ns=463386 event_wait_ns=49463135 cookie=1295205400
+PAGE_FLIP index=488 fb=38 cookie=1295205401, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1466 elapsed_ns=49947032 ioctl_ns=426987 event_wait_ns=49520045 cookie=1295205401
+=== flip sample 488 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 19104
+copy_count 489
+copy_total_ns 16708334283
+copy_last_ns 33931411
+present_count 489
+wait_total_ns 7309696529
+PAGE_FLIP index=489 fb=39 cookie=1295205402, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1469 elapsed_ns=49550667 ioctl_ns=428745 event_wait_ns=49121922 cookie=1295205402
+PAGE_FLIP index=490 fb=38 cookie=1295205403, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1472 elapsed_ns=49935860 ioctl_ns=429222 event_wait_ns=49506638 cookie=1295205403
+PAGE_FLIP index=491 fb=39 cookie=1295205404, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1475 elapsed_ns=49980588 ioctl_ns=436392 event_wait_ns=49544196 cookie=1295205404
+PAGE_FLIP index=492 fb=38 cookie=1295205405, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1478 elapsed_ns=49936203 ioctl_ns=434466 event_wait_ns=49501737 cookie=1295205405
+PAGE_FLIP index=493 fb=39 cookie=1295205406, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1481 elapsed_ns=49964151 ioctl_ns=443684 event_wait_ns=49520467 cookie=1295205406
+PAGE_FLIP index=494 fb=38 cookie=1295205407, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1484 elapsed_ns=49948306 ioctl_ns=445380 event_wait_ns=49502926 cookie=1295205407
+PAGE_FLIP index=495 fb=39 cookie=1295205408, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1487 elapsed_ns=49965847 ioctl_ns=466386 event_wait_ns=49499461 cookie=1295205408
+PAGE_FLIP index=496 fb=38 cookie=1295205409, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1490 elapsed_ns=49943634 ioctl_ns=416400 event_wait_ns=49527234 cookie=1295205409
+PAGE_FLIP index=497 fb=39 cookie=1295205410, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1493 elapsed_ns=49972535 ioctl_ns=442470 event_wait_ns=49530065 cookie=1295205410
+PAGE_FLIP index=498 fb=38 cookie=1295205411, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1496 elapsed_ns=49941069 ioctl_ns=431992 event_wait_ns=49509077 cookie=1295205411
+PAGE_FLIP index=499 fb=39 cookie=1295205412, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1499 elapsed_ns=49970972 ioctl_ns=436845 event_wait_ns=49534127 cookie=1295205412
+PAGE_FLIP index=500 fb=38 cookie=1295205413, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1502 elapsed_ns=49941829 ioctl_ns=444801 event_wait_ns=49497028 cookie=1295205413
+PAGE_FLIP index=501 fb=39 cookie=1295205414, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1505 elapsed_ns=49974353 ioctl_ns=442676 event_wait_ns=49531677 cookie=1295205414
+PAGE_FLIP index=502 fb=38 cookie=1295205415, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1508 elapsed_ns=49939542 ioctl_ns=439797 event_wait_ns=49499745 cookie=1295205415
+PAGE_FLIP index=503 fb=39 cookie=1295205416, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1511 elapsed_ns=49976821 ioctl_ns=429560 event_wait_ns=49547261 cookie=1295205416
+PAGE_FLIP index=504 fb=38 cookie=1295205417, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1514 elapsed_ns=49936071 ioctl_ns=441342 event_wait_ns=49494729 cookie=1295205417
+PAGE_FLIP index=505 fb=39 cookie=1295205418, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1517 elapsed_ns=49971998 ioctl_ns=439839 event_wait_ns=49532159 cookie=1295205418
+PAGE_FLIP index=506 fb=38 cookie=1295205419, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1520 elapsed_ns=49943375 ioctl_ns=438058 event_wait_ns=49505317 cookie=1295205419
+PAGE_FLIP index=507 fb=39 cookie=1295205420, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1523 elapsed_ns=49972680 ioctl_ns=436259 event_wait_ns=49536421 cookie=1295205420
+PAGE_FLIP index=508 fb=38 cookie=1295205421, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1526 elapsed_ns=49933867 ioctl_ns=442621 event_wait_ns=49491246 cookie=1295205421
+PAGE_FLIP index=509 fb=39 cookie=1295205422, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1529 elapsed_ns=49953443 ioctl_ns=419292 event_wait_ns=49534151 cookie=1295205422
+PAGE_FLIP index=510 fb=38 cookie=1295205423, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1532 elapsed_ns=49961235 ioctl_ns=443014 event_wait_ns=49518221 cookie=1295205423
+PAGE_FLIP index=511 fb=39 cookie=1295205424, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1535 elapsed_ns=49969366 ioctl_ns=450294 event_wait_ns=49519072 cookie=1295205424
+PAGE_FLIP index=512 fb=38 cookie=1295205425, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1538 elapsed_ns=49941334 ioctl_ns=436326 event_wait_ns=49505008 cookie=1295205425
+PAGE_FLIP index=513 fb=39 cookie=1295205426, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1541 elapsed_ns=49975559 ioctl_ns=442736 event_wait_ns=49532823 cookie=1295205426
+PAGE_FLIP index=514 fb=38 cookie=1295205427, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1544 elapsed_ns=49937097 ioctl_ns=432451 event_wait_ns=49504646 cookie=1295205427
+PAGE_FLIP index=515 fb=39 cookie=1295205428, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1547 elapsed_ns=49955417 ioctl_ns=447197 event_wait_ns=49508220 cookie=1295205428
+PAGE_FLIP index=516 fb=38 cookie=1295205429, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1550 elapsed_ns=49960892 ioctl_ns=444698 event_wait_ns=49516194 cookie=1295205429
+PAGE_FLIP index=517 fb=39 cookie=1295205430, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1553 elapsed_ns=49957095 ioctl_ns=417807 event_wait_ns=49539288 cookie=1295205430
+PAGE_FLIP index=518 fb=38 cookie=1295205431, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1556 elapsed_ns=49954547 ioctl_ns=444118 event_wait_ns=49510429 cookie=1295205431
+PAGE_FLIP index=519 fb=39 cookie=1295205432, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1559 elapsed_ns=49957849 ioctl_ns=438589 event_wait_ns=49519260 cookie=1295205432
+PAGE_FLIP index=520 fb=38 cookie=1295205433, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1562 elapsed_ns=49955525 ioctl_ns=444269 event_wait_ns=49511256 cookie=1295205433
+PAGE_FLIP index=521 fb=39 cookie=1295205434, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1565 elapsed_ns=49953648 ioctl_ns=445386 event_wait_ns=49508262 cookie=1295205434
+PAGE_FLIP index=522 fb=38 cookie=1295205435, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1568 elapsed_ns=49958935 ioctl_ns=433730 event_wait_ns=49525205 cookie=1295205435
+PAGE_FLIP index=523 fb=39 cookie=1295205436, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1571 elapsed_ns=49952078 ioctl_ns=437134 event_wait_ns=49514944 cookie=1295205436
+PAGE_FLIP index=524 fb=38 cookie=1295205437, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1574 elapsed_ns=50000477 ioctl_ns=443618 event_wait_ns=49556859 cookie=1295205437
+PAGE_FLIP index=525 fb=39 cookie=1295205438, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1577 elapsed_ns=49908969 ioctl_ns=435354 event_wait_ns=49473615 cookie=1295205438
+PAGE_FLIP index=526 fb=38 cookie=1295205439, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1580 elapsed_ns=49960886 ioctl_ns=446244 event_wait_ns=49514642 cookie=1295205439
+PAGE_FLIP index=527 fb=39 cookie=1295205440, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1583 elapsed_ns=49954282 ioctl_ns=439470 event_wait_ns=49514812 cookie=1295205440
+PAGE_FLIP index=528 fb=38 cookie=1295205441, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1586 elapsed_ns=49955851 ioctl_ns=450637 event_wait_ns=49505214 cookie=1295205441
+PAGE_FLIP index=529 fb=39 cookie=1295205442, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1589 elapsed_ns=49958127 ioctl_ns=414149 event_wait_ns=49543978 cookie=1295205442
+PAGE_FLIP index=530 fb=38 cookie=1295205443, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1592 elapsed_ns=49972946 ioctl_ns=443165 event_wait_ns=49529781 cookie=1295205443
+PAGE_FLIP index=531 fb=39 cookie=1295205444, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1595 elapsed_ns=49942686 ioctl_ns=441227 event_wait_ns=49501459 cookie=1295205444
+PAGE_FLIP index=532 fb=38 cookie=1295205445, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1598 elapsed_ns=49953938 ioctl_ns=441650 event_wait_ns=49512288 cookie=1295205445
+PAGE_FLIP index=533 fb=39 cookie=1295205446, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1601 elapsed_ns=50003410 ioctl_ns=446128 event_wait_ns=49557282 cookie=1295205446
+PAGE_FLIP index=534 fb=38 cookie=1295205447, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1604 elapsed_ns=49915318 ioctl_ns=440436 event_wait_ns=49474882 cookie=1295205447
+PAGE_FLIP index=535 fb=39 cookie=1295205448, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1607 elapsed_ns=49971720 ioctl_ns=440140 event_wait_ns=49531580 cookie=1295205448
+PAGE_FLIP index=536 fb=38 cookie=1295205449, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1610 elapsed_ns=49940893 ioctl_ns=443309 event_wait_ns=49497584 cookie=1295205449
+PAGE_FLIP index=537 fb=39 cookie=1295205450, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1613 elapsed_ns=50003193 ioctl_ns=411746 event_wait_ns=49591447 cookie=1295205450
+PAGE_FLIP index=538 fb=38 cookie=1295205451, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1616 elapsed_ns=49907163 ioctl_ns=438946 event_wait_ns=49468217 cookie=1295205451
+PAGE_FLIP index=539 fb=39 cookie=1295205452, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1619 elapsed_ns=49998811 ioctl_ns=441293 event_wait_ns=49557518 cookie=1295205452
+PAGE_FLIP index=540 fb=38 cookie=1295205453, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1622 elapsed_ns=49914316 ioctl_ns=429034 event_wait_ns=49485282 cookie=1295205453
+PAGE_FLIP index=541 fb=39 cookie=1295205454, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1625 elapsed_ns=49949779 ioctl_ns=430767 event_wait_ns=49519012 cookie=1295205454
+PAGE_FLIP index=542 fb=38 cookie=1295205455, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1628 elapsed_ns=49926171 ioctl_ns=419696 event_wait_ns=49506475 cookie=1295205455
+PAGE_FLIP index=543 fb=39 cookie=1295205456, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1631 elapsed_ns=49299126 ioctl_ns=427398 event_wait_ns=48871728 cookie=1295205456
+PAGE_FLIP index=544 fb=38 cookie=1295205457, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1634 elapsed_ns=48670337 ioctl_ns=424447 event_wait_ns=48245890 cookie=1295205457
+PAGE_FLIP index=545 fb=39 cookie=1295205458, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1637 elapsed_ns=49971243 ioctl_ns=404895 event_wait_ns=49566348 cookie=1295205458
+PAGE_FLIP index=546 fb=38 cookie=1295205459, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1640 elapsed_ns=49936240 ioctl_ns=428183 event_wait_ns=49508057 cookie=1295205459
+PAGE_FLIP index=547 fb=39 cookie=1295205460, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1643 elapsed_ns=49217891 ioctl_ns=424314 event_wait_ns=48793577 cookie=1295205460
+PAGE_FLIP index=548 fb=38 cookie=1295205461, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1646 elapsed_ns=48632194 ioctl_ns=420239 event_wait_ns=48211955 cookie=1295205461
+PAGE_FLIP index=549 fb=39 cookie=1295205462, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1649 elapsed_ns=49970350 ioctl_ns=444288 event_wait_ns=49526062 cookie=1295205462
+=== flip sample 549 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 19287
+copy_count 550
+copy_total_ns 18786477601
+copy_last_ns 34183241
+present_count 550
+wait_total_ns 8233712311
+PAGE_FLIP index=550 fb=38 cookie=1295205463, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1652 elapsed_ns=49579701 ioctl_ns=423668 event_wait_ns=49156033 cookie=1295205463
+PAGE_FLIP index=551 fb=39 cookie=1295205464, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1655 elapsed_ns=49973097 ioctl_ns=436869 event_wait_ns=49536228 cookie=1295205464
+PAGE_FLIP index=552 fb=38 cookie=1295205465, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1658 elapsed_ns=49992647 ioctl_ns=397132 event_wait_ns=49595515 cookie=1295205465
+PAGE_FLIP index=553 fb=39 cookie=1295205466, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1661 elapsed_ns=49159872 ioctl_ns=421393 event_wait_ns=48738479 cookie=1295205466
+PAGE_FLIP index=554 fb=38 cookie=1295205467, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1664 elapsed_ns=49937145 ioctl_ns=432154 event_wait_ns=49504991 cookie=1295205467
+PAGE_FLIP index=555 fb=39 cookie=1295205468, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1667 elapsed_ns=49952658 ioctl_ns=424362 event_wait_ns=49528296 cookie=1295205468
+PAGE_FLIP index=556 fb=38 cookie=1295205469, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1670 elapsed_ns=49929129 ioctl_ns=423589 event_wait_ns=49505540 cookie=1295205469
+PAGE_FLIP index=557 fb=39 cookie=1295205470, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1673 elapsed_ns=49186159 ioctl_ns=404213 event_wait_ns=48781946 cookie=1295205470
+PAGE_FLIP index=558 fb=38 cookie=1295205471, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1676 elapsed_ns=49939161 ioctl_ns=427960 event_wait_ns=49511201 cookie=1295205471
+PAGE_FLIP index=559 fb=39 cookie=1295205472, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1679 elapsed_ns=49239513 ioctl_ns=412833 event_wait_ns=48826680 cookie=1295205472
+PAGE_FLIP index=560 fb=38 cookie=1295205473, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1682 elapsed_ns=49909144 ioctl_ns=3846820 event_wait_ns=46062324 cookie=1295205473
+PAGE_FLIP index=561 fb=39 cookie=1295205474, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1685 elapsed_ns=49947479 ioctl_ns=420415 event_wait_ns=49527064 cookie=1295205474
+PAGE_FLIP index=562 fb=38 cookie=1295205475, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1688 elapsed_ns=49884286 ioctl_ns=424495 event_wait_ns=49459791 cookie=1295205475
+PAGE_FLIP index=563 fb=39 cookie=1295205476, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1691 elapsed_ns=49936578 ioctl_ns=418332 event_wait_ns=49518246 cookie=1295205476
+PAGE_FLIP index=564 fb=38 cookie=1295205477, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1694 elapsed_ns=49968358 ioctl_ns=422902 event_wait_ns=49545456 cookie=1295205477
+PAGE_FLIP index=565 fb=39 cookie=1295205478, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1697 elapsed_ns=49923636 ioctl_ns=399294 event_wait_ns=49524342 cookie=1295205478
+PAGE_FLIP index=566 fb=38 cookie=1295205479, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1700 elapsed_ns=49955176 ioctl_ns=422962 event_wait_ns=49532214 cookie=1295205479
+PAGE_FLIP index=567 fb=39 cookie=1295205480, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1703 elapsed_ns=49929853 ioctl_ns=422823 event_wait_ns=49507030 cookie=1295205480
+PAGE_FLIP index=568 fb=38 cookie=1295205481, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1706 elapsed_ns=49959775 ioctl_ns=419449 event_wait_ns=49540326 cookie=1295205481
+PAGE_FLIP index=569 fb=39 cookie=1295205482, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1709 elapsed_ns=49926135 ioctl_ns=419937 event_wait_ns=49506198 cookie=1295205482
+PAGE_FLIP index=570 fb=38 cookie=1295205483, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1712 elapsed_ns=49232378 ioctl_ns=422056 event_wait_ns=48810322 cookie=1295205483
+PAGE_FLIP index=571 fb=39 cookie=1295205484, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1715 elapsed_ns=49902606 ioctl_ns=3278639 event_wait_ns=46623967 cookie=1295205484
+PAGE_FLIP index=572 fb=38 cookie=1295205485, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1718 elapsed_ns=49937556 ioctl_ns=427725 event_wait_ns=49509831 cookie=1295205485
+PAGE_FLIP index=573 fb=39 cookie=1295205486, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1721 elapsed_ns=49254005 ioctl_ns=400917 event_wait_ns=48853088 cookie=1295205486
+PAGE_FLIP index=574 fb=38 cookie=1295205487, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1724 elapsed_ns=49907671 ioctl_ns=3124620 event_wait_ns=46783051 cookie=1295205487
+PAGE_FLIP index=575 fb=39 cookie=1295205488, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1727 elapsed_ns=49939608 ioctl_ns=422286 event_wait_ns=49517322 cookie=1295205488
+PAGE_FLIP index=576 fb=38 cookie=1295205489, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1730 elapsed_ns=49249183 ioctl_ns=418344 event_wait_ns=48830839 cookie=1295205489
+PAGE_FLIP index=577 fb=39 cookie=1295205490, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1733 elapsed_ns=49904972 ioctl_ns=2972218 event_wait_ns=46932754 cookie=1295205490
+PAGE_FLIP index=578 fb=38 cookie=1295205491, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1736 elapsed_ns=49938050 ioctl_ns=420975 event_wait_ns=49517075 cookie=1295205491
+PAGE_FLIP index=579 fb=39 cookie=1295205492, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1739 elapsed_ns=49250028 ioctl_ns=425479 event_wait_ns=48824549 cookie=1295205492
+PAGE_FLIP index=580 fb=38 cookie=1295205493, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1742 elapsed_ns=49889447 ioctl_ns=2808438 event_wait_ns=47081009 cookie=1295205493
+PAGE_FLIP index=581 fb=39 cookie=1295205494, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1745 elapsed_ns=49954674 ioctl_ns=418108 event_wait_ns=49536566 cookie=1295205494
+PAGE_FLIP index=582 fb=38 cookie=1295205495, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1748 elapsed_ns=49959660 ioctl_ns=429287 event_wait_ns=49530373 cookie=1295205495
+PAGE_FLIP index=583 fb=39 cookie=1295205496, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1751 elapsed_ns=49921047 ioctl_ns=427586 event_wait_ns=49493461 cookie=1295205496
+PAGE_FLIP index=584 fb=38 cookie=1295205497, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1754 elapsed_ns=49248308 ioctl_ns=421942 event_wait_ns=48826366 cookie=1295205497
+PAGE_FLIP index=585 fb=39 cookie=1295205498, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1757 elapsed_ns=49901194 ioctl_ns=2563068 event_wait_ns=47338126 cookie=1295205498
+PAGE_FLIP index=586 fb=38 cookie=1295205499, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1760 elapsed_ns=49951850 ioctl_ns=429155 event_wait_ns=49522695 cookie=1295205499
+PAGE_FLIP index=587 fb=39 cookie=1295205500, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1763 elapsed_ns=49258122 ioctl_ns=428394 event_wait_ns=48829728 cookie=1295205500
+PAGE_FLIP index=588 fb=38 cookie=1295205501, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1766 elapsed_ns=49938322 ioctl_ns=421103 event_wait_ns=49517219 cookie=1295205501
+PAGE_FLIP index=589 fb=39 cookie=1295205502, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1769 elapsed_ns=49241203 ioctl_ns=426541 event_wait_ns=48814662 cookie=1295205502
+PAGE_FLIP index=590 fb=38 cookie=1295205503, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1772 elapsed_ns=49889622 ioctl_ns=2298695 event_wait_ns=47590927 cookie=1295205503
+PAGE_FLIP index=591 fb=39 cookie=1295205504, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1775 elapsed_ns=49967936 ioctl_ns=422449 event_wait_ns=49545487 cookie=1295205504
+PAGE_FLIP index=592 fb=38 cookie=1295205505, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1778 elapsed_ns=49946888 ioctl_ns=428974 event_wait_ns=49517914 cookie=1295205505
+PAGE_FLIP index=593 fb=39 cookie=1295205506, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1781 elapsed_ns=49936783 ioctl_ns=399155 event_wait_ns=49537628 cookie=1295205506
+PAGE_FLIP index=594 fb=38 cookie=1295205507, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1784 elapsed_ns=49963620 ioctl_ns=426807 event_wait_ns=49536813 cookie=1295205507
+PAGE_FLIP index=595 fb=39 cookie=1295205508, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1787 elapsed_ns=49923558 ioctl_ns=420795 event_wait_ns=49502763 cookie=1295205508
+PAGE_FLIP index=596 fb=38 cookie=1295205509, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1790 elapsed_ns=49180920 ioctl_ns=422775 event_wait_ns=48758145 cookie=1295205509
+PAGE_FLIP index=597 fb=39 cookie=1295205510, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1793 elapsed_ns=49970688 ioctl_ns=435553 event_wait_ns=49535135 cookie=1295205510
+PAGE_FLIP index=598 fb=38 cookie=1295205511, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1796 elapsed_ns=49933372 ioctl_ns=436706 event_wait_ns=49496666 cookie=1295205511
+PAGE_FLIP index=599 fb=39 cookie=1295205512, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1799 elapsed_ns=49968569 ioctl_ns=437690 event_wait_ns=49530879 cookie=1295205512
+PAGE_FLIP index=600 fb=38 cookie=1295205513, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1802 elapsed_ns=49943713 ioctl_ns=438348 event_wait_ns=49505365 cookie=1295205513
+total: flips=600 elapsed_ns=30030426046 cadence_hz=19.980 reference_hz=60
+ioctl_ns includes all ioctl work (not exclusively CPU copy); event_wait_ns follows return.
+cadence gate: BELOW threshold (>=95% refresh required); not a hardware presentation PASS
+=== after flip (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 16
+scanout_byte 37888
+vblank_count 19440
+copy_count 601
+copy_total_ns 20526216405
+copy_last_ns 33980183
+present_count 601
+wait_total_ns 8978586985
+=== after flip sample 2 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 168
+scanout_byte 887808
+vblank_count 19440
+copy_count 601
+copy_total_ns 20526216405
+copy_last_ns 33980183
+present_count 601
+wait_total_ns 8978586985
+=== after flip sample 3 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 616
+scanout_byte 3155200
+vblank_count 19440
+copy_count 601
+copy_total_ns 20526216405
+copy_last_ns 33980183
+present_count 601
+wait_total_ns 8978586985
+DRM-side completion only; compare selector and scanout evidence separately.
+cleanup: disable probe CRTC
+=== after cleanup (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 536
+scanout_byte 2760448
+vblank_count 19441
+copy_count 601
+copy_total_ns 20526216405
+copy_last_ns 33980183
+present_count 601
+wait_total_ns 8978586985

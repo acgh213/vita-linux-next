@@ -1,0 +1,38 @@
+[
+  {
+    "s": 0.0,
+    "ssh": false,
+    "ftp": false,
+    "control": false
+  },
+  {
+    "s": 5.08,
+    "ssh": false,
+    "ftp": false,
+    "control": false
+  },
+  {
+    "s": 10.2,
+    "ssh": false,
+    "ftp": false,
+    "control": false
+  },
+  {
+    "s": 15.32,
+    "ssh": false,
+    "ftp": false,
+    "control": false
+  },
+  {
+    "s": 23.32,
+    "ssh": false,
+    "ftp": false,
+    "control": false
+  },
+  {
+    "s": 31.33,
+    "ssh": false,
+    "ftp": true,
+    "control": true
+  }
+]

@@ -1,0 +1,16 @@
+2026-10-21T23:07:29.864105+00:00
+6.12.0-g4c46f62c3178
+1216.20 4422.33
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 704
+scanout_byte 3621120
+vblank_count 72793
+1226.24 4458.37
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 216
+scanout_byte 1136640
+vblank_count 73395

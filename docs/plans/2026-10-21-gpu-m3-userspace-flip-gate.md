@@ -1,6 +1,10 @@
 # GPU lane — M3 gate: userspace page flips through the standard DRM ABI
 
-**Status:** design, not started. **Date:** 2026-10-21.
+**Status:** PARTIAL — B2 PASS; C native opaque ABGR8888 PASS (~59.94 FPS, twice), legacy XRGB conversion still ~20 FPS; scoped D recovery checks passed; E Linux fbcon/readback/reboot passed but physical HDMI gate FAIL (Cassie reports connected TV is black). **Date:** 2026-10-21.
+
+Latest evidence: [`lab/gpu-m3-native-format-comparison-2026-10-21.md`](../../lab/gpu-m3-native-format-comparison-2026-10-21.md).
+Earlier XRGB throughput failures remain recorded in `lab/gpu-m3-cde-results-2026-10-21.md`; native success does not erase them.
+The rationale below preserves the original design context; it is not a claim the gate is unstarted.
 **Depends on:** IFTU/DRM M2 (hardware-passed 2026-09-01), `vita-linux-next` `c8540dc`.
 **Explicitly not:** SGX. This gate touches no secure world, no SMC, no firmware.
 
@@ -84,33 +88,77 @@ Rebase the 11 commits onto `37b93487`, add `CONFIG_DRM_VITA`, build.
 ### M3-A — load without taking over scanout
 
 Boot the new kernel. The driver registers, enumerates connector/CRTC, and claims the vblank IRQ —
-but **does not** commit a frame. The console must survive.
+but **does not** commit a frame.
 
 - **PASS:** `/sys/class/drm/*/status` shows the connector; the vblank IRQ is claimed exactly once
-  in `/proc/interrupts` and increments at ~52 Hz; HDMI console and SSH both still work.
-- **FAIL:** the console dies before any flip was requested (driver is grabbing scanout at probe);
-  IRQ storms; oops on probe.
+  in `/proc/interrupts` and increments at the independently measured ~59.94 Hz; the box boots to SSH normally. Verify inherited
+  selector/config0 addresses via `iftu_state` before the first userspace commit. Raw IRQ activity
+  does not establish DRM-core vblank operation or visually unchanged scanout.
+- **FAIL:** IRQ storm; oops on probe; a hang at any point; SSH never arrives.
 - **Why it can fail:** the driver inherits a framebuffer the loader set up. Taking it over at probe
   time is easy to do by accident and hard to see.
+- **Corrected 2026-10-21, after the first hardware run:** this criterion originally required the
+  HDMI console to survive. It cannot: the M2 DTS series replaced the `simple-framebuffer` node with
+  plain reserved memory, so `fbcon` has no framebuffer to attach to on *any* kernel from this
+  branch. Console survival was moved to **M3-E**, where the DRM driver is supposed to *become* the
+  console. This is a changed prerequisite, not a retroactive PASS for console preservation; the
+  original run failed that requirement. See `lab/gpu-m3-ab-run-2026-10-21.md`.
 
 ### M3-B — one flip, from an ordinary program
 
 A self-contained C probe, **raw DRM ioctls, no libdrm dependency**, cross-compiled and statically
-linked so nothing has to be installed on the device: create a dumb buffer, fill it with a solid
-colour different from the console, `ADDFB`, one page flip with an event, wait for completion.
+linked so nothing has to be installed on the device: read the connector's fixed mode, create two
+distinct dumb buffers and `ADDFB` each, `SETCRTC` with the first (grey), then `PAGE_FLIP` to the
+second (magenta) with an event. Record `iftu_state` immediately before and after the flip, and
+additional scanout samples before cleanup. Refuse an already-active CRTC rather than stealing it.
+`tools/check-drm-flip.py` judges the saved transcript; the caller also verifies remote exit status,
+kernel identity and the uploaded probe hash.
 
-- **PASS:** commit returns success **and** the selector register changed **and** the flip event
-  arrived within a bounded number of vblanks (say 5) **and** the scanout position is advancing.
+*(Corrected 2026-10-21: the original sequence went straight to `PAGE_FLIP`, which was written
+assuming a lit CRTC. On this driver the CRTC reports `enable=0 active=0` — nothing has ever enabled
+it — so the original probe stopped before issuing a flip ioctl. The modeset is not scaffolding around the flip;
+on this hardware it is the first userspace commit, and therefore the first thing that exercises
+`atomic_update()` at all.)*
+
+**Split in two, because reading the rebased driver changed what this phase is.**
+
+The driver as inherited from M2 does **not** have a userspace page-flip path. The selector toggle
+lives only in `vita_iftu_do_page_flip()`, reachable from the debugfs `flip` file, while
+`atomic_update()` blits the shadow framebuffer into `idev->screen_base` — the buffer currently
+being scanned out. A `drmModePageFlip` against that code would therefore change what is on screen
+*without ever touching the selector*, and with the write landing mid-frame. Under the rule below,
+a legitimate flip would be recorded as a no-op. The rule was right; the driver was not there yet.
+
+So:
+
+- **M3-B1 — wire the flip (code).** Full-copy the visible frame into the inactive buffer outside
+  spinlocks, order producer WC stores with `wmb()`, then publish an explicit target/event/ref
+  record under the flip lock in `atomic_flush`. The vblank ISR writes/readbacks that selector,
+  accounts the DRM vblank, then sends the associated event under DRM `event_lock` and drops its
+  reference exactly once. First-enable publication is staged until `drm_crtc_vblank_on()`; disable
+  drains pending work and calls `drm_crtc_vblank_off()`. Internal/no-plane events also complete.
+  Normal KMS helper tails run in process/workqueue context, not inherently atomic CPU context.
+  The original B1 implementation was rejected by source review for missing event lock/reference,
+  racing publication, fake completion, stale ping-pong damage, and absent producer ordering.
+  No hardware flip was attempted with that implementation.
+- **M3-B2 — verify it (hardware).** The userspace probe above, judged by the three signals. This is
+  where PASS/FAIL is decided; B1 compiling is not evidence of anything.
+
+M3-B2 passes when: the commit succeeds **and** the selector register changed **and** the flip event
+arrived within ~5 vblanks **and** the scanout position is advancing.
+
 - **FAIL:** success with an unchanged selector (no-op flip); event never arrives; scanout frozen.
 - **Human cross-check (optional, not required):** the screen changes colour. Recorded if offered,
   never load-bearing.
 
 ### M3-C — repeated flips at rate
 
-Alternate two buffers for a fixed window (target: 30 s ≈ 1,560 flips).
+Alternate two low-contrast buffers for a fixed 30-second window; judge against the
+current ~59.94 Hz cadence, not the superseded pre-timer-correction 52 Hz assumption.
+Do not repeatedly flash high-contrast full-screen colours.
 
 - **PASS:** flip completions ≥ 95% of the vblank cadence; selector observed toggling on repeated
-  readback; vblank rate stays ≈ 52.1 Hz; no WARN/oops in `dmesg`.
+  readback; vblank rate stays ≈ 59.94 Hz; no new WARN/oops in `dmesg`.
 - **FAIL:** completion rate collapses, cadence drifts, selector stops toggling mid-run, or the box
   locks (lock = hard fail, power cycle, record).
 
@@ -119,18 +167,39 @@ Alternate two buffers for a fixed window (target: 30 s ≈ 1,560 flips).
 The part that is always skipped and always the thing that ruins the demo:
 
 1. `kill -9` the flip probe mid-run — the display must not stay wedged.
-2. Return to fbcon/VT and confirm the console is usable again.
+2. Verify probe-owned CRTC is disabled, no pending flip remains, and SSH/kernel remain healthy.
+   fbcon/VT restoration is tested only after M3-E supplies a console.
 3. Clean `reboot` from the post-flip state — must come back up.
 
 - **PASS:** all three, with the final boot verified by `tools/hardware-gate.py` writing a normal
   gate record.
 - **FAIL:** any wedged display, any boot that requires a power cycle after a *clean* reboot.
 
+### M3-E — the console (last, and only after B2 passes)
+
+`drm_fbdev_shmem_setup()` is deliberately disabled in the driver, and the comment there is explicit
+about the condition for re-enabling it: *"Do not re-enable this call until the debugfs flip path is
+wired into DRM's atomic page_flip API (userspace drmModePageFlip) and an explicit fbdev-console gate
+passes on hardware."* M3-B2 is that wiring proven; M3-E is that gate.
+
+This is the phase that makes the display *usable* rather than merely correct: a console and ordinary
+fbdev clients on the DRM device, instead of a fixed buffer nobody pages. It is also the phase that
+can fail to restore usable display output. Production has `simplefb` on `/dev/fb0`; this
+experimental DTS removes it, and the DRM branch currently has no framebuffer console. M3-E must
+restore that production capability, not merely claim that it was optional.
+
+- **PASS:** fbcon comes up on the DRM device; text is legible; SSH unaffected; a clean shutdown from
+  the DRM console returns to a working boot; no wedge.
+- **FAIL:** console lost with no replacement, corrupt output, or a boot that needs a power cycle.
+- **Opt-in/rollback:** `vita_iftu.fbdev=1` gates setup; default is disabled. The experimental
+  DTB appends only that boot parameter. Restore the standard DTB to disable takeover.
+  The prior image is preserved locally and on-device before deployment.
+
 ## Outcome vocabulary
 
 | outcome | meaning |
 |---|---|
-| **PASS** | all four phases passed on hardware, evidence recorded |
+| **PASS** | all defined hardware phases (A through E) passed, evidence recorded |
 | **PARTIAL** | some phases passed; each recorded separately with the same vocabulary — never merged into a vague "mostly works" |
 | **FAIL** | a phase failed and the failure is understood |
 | **INCONCLUSIVE** | the run could not distinguish pass from fail (e.g. box wedged before evidence was read) — recorded as such, never as a pass |
@@ -152,7 +221,8 @@ The part that is always skipped and always the thing that ruins the demo:
 
 Not in this gate, and not to be quietly folded in: SGX/PowerVR, firmware or secure-world calls of
 any kind, PLL retuning, EDID or modes beyond the existing fixed timing, scaling/CSC, a second
-plane, DSI/ADV7533 modeset, or acceleration of any kind. This gate is about *presentation through a
+plane, DSI/ADV7533 modeset, or acceleration of any kind. (fbdev console takeover is M3-E, gated
+behind B2 — it must not creep into the B or C phases.) This gate is about *presentation through a
 standard interface*. `docs/GPU-DISPLAY.md` keeps acceleration parked until there is new
 secure-world provenance, and nothing here changes that.
 

@@ -1,0 +1,6 @@
+{
+  "result": "FAIL",
+  "errors": [
+    "missing total/events"
+  ]
+}

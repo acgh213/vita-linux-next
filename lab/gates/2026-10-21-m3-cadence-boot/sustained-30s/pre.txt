@@ -1,0 +1,274 @@
+a333884469f6475ee3dcde40b04ac62110bc7bcb74a8f6d379b0317c8ab7b104  /tmp/drm-flip-probe
+6.12.0-g711b46d1f5a8
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 360
+scanout_byte 1848832
+vblank_count 20803
+copy_count 0
+copy_total_ns 0
+copy_last_ns 0
+present_count 0
+wait_total_ns 0
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 6.12.0-g711b46d1f5a8 (cassie@astraea1) (arm-linux-gnueabihf-gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #14 SMP Wed Oct 21 19:11:45 EDT 2026
+[    0.000000] CPU: ARMv7 Processor [412fc09a] revision 10 (ARMv7), cr=10c5787d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] OF: fdt: Machine model: PlayStation Vita
+[    0.000000] OF: fdt: Ignoring memory range 0x40200000 - 0x41000000
+[    0.000000] printk: legacy bootconsole [earlycon0] enabled
+[    0.000000] printk: debug: skip boot console de-registration.
+[    0.000000] Memory policy: Data cache writealloc
+[    0.000000] OF: reserved mem: 0x20000000..0x27ffffff (131072 KiB) nomap non-reusable framebuffer@20000000
+[    0.000000] Zone ranges:
+[    0.000000]   Normal   [mem 0x0000000041000000-0x000000005fffffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000041000000-0x000000005fffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000041000000-0x000000005fffffff]
+[    0.000000] percpu: Embedded 9 pages/cpu s15052 r0 d21812 u36864
+[    0.000000] pcpu-alloc: s15052 r0 d21812 u36864 alloc=9*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+[    0.000000] Kernel command line: earlyprintk keep_bootcon console=ttyS0,115200 console=tty0
+[    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 126976
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] rcu: Hierarchical RCU implementation.
+[    0.000000] rcu: 	RCU event tracing is enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+[    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+[    0.000000] L2C-310 cache controller enabled, 16 ways, 2048 kB
+[    0.000000] L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x60090001
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000005] sched_clock: 64 bits at 166MHz, resolution 6ns, wraps every 4398046511103ns
+[    0.008141] clocksource: arm_global_timer: mask: 0xffffffffffffffff max_cycles: 0x26353f7f84, max_idle_ns: 440795204945 ns
+[    0.019374] Switching to timer-based delay loop, resolution 6ns
+[    0.025928] Console: colour dummy device 80x30
+[    0.030463] printk: legacy console [tty0] enabled
+[    0.035308] Calibrating delay loop (skipped), value calculated using timer frequency.. 331.33 BogoMIPS (lpj=1656675)
+[    0.046086] CPU: Testing write buffer coherency: ok
+[    0.051134] CPU0: Spectre v2: using BPIALL workaround
+[    0.056298] pid_max: default: 32768 minimum: 301
+[    0.061358] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.068837] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.078521] CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+[    0.086990] Setting up static identity map for 0x41100000 - 0x41100060
+[    0.094044] rcu: Hierarchical SRCU implementation.
+[    0.098960] rcu: 	Max phase no-delay instances is 1000.
+[    0.107295] smp: Bringing up secondary CPUs ...
+[    0.113384] CPU1: thread -1, cpu 1, socket 0, mpidr 80000001
+[    0.113423] CPU1: Spectre v2: using BPIALL workaround
+[    0.125973] CPU2: thread -1, cpu 2, socket 0, mpidr 80000002
+[    0.126011] CPU2: Spectre v2: using BPIALL workaround
+[    0.138528] CPU3: thread -1, cpu 3, socket 0, mpidr 80000003
+[    0.138567] CPU3: Spectre v2: using BPIALL workaround
+[    0.149698] smp: Brought up 1 node, 4 CPUs
+[    0.153888] SMP: Total of 4 processors activated (1325.34 BogoMIPS).
+[    0.160382] CPU: WARNING: CPU(s) started in wrong/inconsistent modes (primary CPU mode 0x13)
+[    0.168993] CPU: This may indicate a broken bootloader or firmware.
+[    0.176895] Memory: 462736K/507904K available (8192K kernel code, 653K rwdata, 1644K rodata, 27648K init, 257K bss, 43368K reserved, 0K cma-reserved)
+[    0.191504] devtmpfs: initialized
+[    0.200272] VFP support v0.3: implementor 41 architecture 3 part 30 variant 9 rev 4
+[    0.208631] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.218692] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.228118] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.237517] DMA: preallocated 256 KiB pool for atomic coherent allocations
+[    0.260672] SCSI subsystem initialized
+[    0.264957] usbcore: registered new interface driver usbfs
+[    0.270695] usbcore: registered new interface driver hub
+[    0.276227] usbcore: registered new device driver usb
+[    0.281571] pps_core: LinuxPPS API ver. 1 registered
+[    0.286660] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.296010] PTP clock support registered
+[    0.301821] Bluetooth: Core ver 2.22
+[    0.305577] NET: Registered PF_BLUETOOTH protocol family
+[    0.310992] Bluetooth: HCI device and connection manager initialized
+[    0.317488] Bluetooth: HCI socket layer initialized
+[    0.322467] Bluetooth: L2CAP socket layer initialized
+[    0.327662] Bluetooth: SCO socket layer initialized
+[    0.333319] clocksource: Switched to clocksource arm_global_timer
+[    0.363789] NET: Registered PF_INET protocol family
+[    0.369274] IP idents hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.379155] tcp_listen_portaddr_hash hash table entries: 512 (order: 0, 4096 bytes, linear)
+[    0.387756] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.395690] TCP established hash table entries: 4096 (order: 2, 16384 bytes, linear)
+[    0.403665] TCP bind hash table entries: 4096 (order: 4, 65536 bytes, linear)
+[    0.411226] TCP: Hash tables configured (established 4096 bind 4096)
+[    0.417878] UDP hash table entries: 256 (order: 1, 8192 bytes, linear)
+[    0.424596] UDP-Lite hash table entries: 256 (order: 1, 8192 bytes, linear)
+[    0.432041] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.443349] Initialise system trusted keyrings
+[    0.448551] workingset: timestamp_bits=30 max_order=17 bucket_order=0
+[    0.455837] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.932086] Key type asymmetric registered
+[    0.936349] Asymmetric key parser 'x509' registered
+[    0.941556] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 250)
+[    0.949129] io scheduler mq-deadline registered
+[    0.953759] io scheduler kyber registered
+[    0.970351] vita_gpio_probe
+[    0.984719] ledtrig-cpu: registered to indicate activity on CPUs
+[    0.991984] vita-reset e3101000.reset: probe
+[    1.144399] e2030000.serial: ttyS0 at MMIO 0xe2030000 (irq = 0, base_baud = 0) is a vita-uart
+[    1.153209] printk: legacy console [ttyS0] enabled
+[    1.788331] vita-iftu e5030000.display: [drm] vita-iftu: plane A config 1 -> second buffer 0x20384000, config 0 active
+[    1.811194] vita-iftu e5030000.display: [drm] vita-iftu: vblank IRQ 26 claimed
+[    1.827129] [drm] Initialized vita-iftu 1.0.0 for e5030000.display on minor 0
+[    1.859183] loop: module loaded
+[    1.868685] null_blk: disk nullb0 created
+[    1.876887] null_blk: module loaded
+[    1.883996] SPI driver vita-syscon has no spi_device_id for vita,syscon
+[    1.897929] vita_spi_probe
+[    1.903547] vita_reset_level: idx: 65, mask: 0x1, assert: 0
+[    1.918711] usbcore: registered new interface driver asix
+[    1.929821] usbcore: registered new interface driver ax88179_178a
+[    1.942320] usbcore: registered new interface driver cdc_ether
+[    1.954300] usbcore: registered new interface driver smsc95xx
+[    1.966106] usbcore: registered new interface driver net1080
+[    1.977717] usbcore: registered new interface driver cdc_subset
+[    1.989868] usbcore: registered new interface driver zaurus
+[    2.001330] usbcore: registered new interface driver cdc_ncm
+[    2.012942] usbcore: registered new interface driver r8153_ecm
+[    2.026254] usbcore: registered new interface driver usb-storage
+[    2.029281] vita_reset_level: idx: 36, mask: 0xf, assert: 0
+[    2.032944] mousedev: PS/2 mouse device common for all mice
+[    2.038089] vita pervasive usb0 prepare: reset=0x0 gate=0x0 mode_flag=0x1
+[    2.075494] i2c_dev: i2c /dev entries driver
+[    2.084827] vita_reset_level: idx: 68, mask: 0x1, assert: 0
+[    2.096945] i2c-vita e0500000.i2c: Vita I2C0 adapter registered
+[    2.508569] vita pervasive usb0: host mode latched, PHY ready after 20 ms (F30=0x1)
+[    2.524377] ehci-platform e40e0000.usb: EHCI Host Controller
+[    2.535986] ehci-platform e40e0000.usb: new USB bus registered, assigned bus number 1
+[    2.552387] ehci-platform e40e0000.usb: irq 28, io mem 0xe40e0000
+[    2.564938] vita_reset_level: idx: 38, mask: 0xf, assert: 0
+[    2.566529] sdhci: Secure Digital Host Controller Interface driver
+[    2.570692] vita pervasive usb2 prepare: reset=0x0 gate=0x0 mode_flag=0x1
+[    2.576965] sdhci: Copyright(c) Pierre Ossman
+[    2.583920] ehci-platform e40e0000.usb: USB 2.0 started, EHCI 1.00
+[    2.588652] hid: raw HID events driver (C) Jiri Kosina
+[    2.589286] sdhci-vita e0b00000.mmc: SDIF0 @ 0xe0b00000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1fff0000 [card present]
+[    2.589336] sdhci-vita e0b00000.mmc: SDIF0: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    2.590066] mmc0: Invalid maximum block size, assuming 512 bytes
+[    2.596864] hub 1-0:1.0: USB hub found
+[    2.600175] usbcore: registered new interface driver usbhid
+[    2.609087] sdhci-vita e0c00000.mmc: game-card rail on at boot failed: -517
+[    2.609381] sdhci-vita e0c10000.mmc: SDIF2 @ 0xe0c10000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1ffc0000 [no card]
+[    2.609427] sdhci-vita e0c10000.mmc: SDIF2: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    2.612990] hub 1-0:1.0: 1 port detected
+[    2.623247] usbhid: USB HID core driver
+[    2.629864] NET: Registered PF_INET6 protocol family
+[    2.800547] Segment Routing with IPv6
+[    2.808275] In-situ OAM (IOAM) with IPv6
+[    2.816510] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+[    2.830188] NET: Registered PF_PACKET protocol family
+[    2.838604] mmc0: SDHCI controller on (null) [e0b00000.mmc] using ADMA
+[    2.840921] Bluetooth: RFCOMM TTY layer initialized
+[    2.863757] Bluetooth: RFCOMM socket layer initialized
+[    2.874263] Bluetooth: RFCOMM ver 1.11
+[    2.881962] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[    2.892792] Bluetooth: BNEP socket layer initialized
+[    2.902904] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+[    2.905635] usb 1-1: new high-speed USB device number 2 using ehci-platform
+[    2.908970] Bluetooth: HIDP socket layer initialized
+[    2.939369] Registering SWP/SWPB emulation handler
+[    2.954163] mmc0: new high speed MMC card at address 0001
+[    2.967121] mmcblk0: mmc0:0001 M4G1FA 3.55 GiB
+[    2.970384] Loading compiled-in X.509 certificates
+[    2.976283]  mmcblk0: [SCE] p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13
+[    2.992476] vita_gpio_probe
+[    2.998475] mmcblk0boot0: mmc0:0001 M4G1FA 1.00 MiB
+[    3.002227] vita_reset_level: idx: 64, mask: 0x1, assert: 0
+[    3.010794] mmcblk0boot1: mmc0:0001 M4G1FA 1.00 MiB
+[    3.013188] gpio gpiochip1: (e20a0000.gpio): not an immutable chip, please consider fixing it!
+[    3.020939] mmcblk0rpmb: mmc0:0001 M4G1FA 128 KiB, chardev (248:0)
+[    3.028543] vita_syscon_probe
+[    3.048600] vita pervasive usb2: host mode latched, PHY ready after 20 ms (F30=0x5)
+[    3.050203] Vita Syscon Baryon version: 0x1040301
+[    3.057229] ehci-platform e4020000.usb: EHCI Host Controller
+[    3.085301] usb-storage 1-1:1.0: USB Mass Storage device detected
+[    3.087764] ehci-platform e4020000.usb: new USB bus registered, assigned bus number 2
+[    3.089129] scsi host0: usb-storage 1-1:1.0
+[    3.094508] ehci-platform e4020000.usb: irq 29, io mem 0xe4020000
+[    3.104396] Vita Syscon HW info: 0x723030
+[    3.128590] ehci-platform e4020000.usb: USB 2.0 started, EHCI 1.00
+[    3.132891] vita-syscon spi0.0: clockgen I2C adapter: Vita I2C
+[    3.147009] hub 2-0:1.0: USB hub found
+[    3.150636] vita-syscon-buttons vita-syscon-buttons: DMA mask not set
+[    3.154171] hub 2-0:1.0: 1 port detected
+[    3.160735] vita_syscon_buttons_probe
+[    3.227726] input: PlayStation Vita Buttons (Syscon) as /devices/platform/soc/e0a00000.spi/spi_master/spi0/spi0.0/vita-syscon-buttons/input/input0
+[    3.256569] vita-syscon-rtc vita-syscon-rtc: DMA mask not set
+[    3.297277] vita-syscon-rtc vita-syscon-rtc: registered as rtc0
+[    3.336849] vita-syscon-rtc vita-syscon-rtc: setting system clock to 2026-10-21T23:16:17 UTC (1792624577)
+[    3.365684] pstv-ohci e40e0200.ohci: PSTV bus-zero OHCI companion
+[    3.378170] pstv-ohci e40e0200.ohci: new USB bus registered, assigned bus number 3
+[    3.393946] pstv-ohci e40e0200.ohci: irq 27, io mem 0xe40e0200
+[    3.428588] usb 2-1: new high-speed USB device number 2 using ehci-platform
+[    3.471810] hub 3-0:1.0: USB hub found
+[    3.479628] hub 3-0:1.0: 1 port detected
+[    3.516194] vita-syscon spi0.0: Dolce USB power rail on
+[    3.526908] vita-dolce-usb-power usb0-power: Type-A port powered: Dolce rail on, enable GPIO asserted
+[    3.546060] pwrseq_vita_wlan wlan-pwrseq: Vita WLAN power sequencer registered
+[    3.562267] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[    3.563403] sdhci-vita e0c10000.mmc: SDIF2 @ 0xe0c10000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1fff0000 [card present]
+[    3.576427] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    3.583294] sdhci-vita e0c10000.mmc: SDIF2: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    3.594612] Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+[    3.599990] sdhci-vita e0c10000.mmc: allocated mmc-pwrseq
+[    3.607008] clk: Disabling unused clocks
+[    3.612522] mmc1: Invalid maximum block size, assuming 512 bytes
+[    3.698886] cdc_ether 2-1:2.0 eth0: register 'cdc_ether' at usb-e4020000.usb-1, CDC Ethernet Device, 00:d9:d1:53:1a:bf
+[    4.025631] mmc1: SDHCI controller on (null) [e0c10000.mmc] using ADMA
+[    4.099222] mmc1: new high speed SDIO card at address 0001
+[    4.113712] Bluetooth: vendor=0x2df, device=0x911a, class=255, fn=2
+[    4.128413] scsi 0:0:0:0: Direct-Access     Kingston DataTraveler 3.0 PMAP PQ: 0 ANSI: 6
+[    4.438602] sdhci-vita e0c00000.mmc: game-card rail raised before init
+[    4.452167] sdhci-vita e0c00000.mmc: SDIF1 @ 0xe0c00000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1ffc0000 [no card]
+[    4.477110] sdhci-vita e0c00000.mmc: SDIF1: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    4.498761] mmc2: Invalid maximum block size, assuming 512 bytes
+[    4.548593] mmc2: SDHCI controller on (null) [e0c00000.mmc] using ADMA
+[    4.593822] sd 0:0:0:0: [sda] 242417664 512-byte logical blocks: (124 GB/116 GiB)
+[    4.612503] sd 0:0:0:0: [sda] Write Protect is off
+[    4.622365] sd 0:0:0:0: [sda] Mode Sense: 45 00 00 00
+[    4.623621] sd 0:0:0:0: [sda] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+[    4.830702] mmc2: new high speed SDXC card at address aaaa
+[    4.843617] mmcblk2: mmc2:aaaa SN64G 59.5 GiB
+[    4.851814]  sda: sda1
+[    4.858037] sd 0:0:0:0: [sda] Attached SCSI removable disk
+[    9.033076] Freeing unused kernel image (initmem) memory: 27648K
+[    9.053682] Run /init as init process
+[    9.061153]   with arguments:
+[    9.061185]     /init
+[    9.061211]   with environment:
+[    9.061234]     HOME=/
+[    9.061258]     TERM=linux
+[    9.272128] exFAT-fs (sda1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+[    9.651344] Bluetooth: FW download over, size 466592 bytes
+[    9.765791] mwifiex_sdio mmc1:0001:1: WLAN is not the winner! Skip FW dnld
+[    9.780127] mwifiex_sdio mmc1:0001:1: WLAN FW is active
+[    9.965129] mwifiex_sdio mmc1:0001:1: host_mlme: disable, key_api: 0
+[   10.035056] mwifiex_sdio mmc1:0001:1: CHAN_REGION_CFG unsupported (result=0x2), using default reg domain
+[   10.308614] mwifiex_sdio mmc1:0001:1: info: MWIFIEX VERSION: mwifiex 1.0 (14.68.35.p66) 
+[   10.325217] mwifiex_sdio mmc1:0001:1: driver_version = mwifiex 1.0 (14.68.35.p66) 
+[   10.340878] btmrvl_sdio mmc1:0001:2: sdio device tree data not available
+[   10.356214] btmrvl_sdio mmc1:0001:3: error -ENODEV: SDIO function disabled by firmware description
+[   11.535636] random: crng init done
+[   37.463948] loop7: detected capacity change from 0 to 16777216
+[   76.765150] EXT4-fs (loop7): mounted filesystem bcb32c9a-d2d6-418e-9108-b5188e0676ae r/w with ordered data mode. Quota mode: disabled.
+[  135.939499] cdc_ether 2-1:2.0 enx00d9d1531abf: renamed from eth0
+[  157.139275] EXT4-fs (loop7): re-mounted bcb32c9a-d2d6-418e-9108-b5188e0676ae r/w. Quota mode: disabled.
+[  162.607572] mwifiex_sdio mmc1:0001:1: info: trying to associate to bssid 40:e1:e4:1b:bf:5a
+[  163.637177] mwifiex_sdio mmc1:0001:1: ASSOC_RESP: failed,	status code=1 err=0xfffc a_id=0x3fff
+[  163.654729] mwifiex_sdio mmc1:0001:1: assoc failure: reason CONNECT_ERR_ASSOC_ERR_TIMEOUT
+[  163.671390] mwifiex_sdio mmc1:0001:1: ASSOC_RESP: UNSPECIFIED failure
+[  163.684542] mwifiex_sdio mmc1:0001:1: info: association to bssid 40:e1:e4:1b:bf:5a failed
+[  163.864235] mwifiex_sdio mmc1:0001:1: info: trying to associate to bssid 42:e1:e4:1b:bb:fa
+[  163.902723] mwifiex_sdio mmc1:0001:1: assoc: associated with 42:e1:e4:1b:bb:fa
+[  163.917592] mwifiex_sdio mmc1:0001:1: info: associated to bssid 42:e1:e4:1b:bb:fa successfully
+[  163.997777] mwifiex_sdio mmc1:0001:1: key: send EAPOL to 42:e1:e4:1b:bb:fa
+[  164.019539] mwifiex_sdio mmc1:0001:1: key: send EAPOL to 42:e1:e4:1b:bb:fa
+[  228.360440] mwifiex_sdio mmc1:0001:1: CMD_RESP: cmd 0x23f error, result=0x2
+[  239.962591] loop0: detected capacity change from 0 to 21144
+[  241.311873] Bluetooth: MGMT ver 1.23

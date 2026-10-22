@@ -1,0 +1,44 @@
+[
+  {
+    "label": "01-xrgb",
+    "execution": {
+      "remote_exit": 1,
+      "post_ssh_exit": 0,
+      "probe_sha256": "c801d82fd1e19240355d8726025d1ee3d3276789b0a374baca46381dda8ff0b4",
+      "args": "--seconds 30",
+      "utc": "2026-10-22T00:44:34.838359+00:00",
+      "new_dmesg": []
+    },
+    "verdict": {
+      "result": "FAIL",
+      "errors": [
+        "cadence below 95% refresh"
+      ],
+      "flips": 600,
+      "cadence_hz": 19.979736520585227,
+      "reference_hz": 59.94,
+      "ioctl_mean_ms": 0.5502085250000001,
+      "event_wait_mean_ms": 49.32348543333333,
+      "copy_mean_ms": 34.14933779333334,
+      "publish_to_irq_mean_ms": 14.941679070000001,
+      "raw_vblank_delta": 1800
+    }
+  },
+  {
+    "label": "02-native-abgr",
+    "execution": {
+      "remote_exit": 1,
+      "post_ssh_exit": 0,
+      "probe_sha256": "c801d82fd1e19240355d8726025d1ee3d3276789b0a374baca46381dda8ff0b4",
+      "args": "--seconds 30 --native-abgr",
+      "utc": "2026-10-22T00:44:37.562559+00:00",
+      "new_dmesg": []
+    },
+    "verdict": {
+      "result": "FAIL",
+      "errors": [
+        "missing total/events"
+      ]
+    }
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "result": "FAIL",
+  "errors": [
+    "cadence below 95% refresh"
+  ],
+  "flips": 600,
+  "cadence_hz": 19.979736520585227,
+  "reference_hz": 59.94,
+  "ioctl_mean_ms": 0.5502085250000001,
+  "event_wait_mean_ms": 49.32348543333333,
+  "copy_mean_ms": 34.14933779333334,
+  "publish_to_irq_mean_ms": 14.941679070000001,
+  "raw_vblank_delta": 1800
+}

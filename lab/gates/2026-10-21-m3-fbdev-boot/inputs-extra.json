@@ -1,0 +1,6 @@
+{
+  "kernel_source": "81e636543b35",
+  "base_dtb_sha256": "89b1dd57e9f7fd5c6ff71deb86d7ca3d67a7e9394ff08ddccaec164df1593ebe",
+  "gate_dtb_sha256": "1ff66ae21c994ed02d022f13967113ea081fa73d86fd9ce0f2cc5e99adce95c3",
+  "bootargs": "earlyprintk keep_bootcon console=ttyS0,115200 console=tty0 vita_iftu.fbdev=1"
+}

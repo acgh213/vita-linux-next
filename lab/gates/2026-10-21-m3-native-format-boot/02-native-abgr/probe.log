@@ -1,0 +1,13 @@
+M3-B2 modeset-first probe: /dev/dri/card0
+SET_MASTER
+GETRESOURCES
+GETCRTC
+before: crtc=34 mode=0x0 fb=0 valid=0
+GETCONNECTOR (discover modes/counts)
+connector: id=36 connection=1 modes=1 encoders=1
+GETCONNECTOR (fetch mode)
+mode: 1280x720 clock=74176 htotal=1650 vtotal=750
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB2 native ABGR8888 (opaque alpha)
+FAIL ADDFB2 (errno=22: Invalid argument)

@@ -1,0 +1,11 @@
+--- 
++++ 
+@@ -10,7 +10,7 @@
+ 		#address-cells = <0x01>;
+ 		#size-cells = <0x01>;
+ 		ranges;
+-		bootargs = "earlyprintk keep_bootcon console=ttyS0,115200 console=tty0 vita_iftu.fbdev=1";
++		bootargs = "earlyprintk keep_bootcon console=ttyS0,115200 console=tty0 vita_iftu.fbdev=1 vita_iftu.restore_opaque=1";
+ 	};
+ 
+ 	aliases {

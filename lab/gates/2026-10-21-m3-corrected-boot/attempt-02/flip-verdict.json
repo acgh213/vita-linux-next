@@ -1,0 +1,13 @@
+{
+  "result": "FAIL",
+  "errors": [
+    "missing evidence keys: after modeset / before flip",
+    "missing evidence keys: after flip",
+    "missing evidence keys: after flip sample 2",
+    "missing evidence keys: after flip sample 3",
+    "probe failed or modeset did not succeed",
+    "missing/late completion event"
+  ],
+  "snapshots": {},
+  "scope": "one modeset and one flip; not SGX, not sustained presentation"
+}

@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "errors": [],
+  "flips": 1799,
+  "cadence_hz": 59.93919677853377,
+  "reference_hz": 59.94,
+  "ioctl_mean_ms": 0.49568855030572545,
+  "event_wait_mean_ms": 16.019336778210118,
+  "copy_mean_ms": 11.267956047804335,
+  "publish_to_irq_mean_ms": 4.376933738743746,
+  "raw_vblank_delta": 1799
+}

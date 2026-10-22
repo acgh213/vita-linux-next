@@ -1,0 +1,7 @@
+M3-B2 modeset-first probe: /dev/dri/card0
+SET_MASTER
+GETRESOURCES
+GETCRTC
+before: crtc=34 mode=0x0 fb=0 valid=0
+GETCONNECTOR
+FAIL expected connected fixed-mode connector (errno=0: Success)

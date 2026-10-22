@@ -1,0 +1,479 @@
+probe_pid=1193
+killed_exit=137
+M3-B2 modeset-first probe: /dev/dri/card0
+SET_MASTER
+GETRESOURCES
+GETCRTC
+before: crtc=34 mode=0x0 fb=0 valid=0
+GETCONNECTOR (discover modes/counts)
+connector: id=36 connection=1 modes=1 encoders=1
+GETCONNECTOR (fetch mode)
+mode: 1280x720 clock=74176 htotal=1650 vtotal=750
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB
+buffer: fb=38 pitch=5120 bytes=3686400 colour=00202020
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB
+buffer: fb=39 pitch=5120 bytes=3686400 colour=00212121
+=== before modeset (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 656
+scanout_byte 3385600
+vblank_count 24737
+copy_count 601
+copy_total_ns 20515397123
+copy_last_ns 34002897
+present_count 601
+wait_total_ns 8973981324
+SETCRTC (first commit, grey)
+SETCRTC returned success
+=== after modeset / before flip (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 24741
+copy_count 602
+copy_total_ns 20552282397
+copy_last_ns 36885274
+present_count 602
+wait_total_ns 8987614342
+refresh reference=60 Hz (default measured approximately 60); event budget=83333334 ns
+PAGE_FLIP index=1 fb=39 cookie=1295204914, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1808 elapsed_ns=49445957 ioctl_ns=420366 event_wait_ns=49025591 cookie=1295204914
+=== flip sample 1 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 24744
+copy_count 603
+copy_total_ns 20586870774
+copy_last_ns 34588377
+present_count 603
+wait_total_ns 9001862248
+PAGE_FLIP index=2 fb=38 cookie=1295204915, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1811 elapsed_ns=49480646 ioctl_ns=402656 event_wait_ns=49077990 cookie=1295204915
+PAGE_FLIP index=3 fb=39 cookie=1295204916, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1814 elapsed_ns=49862967 ioctl_ns=432885 event_wait_ns=49430082 cookie=1295204916
+PAGE_FLIP index=4 fb=38 cookie=1295204917, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1817 elapsed_ns=49869347 ioctl_ns=498777 event_wait_ns=49370570 cookie=1295204917
+PAGE_FLIP index=5 fb=39 cookie=1295204918, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1820 elapsed_ns=49875310 ioctl_ns=428123 event_wait_ns=49447187 cookie=1295204918
+PAGE_FLIP index=6 fb=38 cookie=1295204919, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1823 elapsed_ns=49891783 ioctl_ns=433169 event_wait_ns=49458614 cookie=1295204919
+PAGE_FLIP index=7 fb=39 cookie=1295204920, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1826 elapsed_ns=49861632 ioctl_ns=425967 event_wait_ns=49435665 cookie=1295204920
+PAGE_FLIP index=8 fb=38 cookie=1295204921, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1829 elapsed_ns=49895924 ioctl_ns=419383 event_wait_ns=49476541 cookie=1295204921
+PAGE_FLIP index=9 fb=39 cookie=1295204922, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1832 elapsed_ns=49861675 ioctl_ns=434599 event_wait_ns=49427076 cookie=1295204922
+PAGE_FLIP index=10 fb=38 cookie=1295204923, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1835 elapsed_ns=49892272 ioctl_ns=428146 event_wait_ns=49464126 cookie=1295204923
+PAGE_FLIP index=11 fb=39 cookie=1295204924, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1838 elapsed_ns=49858548 ioctl_ns=429511 event_wait_ns=49429037 cookie=1295204924
+PAGE_FLIP index=12 fb=38 cookie=1295204925, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1841 elapsed_ns=49893613 ioctl_ns=423445 event_wait_ns=49470168 cookie=1295204925
+PAGE_FLIP index=13 fb=39 cookie=1295204926, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1844 elapsed_ns=49862568 ioctl_ns=427814 event_wait_ns=49434754 cookie=1295204926
+PAGE_FLIP index=14 fb=38 cookie=1295204927, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1847 elapsed_ns=49893999 ioctl_ns=390868 event_wait_ns=49503131 cookie=1295204927
+PAGE_FLIP index=15 fb=39 cookie=1295204928, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1850 elapsed_ns=49860329 ioctl_ns=428768 event_wait_ns=49431561 cookie=1295204928
+PAGE_FLIP index=16 fb=38 cookie=1295204929, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1853 elapsed_ns=49824196 ioctl_ns=427411 event_wait_ns=49396785 cookie=1295204929
+PAGE_FLIP index=17 fb=39 cookie=1295204930, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1856 elapsed_ns=49859616 ioctl_ns=425623 event_wait_ns=49433993 cookie=1295204930
+PAGE_FLIP index=18 fb=38 cookie=1295204931, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1859 elapsed_ns=49893238 ioctl_ns=424386 event_wait_ns=49468852 cookie=1295204931
+PAGE_FLIP index=19 fb=39 cookie=1295204932, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1862 elapsed_ns=49848468 ioctl_ns=424773 event_wait_ns=49423695 cookie=1295204932
+PAGE_FLIP index=20 fb=38 cookie=1295204933, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1865 elapsed_ns=49884987 ioctl_ns=430966 event_wait_ns=49454021 cookie=1295204933
+PAGE_FLIP index=21 fb=39 cookie=1295204934, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1868 elapsed_ns=49904532 ioctl_ns=417221 event_wait_ns=49487311 cookie=1295204934
+PAGE_FLIP index=22 fb=38 cookie=1295204935, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1871 elapsed_ns=49887793 ioctl_ns=429806 event_wait_ns=49457987 cookie=1295204935
+PAGE_FLIP index=23 fb=39 cookie=1295204936, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1874 elapsed_ns=49860178 ioctl_ns=427012 event_wait_ns=49433166 cookie=1295204936
+PAGE_FLIP index=24 fb=38 cookie=1295204937, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1877 elapsed_ns=49892604 ioctl_ns=451748 event_wait_ns=49440856 cookie=1295204937
+PAGE_FLIP index=25 fb=39 cookie=1295204938, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1880 elapsed_ns=49863093 ioctl_ns=428273 event_wait_ns=49434820 cookie=1295204938
+PAGE_FLIP index=26 fb=38 cookie=1295204939, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1883 elapsed_ns=49891391 ioctl_ns=424435 event_wait_ns=49466956 cookie=1295204939
+PAGE_FLIP index=27 fb=39 cookie=1295204940, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1886 elapsed_ns=49859206 ioctl_ns=423245 event_wait_ns=49435961 cookie=1295204940
+PAGE_FLIP index=28 fb=38 cookie=1295204941, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1889 elapsed_ns=49893509 ioctl_ns=428352 event_wait_ns=49465157 cookie=1295204941
+PAGE_FLIP index=29 fb=39 cookie=1295204942, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1892 elapsed_ns=49862037 ioctl_ns=415869 event_wait_ns=49446168 cookie=1295204942
+PAGE_FLIP index=30 fb=38 cookie=1295204943, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1895 elapsed_ns=49890515 ioctl_ns=391851 event_wait_ns=49498664 cookie=1295204943
+PAGE_FLIP index=31 fb=39 cookie=1295204944, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1898 elapsed_ns=49860251 ioctl_ns=418803 event_wait_ns=49441448 cookie=1295204944
+PAGE_FLIP index=32 fb=38 cookie=1295204945, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1901 elapsed_ns=49874815 ioctl_ns=414408 event_wait_ns=49460407 cookie=1295204945
+PAGE_FLIP index=33 fb=39 cookie=1295204946, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1904 elapsed_ns=49875159 ioctl_ns=429698 event_wait_ns=49445461 cookie=1295204946
+PAGE_FLIP index=34 fb=38 cookie=1295204947, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1907 elapsed_ns=49893287 ioctl_ns=429312 event_wait_ns=49463975 cookie=1295204947
+PAGE_FLIP index=35 fb=39 cookie=1295204948, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1910 elapsed_ns=49857896 ioctl_ns=436760 event_wait_ns=49421136 cookie=1295204948
+PAGE_FLIP index=36 fb=38 cookie=1295204949, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1913 elapsed_ns=49892024 ioctl_ns=419943 event_wait_ns=49472081 cookie=1295204949
+PAGE_FLIP index=37 fb=39 cookie=1295204950, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1916 elapsed_ns=49861723 ioctl_ns=429946 event_wait_ns=49431777 cookie=1295204950
+PAGE_FLIP index=38 fb=38 cookie=1295204951, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1919 elapsed_ns=49834337 ioctl_ns=424561 event_wait_ns=49409776 cookie=1295204951
+PAGE_FLIP index=39 fb=39 cookie=1295204952, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1922 elapsed_ns=49860824 ioctl_ns=424399 event_wait_ns=49436425 cookie=1295204952
+PAGE_FLIP index=40 fb=38 cookie=1295204953, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1925 elapsed_ns=49897518 ioctl_ns=422666 event_wait_ns=49474852 cookie=1295204953
+PAGE_FLIP index=41 fb=39 cookie=1295204954, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1928 elapsed_ns=49861288 ioctl_ns=425587 event_wait_ns=49435701 cookie=1295204954
+PAGE_FLIP index=42 fb=38 cookie=1295204955, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1931 elapsed_ns=49889815 ioctl_ns=400024 event_wait_ns=49489791 cookie=1295204955
+PAGE_FLIP index=43 fb=39 cookie=1295204956, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1934 elapsed_ns=49860703 ioctl_ns=430742 event_wait_ns=49429961 cookie=1295204956
+PAGE_FLIP index=44 fb=38 cookie=1295204957, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1937 elapsed_ns=49892592 ioctl_ns=420197 event_wait_ns=49472395 cookie=1295204957
+PAGE_FLIP index=45 fb=39 cookie=1295204958, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1940 elapsed_ns=49859750 ioctl_ns=427495 event_wait_ns=49432255 cookie=1295204958
+PAGE_FLIP index=46 fb=38 cookie=1295204959, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1943 elapsed_ns=49892380 ioctl_ns=416080 event_wait_ns=49476300 cookie=1295204959
+PAGE_FLIP index=47 fb=39 cookie=1295204960, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1946 elapsed_ns=49858505 ioctl_ns=414052 event_wait_ns=49444453 cookie=1295204960
+PAGE_FLIP index=48 fb=38 cookie=1295204961, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1949 elapsed_ns=49893618 ioctl_ns=454712 event_wait_ns=49438906 cookie=1295204961
+PAGE_FLIP index=49 fb=39 cookie=1295204962, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1952 elapsed_ns=49863123 ioctl_ns=426172 event_wait_ns=49436951 cookie=1295204962
+PAGE_FLIP index=50 fb=38 cookie=1295204963, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1955 elapsed_ns=49889187 ioctl_ns=390227 event_wait_ns=49498960 cookie=1295204963
+PAGE_FLIP index=51 fb=39 cookie=1295204964, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1958 elapsed_ns=49865278 ioctl_ns=428099 event_wait_ns=49437179 cookie=1295204964
+PAGE_FLIP index=52 fb=38 cookie=1295204965, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1961 elapsed_ns=49890033 ioctl_ns=423511 event_wait_ns=49466522 cookie=1295204965
+PAGE_FLIP index=53 fb=39 cookie=1295204966, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1964 elapsed_ns=49861977 ioctl_ns=428135 event_wait_ns=49433842 cookie=1295204966
+PAGE_FLIP index=54 fb=38 cookie=1295204967, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1967 elapsed_ns=49874411 ioctl_ns=430476 event_wait_ns=49443935 cookie=1295204967
+PAGE_FLIP index=55 fb=39 cookie=1295204968, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1970 elapsed_ns=49878896 ioctl_ns=429897 event_wait_ns=49448999 cookie=1295204968
+PAGE_FLIP index=56 fb=38 cookie=1295204969, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1973 elapsed_ns=49895314 ioctl_ns=422092 event_wait_ns=49473222 cookie=1295204969
+PAGE_FLIP index=57 fb=39 cookie=1295204970, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=1976 elapsed_ns=49856272 ioctl_ns=427966 event_wait_ns=49428306 cookie=1295204970
+PAGE_FLIP index=58 fb=38 cookie=1295204971, event budget=83333334 ns
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 184
+scanout_byte 963328
+vblank_count 24977
+copy_count 660
+copy_total_ns 22528680826
+copy_last_ns 33849433
+present_count 660
+wait_total_ns 9868286783
+plane[32]: plane-0
+	crtc=(null)
+	fb=0
+	crtc-pos=1280x720+0+0
+	src-pos=1280.000000x720.000000+0.000000+0.000000
+	rotation=1
+	normalized-zpos=0
+	color-encoding=ITU-R BT.601 YCbCr
+	color-range=YCbCr limited range
+	color_mgmt_changed=0
+crtc[34]: crtc-0
+	enable=0
+	active=0
+	self_refresh_active=0
+	planes_changed=1
+	mode_changed=1
+	active_changed=1
+	connectors_changed=1
+	color_mgmt_changed=0
+	plane_mask=0
+	connector_mask=0
+	encoder_mask=0
+	mode: "": 0 0 0 0 0 0 0 0 0 0 0x0 0x0
+connector[36]: HDMI-A-1
+	crtc=(null)
+	self_refresh_aware=0
+	max_requested_bpc=0
+	colorspace=Default
+	broadcast_rgb=Automatic
+	is_limited_range=n
+	output_bpc=0
+	output_format=RGB
+	tmds_char_rate=0
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 6.12.0-g711b46d1f5a8 (cassie@astraea1) (arm-linux-gnueabihf-gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #14 SMP Wed Oct 21 19:11:45 EDT 2026
+[    0.000000] CPU: ARMv7 Processor [412fc09a] revision 10 (ARMv7), cr=10c5787d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] OF: fdt: Machine model: PlayStation Vita
+[    0.000000] OF: fdt: Ignoring memory range 0x40200000 - 0x41000000
+[    0.000000] printk: legacy bootconsole [earlycon0] enabled
+[    0.000000] printk: debug: skip boot console de-registration.
+[    0.000000] Memory policy: Data cache writealloc
+[    0.000000] OF: reserved mem: 0x20000000..0x27ffffff (131072 KiB) nomap non-reusable framebuffer@20000000
+[    0.000000] Zone ranges:
+[    0.000000]   Normal   [mem 0x0000000041000000-0x000000005fffffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000041000000-0x000000005fffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000041000000-0x000000005fffffff]
+[    0.000000] percpu: Embedded 9 pages/cpu s15052 r0 d21812 u36864
+[    0.000000] pcpu-alloc: s15052 r0 d21812 u36864 alloc=9*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+[    0.000000] Kernel command line: earlyprintk keep_bootcon console=ttyS0,115200 console=tty0
+[    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 126976
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] rcu: Hierarchical RCU implementation.
+[    0.000000] rcu: 	RCU event tracing is enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+[    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+[    0.000000] L2C-310 cache controller enabled, 16 ways, 2048 kB
+[    0.000000] L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x60090001
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000005] sched_clock: 64 bits at 166MHz, resolution 6ns, wraps every 4398046511103ns
+[    0.008141] clocksource: arm_global_timer: mask: 0xffffffffffffffff max_cycles: 0x26353f7f84, max_idle_ns: 440795204945 ns
+[    0.019374] Switching to timer-based delay loop, resolution 6ns
+[    0.025928] Console: colour dummy device 80x30
+[    0.030463] printk: legacy console [tty0] enabled
+[    0.035308] Calibrating delay loop (skipped), value calculated using timer frequency.. 331.33 BogoMIPS (lpj=1656675)
+[    0.046086] CPU: Testing write buffer coherency: ok
+[    0.051134] CPU0: Spectre v2: using BPIALL workaround
+[    0.056298] pid_max: default: 32768 minimum: 301
+[    0.061358] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.068837] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.078521] CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+[    0.086990] Setting up static identity map for 0x41100000 - 0x41100060
+[    0.094044] rcu: Hierarchical SRCU implementation.
+[    0.098960] rcu: 	Max phase no-delay instances is 1000.
+[    0.107295] smp: Bringing up secondary CPUs ...
+[    0.113384] CPU1: thread -1, cpu 1, socket 0, mpidr 80000001
+[    0.113423] CPU1: Spectre v2: using BPIALL workaround
+[    0.125973] CPU2: thread -1, cpu 2, socket 0, mpidr 80000002
+[    0.126011] CPU2: Spectre v2: using BPIALL workaround
+[    0.138528] CPU3: thread -1, cpu 3, socket 0, mpidr 80000003
+[    0.138567] CPU3: Spectre v2: using BPIALL workaround
+[    0.149698] smp: Brought up 1 node, 4 CPUs
+[    0.153888] SMP: Total of 4 processors activated (1325.34 BogoMIPS).
+[    0.160382] CPU: WARNING: CPU(s) started in wrong/inconsistent modes (primary CPU mode 0x13)
+[    0.168993] CPU: This may indicate a broken bootloader or firmware.
+[    0.176895] Memory: 462736K/507904K available (8192K kernel code, 653K rwdata, 1644K rodata, 27648K init, 257K bss, 43368K reserved, 0K cma-reserved)
+[    0.191504] devtmpfs: initialized
+[    0.200272] VFP support v0.3: implementor 41 architecture 3 part 30 variant 9 rev 4
+[    0.208631] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.218692] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.228118] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.237517] DMA: preallocated 256 KiB pool for atomic coherent allocations
+[    0.260672] SCSI subsystem initialized
+[    0.264957] usbcore: registered new interface driver usbfs
+[    0.270695] usbcore: registered new interface driver hub
+[    0.276227] usbcore: registered new device driver usb
+[    0.281571] pps_core: LinuxPPS API ver. 1 registered
+[    0.286660] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.296010] PTP clock support registered
+[    0.301821] Bluetooth: Core ver 2.22
+[    0.305577] NET: Registered PF_BLUETOOTH protocol family
+[    0.310992] Bluetooth: HCI device and connection manager initialized
+[    0.317488] Bluetooth: HCI socket layer initialized
+[    0.322467] Bluetooth: L2CAP socket layer initialized
+[    0.327662] Bluetooth: SCO socket layer initialized
+[    0.333319] clocksource: Switched to clocksource arm_global_timer
+[    0.363789] NET: Registered PF_INET protocol family
+[    0.369274] IP idents hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.379155] tcp_listen_portaddr_hash hash table entries: 512 (order: 0, 4096 bytes, linear)
+[    0.387756] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.395690] TCP established hash table entries: 4096 (order: 2, 16384 bytes, linear)
+[    0.403665] TCP bind hash table entries: 4096 (order: 4, 65536 bytes, linear)
+[    0.411226] TCP: Hash tables configured (established 4096 bind 4096)
+[    0.417878] UDP hash table entries: 256 (order: 1, 8192 bytes, linear)
+[    0.424596] UDP-Lite hash table entries: 256 (order: 1, 8192 bytes, linear)
+[    0.432041] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.443349] Initialise system trusted keyrings
+[    0.448551] workingset: timestamp_bits=30 max_order=17 bucket_order=0
+[    0.455837] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.932086] Key type asymmetric registered
+[    0.936349] Asymmetric key parser 'x509' registered
+[    0.941556] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 250)
+[    0.949129] io scheduler mq-deadline registered
+[    0.953759] io scheduler kyber registered
+[    0.970351] vita_gpio_probe
+[    0.984719] ledtrig-cpu: registered to indicate activity on CPUs
+[    0.991984] vita-reset e3101000.reset: probe
+[    1.144399] e2030000.serial: ttyS0 at MMIO 0xe2030000 (irq = 0, base_baud = 0) is a vita-uart
+[    1.153209] printk: legacy console [ttyS0] enabled
+[    1.788331] vita-iftu e5030000.display: [drm] vita-iftu: plane A config 1 -> second buffer 0x20384000, config 0 active
+[    1.811194] vita-iftu e5030000.display: [drm] vita-iftu: vblank IRQ 26 claimed
+[    1.827129] [drm] Initialized vita-iftu 1.0.0 for e5030000.display on minor 0
+[    1.859183] loop: module loaded
+[    1.868685] null_blk: disk nullb0 created
+[    1.876887] null_blk: module loaded
+[    1.883996] SPI driver vita-syscon has no spi_device_id for vita,syscon
+[    1.897929] vita_spi_probe
+[    1.903547] vita_reset_level: idx: 65, mask: 0x1, assert: 0
+[    1.918711] usbcore: registered new interface driver asix
+[    1.929821] usbcore: registered new interface driver ax88179_178a
+[    1.942320] usbcore: registered new interface driver cdc_ether
+[    1.954300] usbcore: registered new interface driver smsc95xx
+[    1.966106] usbcore: registered new interface driver net1080
+[    1.977717] usbcore: registered new interface driver cdc_subset
+[    1.989868] usbcore: registered new interface driver zaurus
+[    2.001330] usbcore: registered new interface driver cdc_ncm
+[    2.012942] usbcore: registered new interface driver r8153_ecm
+[    2.026254] usbcore: registered new interface driver usb-storage
+[    2.029281] vita_reset_level: idx: 36, mask: 0xf, assert: 0
+[    2.032944] mousedev: PS/2 mouse device common for all mice
+[    2.038089] vita pervasive usb0 prepare: reset=0x0 gate=0x0 mode_flag=0x1
+[    2.075494] i2c_dev: i2c /dev entries driver
+[    2.084827] vita_reset_level: idx: 68, mask: 0x1, assert: 0
+[    2.096945] i2c-vita e0500000.i2c: Vita I2C0 adapter registered
+[    2.508569] vita pervasive usb0: host mode latched, PHY ready after 20 ms (F30=0x1)
+[    2.524377] ehci-platform e40e0000.usb: EHCI Host Controller
+[    2.535986] ehci-platform e40e0000.usb: new USB bus registered, assigned bus number 1
+[    2.552387] ehci-platform e40e0000.usb: irq 28, io mem 0xe40e0000
+[    2.564938] vita_reset_level: idx: 38, mask: 0xf, assert: 0
+[    2.566529] sdhci: Secure Digital Host Controller Interface driver
+[    2.570692] vita pervasive usb2 prepare: reset=0x0 gate=0x0 mode_flag=0x1
+[    2.576965] sdhci: Copyright(c) Pierre Ossman
+[    2.583920] ehci-platform e40e0000.usb: USB 2.0 started, EHCI 1.00
+[    2.588652] hid: raw HID events driver (C) Jiri Kosina
+[    2.589286] sdhci-vita e0b00000.mmc: SDIF0 @ 0xe0b00000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1fff0000 [card present]
+[    2.589336] sdhci-vita e0b00000.mmc: SDIF0: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    2.590066] mmc0: Invalid maximum block size, assuming 512 bytes
+[    2.596864] hub 1-0:1.0: USB hub found
+[    2.600175] usbcore: registered new interface driver usbhid
+[    2.609087] sdhci-vita e0c00000.mmc: game-card rail on at boot failed: -517
+[    2.609381] sdhci-vita e0c10000.mmc: SDIF2 @ 0xe0c10000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1ffc0000 [no card]
+[    2.609427] sdhci-vita e0c10000.mmc: SDIF2: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    2.612990] hub 1-0:1.0: 1 port detected
+[    2.623247] usbhid: USB HID core driver
+[    2.629864] NET: Registered PF_INET6 protocol family
+[    2.800547] Segment Routing with IPv6
+[    2.808275] In-situ OAM (IOAM) with IPv6
+[    2.816510] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+[    2.830188] NET: Registered PF_PACKET protocol family
+[    2.838604] mmc0: SDHCI controller on (null) [e0b00000.mmc] using ADMA
+[    2.840921] Bluetooth: RFCOMM TTY layer initialized
+[    2.863757] Bluetooth: RFCOMM socket layer initialized
+[    2.874263] Bluetooth: RFCOMM ver 1.11
+[    2.881962] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[    2.892792] Bluetooth: BNEP socket layer initialized
+[    2.902904] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+[    2.905635] usb 1-1: new high-speed USB device number 2 using ehci-platform
+[    2.908970] Bluetooth: HIDP socket layer initialized
+[    2.939369] Registering SWP/SWPB emulation handler
+[    2.954163] mmc0: new high speed MMC card at address 0001
+[    2.967121] mmcblk0: mmc0:0001 M4G1FA 3.55 GiB
+[    2.970384] Loading compiled-in X.509 certificates
+[    2.976283]  mmcblk0: [SCE] p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13
+[    2.992476] vita_gpio_probe
+[    2.998475] mmcblk0boot0: mmc0:0001 M4G1FA 1.00 MiB
+[    3.002227] vita_reset_level: idx: 64, mask: 0x1, assert: 0
+[    3.010794] mmcblk0boot1: mmc0:0001 M4G1FA 1.00 MiB
+[    3.013188] gpio gpiochip1: (e20a0000.gpio): not an immutable chip, please consider fixing it!
+[    3.020939] mmcblk0rpmb: mmc0:0001 M4G1FA 128 KiB, chardev (248:0)
+[    3.028543] vita_syscon_probe
+[    3.048600] vita pervasive usb2: host mode latched, PHY ready after 20 ms (F30=0x5)
+[    3.050203] Vita Syscon Baryon version: 0x1040301
+[    3.057229] ehci-platform e4020000.usb: EHCI Host Controller
+[    3.085301] usb-storage 1-1:1.0: USB Mass Storage device detected
+[    3.087764] ehci-platform e4020000.usb: new USB bus registered, assigned bus number 2
+[    3.089129] scsi host0: usb-storage 1-1:1.0
+[    3.094508] ehci-platform e4020000.usb: irq 29, io mem 0xe4020000
+[    3.104396] Vita Syscon HW info: 0x723030
+[    3.128590] ehci-platform e4020000.usb: USB 2.0 started, EHCI 1.00
+[    3.132891] vita-syscon spi0.0: clockgen I2C adapter: Vita I2C
+[    3.147009] hub 2-0:1.0: USB hub found
+[    3.150636] vita-syscon-buttons vita-syscon-buttons: DMA mask not set
+[    3.154171] hub 2-0:1.0: 1 port detected
+[    3.160735] vita_syscon_buttons_probe
+[    3.227726] input: PlayStation Vita Buttons (Syscon) as /devices/platform/soc/e0a00000.spi/spi_master/spi0/spi0.0/vita-syscon-buttons/input/input0
+[    3.256569] vita-syscon-rtc vita-syscon-rtc: DMA mask not set
+[    3.297277] vita-syscon-rtc vita-syscon-rtc: registered as rtc0
+[    3.336849] vita-syscon-rtc vita-syscon-rtc: setting system clock to 2026-10-21T23:16:17 UTC (1792624577)
+[    3.365684] pstv-ohci e40e0200.ohci: PSTV bus-zero OHCI companion
+[    3.378170] pstv-ohci e40e0200.ohci: new USB bus registered, assigned bus number 3
+[    3.393946] pstv-ohci e40e0200.ohci: irq 27, io mem 0xe40e0200
+[    3.428588] usb 2-1: new high-speed USB device number 2 using ehci-platform
+[    3.471810] hub 3-0:1.0: USB hub found
+[    3.479628] hub 3-0:1.0: 1 port detected
+[    3.516194] vita-syscon spi0.0: Dolce USB power rail on
+[    3.526908] vita-dolce-usb-power usb0-power: Type-A port powered: Dolce rail on, enable GPIO asserted
+[    3.546060] pwrseq_vita_wlan wlan-pwrseq: Vita WLAN power sequencer registered
+[    3.562267] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[    3.563403] sdhci-vita e0c10000.mmc: SDIF2 @ 0xe0c10000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1fff0000 [card present]
+[    3.576427] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    3.583294] sdhci-vita e0c10000.mmc: SDIF2: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    3.594612] Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+[    3.599990] sdhci-vita e0c10000.mmc: allocated mmc-pwrseq
+[    3.607008] clk: Disabling unused clocks
+[    3.612522] mmc1: Invalid maximum block size, assuming 512 bytes
+[    3.698886] cdc_ether 2-1:2.0 eth0: register 'cdc_ether' at usb-e4020000.usb-1, CDC Ethernet Device, 00:d9:d1:53:1a:bf
+[    4.025631] mmc1: SDHCI controller on (null) [e0c10000.mmc] using ADMA
+[    4.099222] mmc1: new high speed SDIO card at address 0001
+[    4.113712] Bluetooth: vendor=0x2df, device=0x911a, class=255, fn=2
+[    4.128413] scsi 0:0:0:0: Direct-Access     Kingston DataTraveler 3.0 PMAP PQ: 0 ANSI: 6
+[    4.438602] sdhci-vita e0c00000.mmc: game-card rail raised before init
+[    4.452167] sdhci-vita e0c00000.mmc: SDIF1 @ 0xe0c00000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1ffc0000 [no card]
+[    4.477110] sdhci-vita e0c00000.mmc: SDIF1: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    4.498761] mmc2: Invalid maximum block size, assuming 512 bytes
+[    4.548593] mmc2: SDHCI controller on (null) [e0c00000.mmc] using ADMA
+[    4.593822] sd 0:0:0:0: [sda] 242417664 512-byte logical blocks: (124 GB/116 GiB)
+[    4.612503] sd 0:0:0:0: [sda] Write Protect is off
+[    4.622365] sd 0:0:0:0: [sda] Mode Sense: 45 00 00 00
+[    4.623621] sd 0:0:0:0: [sda] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+[    4.830702] mmc2: new high speed SDXC card at address aaaa
+[    4.843617] mmcblk2: mmc2:aaaa SN64G 59.5 GiB
+[    4.851814]  sda: sda1
+[    4.858037] sd 0:0:0:0: [sda] Attached SCSI removable disk
+[    9.033076] Freeing unused kernel image (initmem) memory: 27648K
+[    9.053682] Run /init as init process
+[    9.061153]   with arguments:
+[    9.061185]     /init
+[    9.061211]   with environment:
+[    9.061234]     HOME=/
+[    9.061258]     TERM=linux
+[    9.272128] exFAT-fs (sda1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+[    9.651344] Bluetooth: FW download over, size 466592 bytes
+[    9.765791] mwifiex_sdio mmc1:0001:1: WLAN is not the winner! Skip FW dnld
+[    9.780127] mwifiex_sdio mmc1:0001:1: WLAN FW is active
+[    9.965129] mwifiex_sdio mmc1:0001:1: host_mlme: disable, key_api: 0
+[   10.035056] mwifiex_sdio mmc1:0001:1: CHAN_REGION_CFG unsupported (result=0x2), using default reg domain
+[   10.308614] mwifiex_sdio mmc1:0001:1: info: MWIFIEX VERSION: mwifiex 1.0 (14.68.35.p66) 
+[   10.325217] mwifiex_sdio mmc1:0001:1: driver_version = mwifiex 1.0 (14.68.35.p66) 
+[   10.340878] btmrvl_sdio mmc1:0001:2: sdio device tree data not available
+[   10.356214] btmrvl_sdio mmc1:0001:3: error -ENODEV: SDIO function disabled by firmware description
+[   11.535636] random: crng init done
+[   37.463948] loop7: detected capacity change from 0 to 16777216
+[   76.765150] EXT4-fs (loop7): mounted filesystem bcb32c9a-d2d6-418e-9108-b5188e0676ae r/w with ordered data mode. Quota mode: disabled.
+[  135.939499] cdc_ether 2-1:2.0 enx00d9d1531abf: renamed from eth0
+[  157.139275] EXT4-fs (loop7): re-mounted bcb32c9a-d2d6-418e-9108-b5188e0676ae r/w. Quota mode: disabled.
+[  162.607572] mwifiex_sdio mmc1:0001:1: info: trying to associate to bssid 40:e1:e4:1b:bf:5a
+[  163.637177] mwifiex_sdio mmc1:0001:1: ASSOC_RESP: failed,	status code=1 err=0xfffc a_id=0x3fff
+[  163.654729] mwifiex_sdio mmc1:0001:1: assoc failure: reason CONNECT_ERR_ASSOC_ERR_TIMEOUT
+[  163.671390] mwifiex_sdio mmc1:0001:1: ASSOC_RESP: UNSPECIFIED failure
+[  163.684542] mwifiex_sdio mmc1:0001:1: info: association to bssid 40:e1:e4:1b:bf:5a failed
+[  163.864235] mwifiex_sdio mmc1:0001:1: info: trying to associate to bssid 42:e1:e4:1b:bb:fa
+[  163.902723] mwifiex_sdio mmc1:0001:1: assoc: associated with 42:e1:e4:1b:bb:fa
+[  163.917592] mwifiex_sdio mmc1:0001:1: info: associated to bssid 42:e1:e4:1b:bb:fa successfully
+[  163.997777] mwifiex_sdio mmc1:0001:1: key: send EAPOL to 42:e1:e4:1b:bb:fa
+[  164.019539] mwifiex_sdio mmc1:0001:1: key: send EAPOL to 42:e1:e4:1b:bb:fa
+[  228.360440] mwifiex_sdio mmc1:0001:1: CMD_RESP: cmd 0x23f error, result=0x2
+[  239.962591] loop0: detected capacity change from 0 to 21144
+[  241.311873] Bluetooth: MGMT ver 1.23
+bash: line 1:  1193 Killed                  /tmp/drm-flip-probe --seconds 30 > /tmp/m3-kill-probe.log 2>&1

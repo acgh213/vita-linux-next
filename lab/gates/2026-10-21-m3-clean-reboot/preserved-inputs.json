@@ -1,0 +1,20 @@
+{
+  "payload.bin": {
+    "sha256": "f5712184208467d56cc6626a9d3a17118057e126b34e63113a4f50ff8b0204ab",
+    "bytes": 105928,
+    "local": "/home/cassie/projects/vita-linux-next/rollback-artifacts/m3-clean-reboot-20261021/payload.bin.preserved.bin",
+    "remote": "payload.bin.m3-preserved-f57121842084"
+  },
+  "zImage": {
+    "sha256": "3370abd647ae2b3f3cbc4bce385bf0c3df4067ba6a26e7c49ce1a70b36088482",
+    "bytes": 32193224,
+    "local": "/home/cassie/projects/vita-linux-next/rollback-artifacts/m3-clean-reboot-20261021/zImage.preserved.bin",
+    "remote": "zImage.m3-preserved-3370abd647ae"
+  },
+  "pstv.dtb": {
+    "sha256": "89b1dd57e9f7fd5c6ff71deb86d7ca3d67a7e9394ff08ddccaec164df1593ebe",
+    "bytes": 6388,
+    "local": "/home/cassie/projects/vita-linux-next/rollback-artifacts/m3-clean-reboot-20261021/pstv.dtb.preserved.bin",
+    "remote": "pstv.dtb.m3-preserved-89b1dd57e9f7"
+  }
+}
