@@ -1,0 +1,20 @@
+{
+  "payload.bin": {
+    "sha256": "f5712184208467d56cc6626a9d3a17118057e126b34e63113a4f50ff8b0204ab",
+    "bytes": 105928,
+    "local": "/home/cassie/projects/vita-linux-next/rollback-artifacts/m3-native-before-console-20261021/payload.bin.preserved.bin",
+    "remote": "payload.bin.m3-preserved-f57121842084"
+  },
+  "zImage": {
+    "sha256": "5de9c77e90ff62ddf52a0cf22f45e68aee21967afb6dbbb728a1b0deb5b9977e",
+    "bytes": 32192232,
+    "local": "/home/cassie/projects/vita-linux-next/rollback-artifacts/m3-native-before-console-20261021/zImage.preserved.bin",
+    "remote": "zImage.m3-preserved-5de9c77e90ff"
+  },
+  "pstv.dtb": {
+    "sha256": "89b1dd57e9f7fd5c6ff71deb86d7ca3d67a7e9394ff08ddccaec164df1593ebe",
+    "bytes": 6388,
+    "local": "/home/cassie/projects/vita-linux-next/rollback-artifacts/m3-native-before-console-20261021/pstv.dtb.preserved.bin",
+    "remote": "pstv.dtb.m3-preserved-89b1dd57e9f7"
+  }
+}

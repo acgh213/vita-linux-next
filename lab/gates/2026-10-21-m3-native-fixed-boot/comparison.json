@@ -1,0 +1,82 @@
+[
+  {
+    "label": "01-xrgb",
+    "remote_exit": 1,
+    "post_ssh_exit": 0,
+    "probe_sha256": "c801d82fd1e19240355d8726025d1ee3d3276789b0a374baca46381dda8ff0b4",
+    "args": "--seconds 30",
+    "utc": "2026-10-22T00:56:44.990229+00:00",
+    "new_dmesg": [],
+    "result": "FAIL",
+    "errors": [
+      "cadence below 95% refresh"
+    ],
+    "flips": 600,
+    "cadence_hz": 19.979733058944323,
+    "reference_hz": 59.94,
+    "ioctl_mean_ms": 0.567666295,
+    "event_wait_mean_ms": 49.28599251333333,
+    "copy_mean_ms": 34.141244173333334,
+    "publish_to_irq_mean_ms": 14.880352795,
+    "raw_vblank_delta": 1800
+  },
+  {
+    "label": "02-native-abgr",
+    "remote_exit": 0,
+    "post_ssh_exit": 0,
+    "probe_sha256": "c801d82fd1e19240355d8726025d1ee3d3276789b0a374baca46381dda8ff0b4",
+    "args": "--seconds 30 --native-abgr",
+    "utc": "2026-10-22T00:57:17.868419+00:00",
+    "new_dmesg": [],
+    "result": "PASS",
+    "errors": [],
+    "flips": 1799,
+    "cadence_hz": 59.939217849499954,
+    "reference_hz": 59.94,
+    "ioctl_mean_ms": 0.5007436536964981,
+    "event_wait_mean_ms": 16.008204217342968,
+    "copy_mean_ms": 11.294113125625348,
+    "publish_to_irq_mean_ms": 4.332641207893274,
+    "raw_vblank_delta": 1799
+  },
+  {
+    "label": "03-xrgb",
+    "remote_exit": 1,
+    "post_ssh_exit": 0,
+    "probe_sha256": "c801d82fd1e19240355d8726025d1ee3d3276789b0a374baca46381dda8ff0b4",
+    "args": "--seconds 30",
+    "utc": "2026-10-22T00:57:50.765341+00:00",
+    "new_dmesg": [],
+    "result": "FAIL",
+    "errors": [
+      "cadence below 95% refresh"
+    ],
+    "flips": 600,
+    "cadence_hz": 19.97974104606876,
+    "reference_hz": 59.94,
+    "ioctl_mean_ms": 0.5668732583333334,
+    "event_wait_mean_ms": 49.298052418333334,
+    "copy_mean_ms": 34.19352811833333,
+    "publish_to_irq_mean_ms": 14.878338081666667,
+    "raw_vblank_delta": 1800
+  },
+  {
+    "label": "04-native-abgr",
+    "remote_exit": 0,
+    "post_ssh_exit": 0,
+    "probe_sha256": "c801d82fd1e19240355d8726025d1ee3d3276789b0a374baca46381dda8ff0b4",
+    "args": "--seconds 30 --native-abgr",
+    "utc": "2026-10-22T00:58:23.599182+00:00",
+    "new_dmesg": [],
+    "result": "PASS",
+    "errors": [],
+    "flips": 1799,
+    "cadence_hz": 59.93919677853377,
+    "reference_hz": 59.94,
+    "ioctl_mean_ms": 0.49568855030572545,
+    "event_wait_mean_ms": 16.019336778210118,
+    "copy_mean_ms": 11.267956047804335,
+    "publish_to_irq_mean_ms": 4.376933738743746,
+    "raw_vblank_delta": 1799
+  }
+]

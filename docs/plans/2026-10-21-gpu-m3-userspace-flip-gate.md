@@ -1,8 +1,9 @@
 # GPU lane — M3 gate: userspace page flips through the standard DRM ABI
 
-**Status:** PARTIAL — B2 PASS; C throughput FAIL (~20 FPS against ~59.94 Hz); scoped D recovery checks passed; E fbcon/readback/reboot passed, physical HDMI confirmation open. **Date:** 2026-10-21.
+**Status:** PARTIAL — B2 PASS; C native opaque ABGR8888 PASS (~59.94 FPS, twice), legacy XRGB conversion still ~20 FPS; scoped D recovery checks passed; E Linux fbcon/readback/reboot passed, physical HDMI confirmation open. **Date:** 2026-10-21.
 
-Latest evidence: [`lab/gpu-m3-cde-results-2026-10-21.md`](../../lab/gpu-m3-cde-results-2026-10-21.md).
+Latest evidence: [`lab/gpu-m3-native-format-comparison-2026-10-21.md`](../../lab/gpu-m3-native-format-comparison-2026-10-21.md).
+Earlier XRGB throughput failures remain recorded in `lab/gpu-m3-cde-results-2026-10-21.md`; native success does not erase them.
 The rationale below preserves the original design context; it is not a claim the gate is unstarted.
 **Depends on:** IFTU/DRM M2 (hardware-passed 2026-09-01), `vita-linux-next` `c8540dc`.
 **Explicitly not:** SGX. This gate touches no secure world, no SMC, no firmware.

@@ -1,0 +1,8 @@
+{
+  "remote_exit": 1,
+  "post_ssh_exit": 0,
+  "probe_sha256": "c801d82fd1e19240355d8726025d1ee3d3276789b0a374baca46381dda8ff0b4",
+  "args": "--seconds 30",
+  "utc": "2026-10-22T00:44:34.838359+00:00",
+  "new_dmesg": []
+}

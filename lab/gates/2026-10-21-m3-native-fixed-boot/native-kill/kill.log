@@ -1,0 +1,739 @@
+probe_pid=1271
+killed_exit=137
+M3-B2 modeset-first probe: /dev/dri/card0
+SET_MASTER
+GETRESOURCES
+GETCRTC
+before: crtc=34 mode=0x0 fb=0 valid=0
+GETCONNECTOR (discover modes/counts)
+connector: id=36 connection=1 modes=1 encoders=1
+GETCONNECTOR (fetch mode)
+mode: 1280x720 clock=74176 htotal=1650 vtotal=750
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB2 native ABGR8888 (opaque alpha)
+buffer: fb=38 pitch=5120 bytes=3686400 colour=ff202020
+CREATE_DUMB
+MAP_DUMB + mmap
+ADDFB2 native ABGR8888 (opaque alpha)
+buffer: fb=39 pitch=5120 bytes=3686400 colour=ff212121
+=== before modeset (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 616
+scanout_byte 3182592
+vblank_count 33008
+copy_count 4802
+copy_total_ns 81694614824
+copy_last_ns 11255267
+present_count 4802
+wait_total_ns 33562102871
+SETCRTC (first commit, grey)
+SETCRTC returned success
+=== after modeset / before flip (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 33010
+copy_count 4803
+copy_total_ns 81710036346
+copy_last_ns 15421522
+present_count 4803
+wait_total_ns 33564676249
+refresh reference=60 Hz (default measured approximately 60); event budget=83333334 ns
+PAGE_FLIP index=1 fb=39 cookie=1295204914, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7212 elapsed_ns=16037129 ioctl_ns=429759 event_wait_ns=15607370 cookie=1295204914
+=== flip sample 1 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 33011
+copy_count 4804
+copy_total_ns 81721663105
+copy_last_ns 11626759
+present_count 4804
+wait_total_ns 33568465224
+PAGE_FLIP index=2 fb=38 cookie=1295204915, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7213 elapsed_ns=16124544 ioctl_ns=432776 event_wait_ns=15691768 cookie=1295204915
+PAGE_FLIP index=3 fb=39 cookie=1295204916, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7214 elapsed_ns=16505121 ioctl_ns=424103 event_wait_ns=16081018 cookie=1295204916
+PAGE_FLIP index=4 fb=38 cookie=1295204917, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7215 elapsed_ns=16470153 ioctl_ns=421646 event_wait_ns=16048507 cookie=1295204917
+PAGE_FLIP index=5 fb=39 cookie=1295204918, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7216 elapsed_ns=16532240 ioctl_ns=450939 event_wait_ns=16081301 cookie=1295204918
+PAGE_FLIP index=6 fb=38 cookie=1295204919, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7217 elapsed_ns=16566689 ioctl_ns=423692 event_wait_ns=16142997 cookie=1295204919
+PAGE_FLIP index=7 fb=39 cookie=1295204920, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7218 elapsed_ns=16372855 ioctl_ns=881422 event_wait_ns=15491433 cookie=1295204920
+PAGE_FLIP index=8 fb=38 cookie=1295204921, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7219 elapsed_ns=16498583 ioctl_ns=426451 event_wait_ns=16072132 cookie=1295204921
+PAGE_FLIP index=9 fb=39 cookie=1295204922, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7220 elapsed_ns=16540987 ioctl_ns=399722 event_wait_ns=16141265 cookie=1295204922
+PAGE_FLIP index=10 fb=38 cookie=1295204923, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7221 elapsed_ns=16492613 ioctl_ns=433120 event_wait_ns=16059493 cookie=1295204923
+PAGE_FLIP index=11 fb=39 cookie=1295204924, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7222 elapsed_ns=16485997 ioctl_ns=428514 event_wait_ns=16057483 cookie=1295204924
+PAGE_FLIP index=12 fb=38 cookie=1295204925, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7223 elapsed_ns=16542684 ioctl_ns=421121 event_wait_ns=16121563 cookie=1295204925
+PAGE_FLIP index=13 fb=39 cookie=1295204926, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7224 elapsed_ns=16476545 ioctl_ns=430308 event_wait_ns=16046237 cookie=1295204926
+PAGE_FLIP index=14 fb=38 cookie=1295204927, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7225 elapsed_ns=16520639 ioctl_ns=426927 event_wait_ns=16093712 cookie=1295204927
+PAGE_FLIP index=15 fb=39 cookie=1295204928, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7226 elapsed_ns=16457652 ioctl_ns=429215 event_wait_ns=16028437 cookie=1295204928
+PAGE_FLIP index=16 fb=38 cookie=1295204929, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7227 elapsed_ns=16491980 ioctl_ns=431171 event_wait_ns=16060809 cookie=1295204929
+PAGE_FLIP index=17 fb=39 cookie=1295204930, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7228 elapsed_ns=16502820 ioctl_ns=433211 event_wait_ns=16069609 cookie=1295204930
+PAGE_FLIP index=18 fb=38 cookie=1295204931, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7229 elapsed_ns=16533485 ioctl_ns=393572 event_wait_ns=16139913 cookie=1295204931
+PAGE_FLIP index=19 fb=39 cookie=1295204932, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7230 elapsed_ns=16488255 ioctl_ns=432306 event_wait_ns=16055949 cookie=1295204932
+PAGE_FLIP index=20 fb=38 cookie=1295204933, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7231 elapsed_ns=16495958 ioctl_ns=429155 event_wait_ns=16066803 cookie=1295204933
+PAGE_FLIP index=21 fb=39 cookie=1295204934, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7232 elapsed_ns=16540571 ioctl_ns=412103 event_wait_ns=16128468 cookie=1295204934
+PAGE_FLIP index=22 fb=38 cookie=1295204935, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7233 elapsed_ns=16478651 ioctl_ns=428382 event_wait_ns=16050269 cookie=1295204935
+PAGE_FLIP index=23 fb=39 cookie=1295204936, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7234 elapsed_ns=16514283 ioctl_ns=421169 event_wait_ns=16093114 cookie=1295204936
+PAGE_FLIP index=24 fb=38 cookie=1295204937, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7235 elapsed_ns=16527466 ioctl_ns=416575 event_wait_ns=16110891 cookie=1295204937
+PAGE_FLIP index=25 fb=39 cookie=1295204938, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7236 elapsed_ns=16489855 ioctl_ns=427900 event_wait_ns=16061955 cookie=1295204938
+PAGE_FLIP index=26 fb=38 cookie=1295204939, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7237 elapsed_ns=16505241 ioctl_ns=402716 event_wait_ns=16102525 cookie=1295204939
+PAGE_FLIP index=27 fb=39 cookie=1295204940, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7238 elapsed_ns=16527985 ioctl_ns=426674 event_wait_ns=16101311 cookie=1295204940
+PAGE_FLIP index=28 fb=38 cookie=1295204941, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7239 elapsed_ns=16482364 ioctl_ns=430772 event_wait_ns=16051592 cookie=1295204941
+PAGE_FLIP index=29 fb=39 cookie=1295204942, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7240 elapsed_ns=16500339 ioctl_ns=429233 event_wait_ns=16071106 cookie=1295204942
+PAGE_FLIP index=30 fb=38 cookie=1295204943, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7241 elapsed_ns=16541651 ioctl_ns=420329 event_wait_ns=16121322 cookie=1295204943
+PAGE_FLIP index=31 fb=39 cookie=1295204944, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7242 elapsed_ns=16477879 ioctl_ns=427851 event_wait_ns=16050028 cookie=1295204944
+PAGE_FLIP index=32 fb=38 cookie=1295204945, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7243 elapsed_ns=16517585 ioctl_ns=426898 event_wait_ns=16090687 cookie=1295204945
+PAGE_FLIP index=33 fb=39 cookie=1295204946, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7244 elapsed_ns=16531878 ioctl_ns=419557 event_wait_ns=16112321 cookie=1295204946
+PAGE_FLIP index=34 fb=38 cookie=1295204947, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7245 elapsed_ns=16517712 ioctl_ns=403103 event_wait_ns=16114609 cookie=1295204947
+PAGE_FLIP index=35 fb=39 cookie=1295204948, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7246 elapsed_ns=16400121 ioctl_ns=802469 event_wait_ns=15597652 cookie=1295204948
+PAGE_FLIP index=36 fb=38 cookie=1295204949, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7247 elapsed_ns=16506497 ioctl_ns=421737 event_wait_ns=16084760 cookie=1295204949
+PAGE_FLIP index=37 fb=39 cookie=1295204950, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7248 elapsed_ns=16464816 ioctl_ns=433205 event_wait_ns=16031611 cookie=1295204950
+PAGE_FLIP index=38 fb=38 cookie=1295204951, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7249 elapsed_ns=16461165 ioctl_ns=414312 event_wait_ns=16046853 cookie=1295204951
+PAGE_FLIP index=39 fb=39 cookie=1295204952, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7250 elapsed_ns=16535730 ioctl_ns=431648 event_wait_ns=16104082 cookie=1295204952
+PAGE_FLIP index=40 fb=38 cookie=1295204953, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7251 elapsed_ns=16506798 ioctl_ns=428364 event_wait_ns=16078434 cookie=1295204953
+PAGE_FLIP index=41 fb=39 cookie=1295204954, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7252 elapsed_ns=16520114 ioctl_ns=419611 event_wait_ns=16100503 cookie=1295204954
+PAGE_FLIP index=42 fb=38 cookie=1295204955, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7253 elapsed_ns=16525939 ioctl_ns=433447 event_wait_ns=16092492 cookie=1295204955
+PAGE_FLIP index=43 fb=39 cookie=1295204956, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7254 elapsed_ns=16487162 ioctl_ns=426692 event_wait_ns=16060470 cookie=1295204956
+PAGE_FLIP index=44 fb=38 cookie=1295204957, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7255 elapsed_ns=16504921 ioctl_ns=424320 event_wait_ns=16080601 cookie=1295204957
+PAGE_FLIP index=45 fb=39 cookie=1295204958, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7256 elapsed_ns=16522951 ioctl_ns=428841 event_wait_ns=16094110 cookie=1295204958
+PAGE_FLIP index=46 fb=38 cookie=1295204959, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7257 elapsed_ns=16497092 ioctl_ns=400102 event_wait_ns=16096990 cookie=1295204959
+PAGE_FLIP index=47 fb=39 cookie=1295204960, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7258 elapsed_ns=16494249 ioctl_ns=426632 event_wait_ns=16067617 cookie=1295204960
+PAGE_FLIP index=48 fb=38 cookie=1295204961, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7259 elapsed_ns=16528221 ioctl_ns=423034 event_wait_ns=16105187 cookie=1295204961
+PAGE_FLIP index=49 fb=39 cookie=1295204962, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7260 elapsed_ns=16490005 ioctl_ns=424404 event_wait_ns=16065601 cookie=1295204962
+PAGE_FLIP index=50 fb=38 cookie=1295204963, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7261 elapsed_ns=16518219 ioctl_ns=429185 event_wait_ns=16089034 cookie=1295204963
+PAGE_FLIP index=51 fb=39 cookie=1295204964, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7262 elapsed_ns=16527352 ioctl_ns=424157 event_wait_ns=16103195 cookie=1295204964
+PAGE_FLIP index=52 fb=38 cookie=1295204965, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7263 elapsed_ns=16488551 ioctl_ns=428600 event_wait_ns=16059951 cookie=1295204965
+PAGE_FLIP index=53 fb=39 cookie=1295204966, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7264 elapsed_ns=16506007 ioctl_ns=430803 event_wait_ns=16075204 cookie=1295204966
+PAGE_FLIP index=54 fb=38 cookie=1295204967, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7265 elapsed_ns=16519160 ioctl_ns=397175 event_wait_ns=16121985 cookie=1295204967
+PAGE_FLIP index=55 fb=39 cookie=1295204968, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7266 elapsed_ns=16492782 ioctl_ns=427875 event_wait_ns=16064907 cookie=1295204968
+PAGE_FLIP index=56 fb=38 cookie=1295204969, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7267 elapsed_ns=16497370 ioctl_ns=433296 event_wait_ns=16064074 cookie=1295204969
+PAGE_FLIP index=57 fb=39 cookie=1295204970, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7268 elapsed_ns=16540782 ioctl_ns=419533 event_wait_ns=16121249 cookie=1295204970
+PAGE_FLIP index=58 fb=38 cookie=1295204971, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7269 elapsed_ns=16480143 ioctl_ns=426554 event_wait_ns=16053589 cookie=1295204971
+PAGE_FLIP index=59 fb=39 cookie=1295204972, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7270 elapsed_ns=16451954 ioctl_ns=432354 event_wait_ns=16019600 cookie=1295204972
+PAGE_FLIP index=60 fb=38 cookie=1295204973, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7271 elapsed_ns=16525776 ioctl_ns=425545 event_wait_ns=16100231 cookie=1295204973
+PAGE_FLIP index=61 fb=39 cookie=1295204974, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7272 elapsed_ns=16489257 ioctl_ns=431267 event_wait_ns=16057990 cookie=1295204974
+=== flip sample 61 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 0
+live_cfg 0
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 33071
+copy_count 4864
+copy_total_ns 82384687843
+copy_last_ns 11032381
+present_count 4864
+wait_total_ns 33857854862
+PAGE_FLIP index=62 fb=38 cookie=1295204975, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7273 elapsed_ns=16133255 ioctl_ns=465426 event_wait_ns=15667829 cookie=1295204975
+PAGE_FLIP index=63 fb=39 cookie=1295204976, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7274 elapsed_ns=16415875 ioctl_ns=899748 event_wait_ns=15516127 cookie=1295204976
+PAGE_FLIP index=64 fb=38 cookie=1295204977, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7275 elapsed_ns=16473140 ioctl_ns=6747624 event_wait_ns=9725516 cookie=1295204977
+PAGE_FLIP index=65 fb=39 cookie=1295204978, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7276 elapsed_ns=16477547 ioctl_ns=405282 event_wait_ns=16072265 cookie=1295204978
+PAGE_FLIP index=66 fb=38 cookie=1295204979, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7277 elapsed_ns=16465161 ioctl_ns=417741 event_wait_ns=16047420 cookie=1295204979
+PAGE_FLIP index=67 fb=39 cookie=1295204980, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7278 elapsed_ns=16475899 ioctl_ns=427706 event_wait_ns=16048193 cookie=1295204980
+PAGE_FLIP index=68 fb=38 cookie=1295204981, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7279 elapsed_ns=16512019 ioctl_ns=430603 event_wait_ns=16081416 cookie=1295204981
+PAGE_FLIP index=69 fb=39 cookie=1295204982, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7280 elapsed_ns=16519722 ioctl_ns=420191 event_wait_ns=16099531 cookie=1295204982
+PAGE_FLIP index=70 fb=38 cookie=1295204983, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7281 elapsed_ns=16498396 ioctl_ns=426662 event_wait_ns=16071734 cookie=1295204983
+PAGE_FLIP index=71 fb=39 cookie=1295204984, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7282 elapsed_ns=16505990 ioctl_ns=426077 event_wait_ns=16079913 cookie=1295204984
+PAGE_FLIP index=72 fb=38 cookie=1295204985, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7283 elapsed_ns=16513275 ioctl_ns=419600 event_wait_ns=16093675 cookie=1295204985
+PAGE_FLIP index=73 fb=39 cookie=1295204986, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7284 elapsed_ns=16500279 ioctl_ns=423463 event_wait_ns=16076816 cookie=1295204986
+PAGE_FLIP index=74 fb=38 cookie=1295204987, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7285 elapsed_ns=16497611 ioctl_ns=405209 event_wait_ns=16092402 cookie=1295204987
+PAGE_FLIP index=75 fb=39 cookie=1295204988, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7286 elapsed_ns=16539376 ioctl_ns=419382 event_wait_ns=16119994 cookie=1295204988
+PAGE_FLIP index=76 fb=38 cookie=1295204989, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7287 elapsed_ns=16477631 ioctl_ns=421543 event_wait_ns=16056088 cookie=1295204989
+PAGE_FLIP index=77 fb=39 cookie=1295204990, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7288 elapsed_ns=16519069 ioctl_ns=428176 event_wait_ns=16090893 cookie=1295204990
+PAGE_FLIP index=78 fb=38 cookie=1295204991, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7289 elapsed_ns=16524943 ioctl_ns=419268 event_wait_ns=16105675 cookie=1295204991
+PAGE_FLIP index=79 fb=39 cookie=1295204992, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7290 elapsed_ns=16423282 ioctl_ns=419564 event_wait_ns=16003718 cookie=1295204992
+PAGE_FLIP index=80 fb=38 cookie=1295204993, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7291 elapsed_ns=16510969 ioctl_ns=431159 event_wait_ns=16079810 cookie=1295204993
+PAGE_FLIP index=81 fb=39 cookie=1295204994, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7292 elapsed_ns=16514048 ioctl_ns=426662 event_wait_ns=16087386 cookie=1295204994
+PAGE_FLIP index=82 fb=38 cookie=1295204995, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7293 elapsed_ns=16501245 ioctl_ns=393276 event_wait_ns=16107969 cookie=1295204995
+PAGE_FLIP index=83 fb=39 cookie=1295204996, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7294 elapsed_ns=16504951 ioctl_ns=429879 event_wait_ns=16075072 cookie=1295204996
+PAGE_FLIP index=84 fb=38 cookie=1295204997, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7295 elapsed_ns=16540142 ioctl_ns=417668 event_wait_ns=16122474 cookie=1295204997
+PAGE_FLIP index=85 fb=39 cookie=1295204998, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7296 elapsed_ns=16473998 ioctl_ns=420179 event_wait_ns=16053819 cookie=1295204998
+PAGE_FLIP index=86 fb=38 cookie=1295204999, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7297 elapsed_ns=16516203 ioctl_ns=431322 event_wait_ns=16084881 cookie=1295204999
+PAGE_FLIP index=87 fb=39 cookie=1295205000, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7298 elapsed_ns=16524165 ioctl_ns=415857 event_wait_ns=16108308 cookie=1295205000
+PAGE_FLIP index=88 fb=38 cookie=1295205001, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7299 elapsed_ns=16487953 ioctl_ns=418881 event_wait_ns=16069072 cookie=1295205001
+PAGE_FLIP index=89 fb=39 cookie=1295205002, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7300 elapsed_ns=16509146 ioctl_ns=428962 event_wait_ns=16080184 cookie=1295205002
+PAGE_FLIP index=90 fb=38 cookie=1295205003, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7301 elapsed_ns=16592193 ioctl_ns=396421 event_wait_ns=16195772 cookie=1295205003
+PAGE_FLIP index=91 fb=39 cookie=1295205004, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7302 elapsed_ns=16350968 ioctl_ns=888068 event_wait_ns=15462900 cookie=1295205004
+PAGE_FLIP index=92 fb=38 cookie=1295205005, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7303 elapsed_ns=16512659 ioctl_ns=426517 event_wait_ns=16086142 cookie=1295205005
+PAGE_FLIP index=93 fb=39 cookie=1295205006, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7304 elapsed_ns=16494303 ioctl_ns=426390 event_wait_ns=16067913 cookie=1295205006
+PAGE_FLIP index=94 fb=38 cookie=1295205007, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7305 elapsed_ns=16502259 ioctl_ns=425002 event_wait_ns=16077257 cookie=1295205007
+PAGE_FLIP index=95 fb=39 cookie=1295205008, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7306 elapsed_ns=16516040 ioctl_ns=436555 event_wait_ns=16079485 cookie=1295205008
+PAGE_FLIP index=96 fb=38 cookie=1295205009, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7307 elapsed_ns=16516408 ioctl_ns=435022 event_wait_ns=16081386 cookie=1295205009
+PAGE_FLIP index=97 fb=39 cookie=1295205010, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7308 elapsed_ns=16491919 ioctl_ns=420982 event_wait_ns=16070937 cookie=1295205010
+PAGE_FLIP index=98 fb=38 cookie=1295205011, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7309 elapsed_ns=16512974 ioctl_ns=432608 event_wait_ns=16080366 cookie=1295205011
+PAGE_FLIP index=99 fb=39 cookie=1295205012, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7310 elapsed_ns=16514833 ioctl_ns=425038 event_wait_ns=16089795 cookie=1295205012
+PAGE_FLIP index=100 fb=38 cookie=1295205013, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7311 elapsed_ns=16495136 ioctl_ns=421440 event_wait_ns=16073696 cookie=1295205013
+PAGE_FLIP index=101 fb=39 cookie=1295205014, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7312 elapsed_ns=16397102 ioctl_ns=431756 event_wait_ns=15965346 cookie=1295205014
+PAGE_FLIP index=102 fb=38 cookie=1295205015, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7313 elapsed_ns=16541579 ioctl_ns=398473 event_wait_ns=16143106 cookie=1295205015
+PAGE_FLIP index=103 fb=39 cookie=1295205016, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7314 elapsed_ns=16473207 ioctl_ns=417886 event_wait_ns=16055321 cookie=1295205016
+PAGE_FLIP index=104 fb=38 cookie=1295205017, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7315 elapsed_ns=16519251 ioctl_ns=417590 event_wait_ns=16101661 cookie=1295205017
+PAGE_FLIP index=105 fb=39 cookie=1295205018, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7316 elapsed_ns=16524520 ioctl_ns=426909 event_wait_ns=16097611 cookie=1295205018
+PAGE_FLIP index=106 fb=38 cookie=1295205019, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7317 elapsed_ns=16489541 ioctl_ns=430356 event_wait_ns=16059185 cookie=1295205019
+PAGE_FLIP index=107 fb=39 cookie=1295205020, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7318 elapsed_ns=16507239 ioctl_ns=426028 event_wait_ns=16081211 cookie=1295205020
+PAGE_FLIP index=108 fb=38 cookie=1295205021, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7319 elapsed_ns=16515575 ioctl_ns=429855 event_wait_ns=16085720 cookie=1295205021
+PAGE_FLIP index=109 fb=39 cookie=1295205022, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7320 elapsed_ns=16502700 ioctl_ns=430169 event_wait_ns=16072531 cookie=1295205022
+PAGE_FLIP index=110 fb=38 cookie=1295205023, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7321 elapsed_ns=16497092 ioctl_ns=397567 event_wait_ns=16099525 cookie=1295205023
+PAGE_FLIP index=111 fb=39 cookie=1295205024, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7322 elapsed_ns=16522033 ioctl_ns=424060 event_wait_ns=16097973 cookie=1295205024
+PAGE_FLIP index=112 fb=38 cookie=1295205025, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7323 elapsed_ns=16496048 ioctl_ns=421628 event_wait_ns=16074420 cookie=1295205025
+PAGE_FLIP index=113 fb=39 cookie=1295205026, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7324 elapsed_ns=16516794 ioctl_ns=420451 event_wait_ns=16096343 cookie=1295205026
+PAGE_FLIP index=114 fb=38 cookie=1295205027, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7325 elapsed_ns=16528149 ioctl_ns=418978 event_wait_ns=16109171 cookie=1295205027
+PAGE_FLIP index=115 fb=39 cookie=1295205028, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7326 elapsed_ns=16481705 ioctl_ns=426010 event_wait_ns=16055695 cookie=1295205028
+PAGE_FLIP index=116 fb=38 cookie=1295205029, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7327 elapsed_ns=16526440 ioctl_ns=415145 event_wait_ns=16111295 cookie=1295205029
+PAGE_FLIP index=117 fb=39 cookie=1295205030, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7328 elapsed_ns=16477861 ioctl_ns=451356 event_wait_ns=16026505 cookie=1295205030
+PAGE_FLIP index=118 fb=38 cookie=1295205031, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7329 elapsed_ns=16561740 ioctl_ns=428654 event_wait_ns=16133086 cookie=1295205031
+PAGE_FLIP index=119 fb=39 cookie=1295205032, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7330 elapsed_ns=16395056 ioctl_ns=890271 event_wait_ns=15504785 cookie=1295205032
+PAGE_FLIP index=120 fb=38 cookie=1295205033, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7331 elapsed_ns=16491726 ioctl_ns=413388 event_wait_ns=16078338 cookie=1295205033
+PAGE_FLIP index=121 fb=39 cookie=1295205034, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7332 elapsed_ns=16503822 ioctl_ns=413056 event_wait_ns=16090766 cookie=1295205034
+PAGE_FLIP index=122 fb=38 cookie=1295205035, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7333 elapsed_ns=16540178 ioctl_ns=427042 event_wait_ns=16113136 cookie=1295205035
+=== flip sample 122 (/sys/kernel/debug/dri/0/iftu_state) ===
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 16
+scanout_byte 1280
+vblank_count 33132
+copy_count 4925
+copy_total_ns 83058850264
+copy_last_ns 10991275
+present_count 4925
+wait_total_ns 34151271140
+PAGE_FLIP index=123 fb=39 cookie=1295205036, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7334 elapsed_ns=16003157 ioctl_ns=431497 event_wait_ns=15571660 cookie=1295205036
+PAGE_FLIP index=124 fb=38 cookie=1295205037, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7335 elapsed_ns=16516306 ioctl_ns=428033 event_wait_ns=16088273 cookie=1295205037
+PAGE_FLIP index=125 fb=39 cookie=1295205038, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7336 elapsed_ns=16534100 ioctl_ns=427482 event_wait_ns=16106618 cookie=1295205038
+PAGE_FLIP index=126 fb=38 cookie=1295205039, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7337 elapsed_ns=16468378 ioctl_ns=422436 event_wait_ns=16045942 cookie=1295205039
+PAGE_FLIP index=127 fb=39 cookie=1295205040, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7338 elapsed_ns=16523175 ioctl_ns=430030 event_wait_ns=16093145 cookie=1295205040
+PAGE_FLIP index=128 fb=38 cookie=1295205041, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7339 elapsed_ns=16517296 ioctl_ns=427658 event_wait_ns=16089638 cookie=1295205041
+PAGE_FLIP index=129 fb=39 cookie=1295205042, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7340 elapsed_ns=16499452 ioctl_ns=421446 event_wait_ns=16078006 cookie=1295205042
+PAGE_FLIP index=130 fb=38 cookie=1295205043, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7341 elapsed_ns=16498939 ioctl_ns=400586 event_wait_ns=16098353 cookie=1295205043
+PAGE_FLIP index=131 fb=39 cookie=1295205044, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7342 elapsed_ns=16542303 ioctl_ns=428738 event_wait_ns=16113565 cookie=1295205044
+PAGE_FLIP index=132 fb=38 cookie=1295205045, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7343 elapsed_ns=16476346 ioctl_ns=419521 event_wait_ns=16056825 cookie=1295205045
+PAGE_FLIP index=133 fb=39 cookie=1295205046, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7344 elapsed_ns=16517881 ioctl_ns=420970 event_wait_ns=16096911 cookie=1295205046
+PAGE_FLIP index=134 fb=38 cookie=1295205047, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7345 elapsed_ns=16530889 ioctl_ns=426541 event_wait_ns=16104348 cookie=1295205047
+PAGE_FLIP index=135 fb=39 cookie=1295205048, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7346 elapsed_ns=16471656 ioctl_ns=424869 event_wait_ns=16046787 cookie=1295205048
+PAGE_FLIP index=136 fb=38 cookie=1295205049, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7347 elapsed_ns=16516372 ioctl_ns=427181 event_wait_ns=16089191 cookie=1295205049
+PAGE_FLIP index=137 fb=39 cookie=1295205050, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7348 elapsed_ns=16518026 ioctl_ns=423783 event_wait_ns=16094243 cookie=1295205050
+PAGE_FLIP index=138 fb=38 cookie=1295205051, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7349 elapsed_ns=16499337 ioctl_ns=388278 event_wait_ns=16111059 cookie=1295205051
+PAGE_FLIP index=139 fb=39 cookie=1295205052, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7350 elapsed_ns=16502307 ioctl_ns=425920 event_wait_ns=16076387 cookie=1295205052
+PAGE_FLIP index=140 fb=38 cookie=1295205053, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7351 elapsed_ns=16536352 ioctl_ns=409362 event_wait_ns=16126990 cookie=1295205053
+PAGE_FLIP index=141 fb=39 cookie=1295205054, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7352 elapsed_ns=16473823 ioctl_ns=420994 event_wait_ns=16052829 cookie=1295205054
+PAGE_FLIP index=142 fb=38 cookie=1295205055, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7353 elapsed_ns=16519637 ioctl_ns=422395 event_wait_ns=16097242 cookie=1295205055
+PAGE_FLIP index=143 fb=39 cookie=1295205056, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7354 elapsed_ns=16468034 ioctl_ns=422225 event_wait_ns=16045809 cookie=1295205056
+PAGE_FLIP index=144 fb=38 cookie=1295205057, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7355 elapsed_ns=16472060 ioctl_ns=418652 event_wait_ns=16053408 cookie=1295205057
+PAGE_FLIP index=145 fb=39 cookie=1295205058, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7356 elapsed_ns=16505253 ioctl_ns=424845 event_wait_ns=16080408 cookie=1295205058
+PAGE_FLIP index=146 fb=38 cookie=1295205059, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7357 elapsed_ns=16551291 ioctl_ns=400779 event_wait_ns=16150512 cookie=1295205059
+PAGE_FLIP index=147 fb=39 cookie=1295205060, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7358 elapsed_ns=16403145 ioctl_ns=897050 event_wait_ns=15506095 cookie=1295205060
+PAGE_FLIP index=148 fb=38 cookie=1295205061, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7359 elapsed_ns=16494943 ioctl_ns=7516290 event_wait_ns=8978653 cookie=1295205061
+PAGE_FLIP index=149 fb=39 cookie=1295205062, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7360 elapsed_ns=16541639 ioctl_ns=397115 event_wait_ns=16144524 cookie=1295205062
+PAGE_FLIP index=150 fb=38 cookie=1295205063, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7361 elapsed_ns=16479889 ioctl_ns=432409 event_wait_ns=16047480 cookie=1295205063
+PAGE_FLIP index=151 fb=39 cookie=1295205064, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7362 elapsed_ns=16518231 ioctl_ns=432946 event_wait_ns=16085285 cookie=1295205064
+PAGE_FLIP index=152 fb=38 cookie=1295205065, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7363 elapsed_ns=16538446 ioctl_ns=428370 event_wait_ns=16110076 cookie=1295205065
+PAGE_FLIP index=153 fb=39 cookie=1295205066, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7364 elapsed_ns=16472820 ioctl_ns=426674 event_wait_ns=16046146 cookie=1295205066
+PAGE_FLIP index=154 fb=38 cookie=1295205067, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7365 elapsed_ns=16533285 ioctl_ns=422104 event_wait_ns=16111181 cookie=1295205067
+PAGE_FLIP index=155 fb=39 cookie=1295205068, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7366 elapsed_ns=16480233 ioctl_ns=421724 event_wait_ns=16058509 cookie=1295205068
+PAGE_FLIP index=156 fb=38 cookie=1295205069, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7367 elapsed_ns=16522849 ioctl_ns=417095 event_wait_ns=16105754 cookie=1295205069
+PAGE_FLIP index=157 fb=39 cookie=1295205070, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7368 elapsed_ns=16519589 ioctl_ns=416262 event_wait_ns=16103327 cookie=1295205070
+PAGE_FLIP index=158 fb=38 cookie=1295205071, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7369 elapsed_ns=16492601 ioctl_ns=400996 event_wait_ns=16091605 cookie=1295205071
+PAGE_FLIP index=159 fb=39 cookie=1295205072, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7370 elapsed_ns=16497533 ioctl_ns=420252 event_wait_ns=16077281 cookie=1295205072
+PAGE_FLIP index=160 fb=38 cookie=1295205073, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7371 elapsed_ns=16523778 ioctl_ns=421483 event_wait_ns=16102295 cookie=1295205073
+PAGE_FLIP index=161 fb=39 cookie=1295205074, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7372 elapsed_ns=16529385 ioctl_ns=432843 event_wait_ns=16096542 cookie=1295205074
+PAGE_FLIP index=162 fb=38 cookie=1295205075, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7373 elapsed_ns=16477481 ioctl_ns=420288 event_wait_ns=16057193 cookie=1295205075
+PAGE_FLIP index=163 fb=39 cookie=1295205076, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7374 elapsed_ns=16519130 ioctl_ns=422490 event_wait_ns=16096640 cookie=1295205076
+PAGE_FLIP index=164 fb=38 cookie=1295205077, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7375 elapsed_ns=16519734 ioctl_ns=468191 event_wait_ns=16051543 cookie=1295205077
+PAGE_FLIP index=165 fb=39 cookie=1295205078, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7376 elapsed_ns=16436386 ioctl_ns=432583 event_wait_ns=16003803 cookie=1295205078
+PAGE_FLIP index=166 fb=38 cookie=1295205079, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7377 elapsed_ns=16499132 ioctl_ns=400157 event_wait_ns=16098975 cookie=1295205079
+PAGE_FLIP index=167 fb=39 cookie=1295205080, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7378 elapsed_ns=16538386 ioctl_ns=466730 event_wait_ns=16071656 cookie=1295205080
+PAGE_FLIP index=168 fb=38 cookie=1295205081, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7379 elapsed_ns=16478567 ioctl_ns=426010 event_wait_ns=16052557 cookie=1295205081
+PAGE_FLIP index=169 fb=39 cookie=1295205082, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7380 elapsed_ns=16511108 ioctl_ns=428636 event_wait_ns=16082472 cookie=1295205082
+PAGE_FLIP index=170 fb=38 cookie=1295205083, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7381 elapsed_ns=16537046 ioctl_ns=475603 event_wait_ns=16061443 cookie=1295205083
+PAGE_FLIP index=171 fb=39 cookie=1295205084, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7382 elapsed_ns=16467478 ioctl_ns=423034 event_wait_ns=16044444 cookie=1295205084
+PAGE_FLIP index=172 fb=38 cookie=1295205085, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7383 elapsed_ns=16516607 ioctl_ns=422992 event_wait_ns=16093615 cookie=1295205085
+PAGE_FLIP index=173 fb=39 cookie=1295205086, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7384 elapsed_ns=16522631 ioctl_ns=472542 event_wait_ns=16050089 cookie=1295205086
+PAGE_FLIP index=174 fb=38 cookie=1295205087, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7385 elapsed_ns=16525758 ioctl_ns=430779 event_wait_ns=16094979 cookie=1295205087
+PAGE_FLIP index=175 fb=39 cookie=1295205088, event budget=83333334 ns
+DRM_EVENT received: crtc=34 sequence=7386 elapsed_ns=16405578 ioctl_ns=901934 event_wait_ns=15503644 cookie=1295205088
+PAGE_FLIP index=176 fb=38 cookie=1295205089, event budget=83333334 ns
+selector 1
+live_cfg 1
+flip_pending 0
+scanline 256
+scanout_byte 1327104
+vblank_count 33248
+copy_count 4979
+copy_total_ns 83657039691
+copy_last_ns 11398319
+present_count 4979
+wait_total_ns 34410018580
+plane[32]: plane-0
+	crtc=(null)
+	fb=0
+	crtc-pos=1280x720+0+0
+	src-pos=1280.000000x720.000000+0.000000+0.000000
+	rotation=1
+	normalized-zpos=0
+	color-encoding=ITU-R BT.601 YCbCr
+	color-range=YCbCr limited range
+	color_mgmt_changed=0
+crtc[34]: crtc-0
+	enable=0
+	active=0
+	self_refresh_active=0
+	planes_changed=1
+	mode_changed=1
+	active_changed=1
+	connectors_changed=1
+	color_mgmt_changed=0
+	plane_mask=0
+	connector_mask=0
+	encoder_mask=0
+	mode: "": 0 0 0 0 0 0 0 0 0 0 0x0 0x0
+connector[36]: HDMI-A-1
+	crtc=(null)
+	self_refresh_aware=0
+	max_requested_bpc=0
+	colorspace=Default
+	broadcast_rgb=Automatic
+	is_limited_range=n
+	output_bpc=0
+	output_format=RGB
+	tmds_char_rate=0
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 6.12.0-g2334ad948b1f (cassie@astraea1) (arm-linux-gnueabihf-gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #16 SMP Wed Oct 21 20:46:04 EDT 2026
+[    0.000000] CPU: ARMv7 Processor [412fc09a] revision 10 (ARMv7), cr=10c5787d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] OF: fdt: Machine model: PlayStation Vita
+[    0.000000] OF: fdt: Ignoring memory range 0x40200000 - 0x41000000
+[    0.000000] printk: legacy bootconsole [earlycon0] enabled
+[    0.000000] printk: debug: skip boot console de-registration.
+[    0.000000] Memory policy: Data cache writealloc
+[    0.000000] OF: reserved mem: 0x20000000..0x27ffffff (131072 KiB) nomap non-reusable framebuffer@20000000
+[    0.000000] Zone ranges:
+[    0.000000]   Normal   [mem 0x0000000041000000-0x000000005fffffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000041000000-0x000000005fffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000041000000-0x000000005fffffff]
+[    0.000000] percpu: Embedded 9 pages/cpu s15052 r0 d21812 u36864
+[    0.000000] pcpu-alloc: s15052 r0 d21812 u36864 alloc=9*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+[    0.000000] Kernel command line: earlyprintk keep_bootcon console=ttyS0,115200 console=tty0
+[    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 126976
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] rcu: Hierarchical RCU implementation.
+[    0.000000] rcu: 	RCU event tracing is enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 10 jiffies.
+[    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+[    0.000000] L2C-310 cache controller enabled, 16 ways, 2048 kB
+[    0.000000] L2C-310: CACHE_ID 0x410000c7, AUX_CTRL 0x60090001
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000005] sched_clock: 64 bits at 166MHz, resolution 6ns, wraps every 4398046511103ns
+[    0.008140] clocksource: arm_global_timer: mask: 0xffffffffffffffff max_cycles: 0x26353f7f84, max_idle_ns: 440795204945 ns
+[    0.019374] Switching to timer-based delay loop, resolution 6ns
+[    0.025932] Console: colour dummy device 80x30
+[    0.030466] printk: legacy console [tty0] enabled
+[    0.035313] Calibrating delay loop (skipped), value calculated using timer frequency.. 331.33 BogoMIPS (lpj=1656675)
+[    0.046092] CPU: Testing write buffer coherency: ok
+[    0.051142] CPU0: Spectre v2: using BPIALL workaround
+[    0.056307] pid_max: default: 32768 minimum: 301
+[    0.061364] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.068842] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.078529] CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+[    0.086988] Setting up static identity map for 0x41100000 - 0x41100060
+[    0.094044] rcu: Hierarchical SRCU implementation.
+[    0.098959] rcu: 	Max phase no-delay instances is 1000.
+[    0.107307] smp: Bringing up secondary CPUs ...
+[    0.113402] CPU1: thread -1, cpu 1, socket 0, mpidr 80000001
+[    0.113441] CPU1: Spectre v2: using BPIALL workaround
+[    0.125997] CPU2: thread -1, cpu 2, socket 0, mpidr 80000002
+[    0.126034] CPU2: Spectre v2: using BPIALL workaround
+[    0.138549] CPU3: thread -1, cpu 3, socket 0, mpidr 80000003
+[    0.138587] CPU3: Spectre v2: using BPIALL workaround
+[    0.149719] smp: Brought up 1 node, 4 CPUs
+[    0.153909] SMP: Total of 4 processors activated (1325.34 BogoMIPS).
+[    0.160403] CPU: WARNING: CPU(s) started in wrong/inconsistent modes (primary CPU mode 0x13)
+[    0.169015] CPU: This may indicate a broken bootloader or firmware.
+[    0.176913] Memory: 462736K/507904K available (8192K kernel code, 653K rwdata, 1644K rodata, 27648K init, 257K bss, 43368K reserved, 0K cma-reserved)
+[    0.191523] devtmpfs: initialized
+[    0.200385] VFP support v0.3: implementor 41 architecture 3 part 30 variant 9 rev 4
+[    0.208753] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.218816] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.228249] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.237673] DMA: preallocated 256 KiB pool for atomic coherent allocations
+[    0.260900] SCSI subsystem initialized
+[    0.265182] usbcore: registered new interface driver usbfs
+[    0.270921] usbcore: registered new interface driver hub
+[    0.276455] usbcore: registered new device driver usb
+[    0.281794] pps_core: LinuxPPS API ver. 1 registered
+[    0.286882] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.296234] PTP clock support registered
+[    0.302054] Bluetooth: Core ver 2.22
+[    0.305812] NET: Registered PF_BLUETOOTH protocol family
+[    0.311226] Bluetooth: HCI device and connection manager initialized
+[    0.317725] Bluetooth: HCI socket layer initialized
+[    0.322704] Bluetooth: L2CAP socket layer initialized
+[    0.327901] Bluetooth: SCO socket layer initialized
+[    0.333548] clocksource: Switched to clocksource arm_global_timer
+[    0.364137] NET: Registered PF_INET protocol family
+[    0.369628] IP idents hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.379501] tcp_listen_portaddr_hash hash table entries: 512 (order: 0, 4096 bytes, linear)
+[    0.388104] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.396036] TCP established hash table entries: 4096 (order: 2, 16384 bytes, linear)
+[    0.404012] TCP bind hash table entries: 4096 (order: 4, 65536 bytes, linear)
+[    0.411571] TCP: Hash tables configured (established 4096 bind 4096)
+[    0.418223] UDP hash table entries: 256 (order: 1, 8192 bytes, linear)
+[    0.424938] UDP-Lite hash table entries: 256 (order: 1, 8192 bytes, linear)
+[    0.432389] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.443888] Initialise system trusted keyrings
+[    0.449004] workingset: timestamp_bits=30 max_order=17 bucket_order=0
+[    0.456320] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.933346] Key type asymmetric registered
+[    0.937615] Asymmetric key parser 'x509' registered
+[    0.942825] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 250)
+[    0.950399] io scheduler mq-deadline registered
+[    0.955027] io scheduler kyber registered
+[    0.970821] vita_gpio_probe
+[    0.985199] ledtrig-cpu: registered to indicate activity on CPUs
+[    0.992464] vita-reset e3101000.reset: probe
+[    1.146076] e2030000.serial: ttyS0 at MMIO 0xe2030000 (irq = 0, base_baud = 0) is a vita-uart
+[    1.154852] printk: legacy console [ttyS0] enabled
+[    1.790017] vita-iftu e5030000.display: [drm] vita-iftu: plane A config 1 -> second buffer 0x20384000, config 0 active
+[    1.812874] vita-iftu e5030000.display: [drm] vita-iftu: vblank IRQ 26 claimed
+[    1.828817] [drm] Initialized vita-iftu 1.0.0 for e5030000.display on minor 0
+[    1.860291] loop: module loaded
+[    1.869825] null_blk: disk nullb0 created
+[    1.878030] null_blk: module loaded
+[    1.885142] SPI driver vita-syscon has no spi_device_id for vita,syscon
+[    1.899067] vita_spi_probe
+[    1.904686] vita_reset_level: idx: 65, mask: 0x1, assert: 0
+[    1.919886] usbcore: registered new interface driver asix
+[    1.931022] usbcore: registered new interface driver ax88179_178a
+[    1.943527] usbcore: registered new interface driver cdc_ether
+[    1.955508] usbcore: registered new interface driver smsc95xx
+[    1.967336] usbcore: registered new interface driver net1080
+[    1.978957] usbcore: registered new interface driver cdc_subset
+[    1.991100] usbcore: registered new interface driver zaurus
+[    2.002536] usbcore: registered new interface driver cdc_ncm
+[    2.014161] usbcore: registered new interface driver r8153_ecm
+[    2.027458] usbcore: registered new interface driver usb-storage
+[    2.029308] vita_reset_level: idx: 36, mask: 0xf, assert: 0
+[    2.034147] mousedev: PS/2 mouse device common for all mice
+[    2.039357] vita pervasive usb0 prepare: reset=0x0 gate=0x0 mode_flag=0x1
+[    2.039799] i2c_dev: i2c /dev entries driver
+[    2.085642] vita_reset_level: idx: 68, mask: 0x1, assert: 0
+[    2.097797] i2c-vita e0500000.i2c: Vita I2C0 adapter registered
+[    2.513453] vita pervasive usb0: host mode latched, PHY ready after 20 ms (F30=0x1)
+[    2.529286] ehci-platform e40e0000.usb: EHCI Host Controller
+[    2.540891] ehci-platform e40e0000.usb: new USB bus registered, assigned bus number 1
+[    2.555758] vita_reset_level: idx: 38, mask: 0xf, assert: 0
+[    2.557356] ehci-platform e40e0000.usb: irq 28, io mem 0xe40e0000
+[    2.557441] sdhci: Secure Digital Host Controller Interface driver
+[    2.557457] sdhci: Copyright(c) Pierre Ossman
+[    2.557760] hid: raw HID events driver (C) Jiri Kosina
+[    2.558019] usbcore: registered new interface driver usbhid
+[    2.558038] usbhid: USB HID core driver
+[    2.558884] NET: Registered PF_INET6 protocol family
+[    2.560204] sdhci-vita e0b00000.mmc: SDIF0 @ 0xe0b00000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1fff0000 [card present]
+[    2.560254] sdhci-vita e0b00000.mmc: SDIF0: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    2.560953] mmc0: Invalid maximum block size, assuming 512 bytes
+[    2.561345] sdhci-vita e0c00000.mmc: game-card rail on at boot failed: -517
+[    2.561639] sdhci-vita e0c10000.mmc: SDIF2 @ 0xe0c10000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1ffc0000 [no card]
+[    2.561683] sdhci-vita e0c10000.mmc: SDIF2: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    2.562536] vita pervasive usb2 prepare: reset=0x0 gate=0x0 mode_flag=0x1
+[    2.569548] Segment Routing with IPv6
+[    2.593457] ehci-platform e40e0000.usb: USB 2.0 started, EHCI 1.00
+[    2.596794] In-situ OAM (IOAM) with IPv6
+[    2.604495] hub 1-0:1.0: USB hub found
+[    2.606457] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+[    2.611375] hub 1-0:1.0: 1 port detected
+[    2.625731] NET: Registered PF_PACKET protocol family
+[    2.840332] Bluetooth: RFCOMM TTY layer initialized
+[    2.850387] Bluetooth: RFCOMM socket layer initialized
+[    2.860897] Bluetooth: RFCOMM ver 1.11
+[    2.868588] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[    2.875632] mmc0: SDHCI controller on (null) [e0b00000.mmc] using ADMA
+[    2.879416] Bluetooth: BNEP socket layer initialized
+[    2.902730] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+[    2.903458] usb 1-1: new high-speed USB device number 2 using ehci-platform
+[    2.908804] Bluetooth: HIDP socket layer initialized
+[    2.909034] Registering SWP/SWPB emulation handler
+[    2.969738] Loading compiled-in X.509 certificates
+[    2.995509] vita_gpio_probe
+[    3.001349] mmc0: new high speed MMC card at address 0001
+[    3.001427] vita_reset_level: idx: 64, mask: 0x1, assert: 0
+[    3.008697] mmcblk0: mmc0:0001 M4G1FA 3.55 GiB
+[    3.012971] gpio gpiochip1: (e20a0000.gpio): not an immutable chip, please consider fixing it!
+[    3.021622]  mmcblk0: [SCE] p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13
+[    3.027932] vita_syscon_probe
+[    3.035642] vita pervasive usb2: host mode latched, PHY ready after 20 ms (F30=0x5)
+[    3.035758] ehci-platform e4020000.usb: EHCI Host Controller
+[    3.049096] Vita Syscon Baryon version: 0x1040301
+[    3.054769] ehci-platform e4020000.usb: new USB bus registered, assigned bus number 2
+[    3.096292] Vita Syscon HW info: 0x723030
+[    3.104612] ehci-platform e4020000.usb: irq 29, io mem 0xe4020000
+[    3.114561] vita-syscon spi0.0: clockgen I2C adapter: Vita I2C
+[    3.123179] usb-storage 1-1:1.0: USB Mass Storage device detected
+[    3.126610] vita-syscon-buttons vita-syscon-buttons: DMA mask not set
+[    3.134104] mmcblk0boot0: mmc0:0001 M4G1FA 1.00 MiB
+[    3.134574] scsi host0: usb-storage 1-1:1.0
+[    3.139070] ehci-platform e4020000.usb: USB 2.0 started, EHCI 1.00
+[    3.139108] vita_syscon_buttons_probe
+[    3.139590] input: PlayStation Vita Buttons (Syscon) as /devices/platform/soc/e0a00000.spi/spi_master/spi0/spi0.0/vita-syscon-buttons/input/input0
+[    3.158414] mmcblk0boot1: mmc0:0001 M4G1FA 1.00 MiB
+[    3.158788] vita-syscon-rtc vita-syscon-rtc: DMA mask not set
+[    3.164334] hub 2-0:1.0: USB hub found
+[    3.187820] vita-syscon-rtc vita-syscon-rtc: registered as rtc0
+[    3.187822] mmcblk0rpmb: mmc0:0001 M4G1FA 128 KiB, chardev (248:0)
+[    3.188673] hub 2-0:1.0: 1 port detected
+[    3.217294] vita-syscon-rtc vita-syscon-rtc: setting system clock to 2026-10-22T00:49:40 UTC (1792630180)
+[    3.336144] pstv-ohci e40e0200.ohci: PSTV bus-zero OHCI companion
+[    3.348639] pstv-ohci e40e0200.ohci: new USB bus registered, assigned bus number 3
+[    3.364391] pstv-ohci e40e0200.ohci: irq 27, io mem 0xe40e0200
+[    3.442251] hub 3-0:1.0: USB hub found
+[    3.450062] hub 3-0:1.0: 1 port detected
+[    3.486782] vita-syscon spi0.0: Dolce USB power rail on
+[    3.493460] usb 2-1: new high-speed USB device number 2 using ehci-platform
+[    3.497469] vita-dolce-usb-power usb0-power: Type-A port powered: Dolce rail on, enable GPIO asserted
+[    3.530674] pwrseq_vita_wlan wlan-pwrseq: Vita WLAN power sequencer registered
+[    3.546462] sdhci-vita e0c10000.mmc: SDIF2 @ 0xe0c10000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1fff0000 [card present]
+[    3.566547] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[    3.572329] sdhci-vita e0c10000.mmc: SDIF2: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    3.578497] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    3.580742] sdhci-vita e0c10000.mmc: allocated mmc-pwrseq
+[    3.596241] Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+[    3.596657] mmc1: Invalid maximum block size, assuming 512 bytes
+[    3.602097] clk: Disabling unused clocks
+[    3.704710] cdc_ether 2-1:2.0 eth0: register 'cdc_ether' at usb-e4020000.usb-1, CDC Ethernet Device, 00:d9:d1:53:1a:bf
+[    3.993462] mmc1: SDHCI controller on (null) [e0c10000.mmc] using ADMA
+[    4.065067] mmc1: new high speed SDIO card at address 0001
+[    4.079348] Bluetooth: vendor=0x2df, device=0x911a, class=255, fn=2
+[    4.210878] scsi 0:0:0:0: Direct-Access     Kingston DataTraveler 3.0 PMAP PQ: 0 ANSI: 6
+[    4.516090] sdhci-vita e0c00000.mmc: game-card rail raised before init
+[    4.529670] sdhci-vita e0c00000.mmc: SDIF1 @ 0xe0c00000: version 0x8901, caps 0x6def30b0, caps1 0x00000000, present 0x1ffc0000 [no card]
+[    4.554613] sdhci-vita e0c00000.mmc: SDIF1: base_clk=48MHz timeout_clk=48MHz max_blk=4096 HS SDMA ADMA2 3.3V 1.8V
+[    4.576314] mmc2: Invalid maximum block size, assuming 512 bytes
+[    4.633458] mmc2: SDHCI controller on (null) [e0c00000.mmc] using ADMA
+[    4.645690] sd 0:0:0:0: [sda] 242417664 512-byte logical blocks: (124 GB/116 GiB)
+[    4.663603] sd 0:0:0:0: [sda] Write Protect is off
+[    4.673436] sd 0:0:0:0: [sda] Mode Sense: 45 00 00 00
+[    4.676217] sd 0:0:0:0: [sda] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+[    4.869307]  sda: sda1
+[    4.875067] sd 0:0:0:0: [sda] Attached SCSI removable disk
+[    4.935582] mmc2: new high speed SDXC card at address aaaa
+[    4.948353] mmcblk2: mmc2:aaaa SN64G 59.5 GiB
+[    9.048216] Freeing unused kernel image (initmem) memory: 27648K
+[    9.070815] Run /init as init process
+[    9.078290]   with arguments:
+[    9.078322]     /init
+[    9.078348]   with environment:
+[    9.078371]     HOME=/
+[    9.078395]     TERM=linux
+[    9.330581] exFAT-fs (sda1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+[    9.640775] Bluetooth: FW download over, size 466592 bytes
+[    9.763493] mwifiex_sdio mmc1:0001:1: WLAN is not the winner! Skip FW dnld
+[    9.777618] mwifiex_sdio mmc1:0001:1: WLAN FW is active
+[    9.953425] mwifiex_sdio mmc1:0001:1: host_mlme: disable, key_api: 0
+[   10.023450] mwifiex_sdio mmc1:0001:1: CHAN_REGION_CFG unsupported (result=0x2), using default reg domain
+[   10.281907] mwifiex_sdio mmc1:0001:1: info: MWIFIEX VERSION: mwifiex 1.0 (14.68.35.p66) 
+[   10.298427] mwifiex_sdio mmc1:0001:1: driver_version = mwifiex 1.0 (14.68.35.p66) 
+[   10.343566] btmrvl_sdio mmc1:0001:2: sdio device tree data not available
+[   10.358634] btmrvl_sdio mmc1:0001:3: error -ENODEV: SDIO function disabled by firmware description
+[   10.585658] random: crng init done
+[   37.222253] loop7: detected capacity change from 0 to 16777216
+[   73.062193] EXT4-fs (loop7): mounted filesystem bcb32c9a-d2d6-418e-9108-b5188e0676ae r/w with ordered data mode. Quota mode: disabled.
+[  139.656846] cdc_ether 2-1:2.0 enx00d9d1531abf: renamed from eth0
+[  142.949280] EXT4-fs (loop7): re-mounted bcb32c9a-d2d6-418e-9108-b5188e0676ae r/w. Quota mode: disabled.
+[  148.260450] mwifiex_sdio mmc1:0001:1: info: trying to associate to bssid 40:e1:e4:1b:bf:5a
+[  149.291407] mwifiex_sdio mmc1:0001:1: ASSOC_RESP: failed,	status code=1 err=0xfffc a_id=0x3fff
+[  149.309008] mwifiex_sdio mmc1:0001:1: assoc failure: reason CONNECT_ERR_ASSOC_ERR_TIMEOUT
+[  149.325691] mwifiex_sdio mmc1:0001:1: ASSOC_RESP: UNSPECIFIED failure
+[  149.338851] mwifiex_sdio mmc1:0001:1: info: association to bssid 40:e1:e4:1b:bf:5a failed
+[  149.981744] mwifiex_sdio mmc1:0001:1: info: trying to associate to bssid 42:e1:e4:1b:bb:fa
+[  150.016926] mwifiex_sdio mmc1:0001:1: assoc: associated with 42:e1:e4:1b:bb:fa
+[  150.031771] mwifiex_sdio mmc1:0001:1: info: associated to bssid 42:e1:e4:1b:bb:fa successfully
+[  150.123393] mwifiex_sdio mmc1:0001:1: key: send EAPOL to 42:e1:e4:1b:bb:fa
+[  150.141624] mwifiex_sdio mmc1:0001:1: key: send EAPOL to 42:e1:e4:1b:bb:fa
+[  213.000413] mwifiex_sdio mmc1:0001:1: CMD_RESP: cmd 0x23f error, result=0x2
+[  217.886134] loop0: detected capacity change from 0 to 21144
+[  219.216127] Bluetooth: MGMT ver 1.23
+bash: line 1:  1271 Killed                  /tmp/drm-flip-probe --native-abgr --seconds 30 > /tmp/m3-native-kill.log 2>&1
